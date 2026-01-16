@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "paths": {
+    "/billing": {
+      "name": "/billing",
+      "lambdaFunction": "stripe",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

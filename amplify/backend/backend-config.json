@@ -1,0 +1,784 @@
+{
+  "api": {
+    "Connections": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "connections"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "TGLAPI": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "TGLFunction"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "apigateway": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "apigateway"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "authorizeNet": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "authorizeNet"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "geoapify": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "geoapify"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "nounProjectREST": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "nounProjectAPI"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "openAi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "openAiCalls"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "sendGrid": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "sendGrid"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "serviceTitan": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "serviceTitan"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "slack": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "slack"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "stripe": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "stripe"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "tglmonday": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "tglmonday"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "thegraphitelabtoolbox": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "TheGraphiteLabToolbox"
+        }
+      ],
+      "output": {
+        "authConfig": {
+          "additionalAuthenticationProviders": [
+            {
+              "authenticationType": "AMAZON_COGNITO_USER_POOLS",
+              "userPoolConfig": {
+                "userPoolId": "authTheGraphiteLabToolbox"
+              }
+            },
+            {
+              "authenticationType": "AWS_IAM"
+            }
+          ],
+          "defaultAuthentication": {
+            "apiKeyConfig": {
+              "apiKeyExpirationDate": "2026-10-12T06:16:55.392Z",
+              "apiKeyExpirationDays": 365,
+              "description": ""
+            },
+            "authenticationType": "API_KEY"
+          }
+        }
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "AppSync"
+    },
+    "userManagement": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "userManagement"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
+    "websiteBlogManagement": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "websiteBlogManagement"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "auth": {
+    "TheGraphiteLabToolbox": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OPTIONAL",
+        "mfaTypes": [
+          "SMS",
+          "TOTP"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [
+            "REQUIRES_LOWERCASE",
+            "REQUIRES_NUMBERS",
+            "REQUIRES_SYMBOLS",
+            "REQUIRES_UPPERCASE"
+          ],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "NAME",
+          "EMAIL",
+          "PHONE_NUMBER"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "TGLFunction": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "aibpa": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "apigateway": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "assemblyCalls": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "authorizeNet": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "connections": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "geoapify": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "handleBlogsTrigger": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "thegraphitelabtoolbox"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "handleReviewsTrigger": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "thegraphitelabtoolbox"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "handleSignupTrigger": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "masterPermissions": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "thegraphitelabtoolbox"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "membershipToolsPerms": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "thegraphitelabtoolbox"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "nounProjectAPI": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "openAiCalls": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "openAiProxy": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "sendGrid": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "serviceTitan": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "slack": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "stripe": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "tglmonday": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "userManagement": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "websiteBlogManagement": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_TGLFunction_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "TGLFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_TGLFunction_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "TGLFunction"
+        }
+      ]
+    },
+    "AMPLIFY_function_aibpa_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "aibpa"
+        }
+      ]
+    },
+    "AMPLIFY_function_aibpa_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "aibpa"
+        }
+      ]
+    },
+    "AMPLIFY_function_apigateway_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "apigateway"
+        }
+      ]
+    },
+    "AMPLIFY_function_apigateway_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "apigateway"
+        }
+      ]
+    },
+    "AMPLIFY_function_assemblyCalls_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "assemblyCalls"
+        }
+      ]
+    },
+    "AMPLIFY_function_assemblyCalls_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "assemblyCalls"
+        }
+      ]
+    },
+    "AMPLIFY_function_authorizeNet_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "authorizeNet"
+        }
+      ]
+    },
+    "AMPLIFY_function_authorizeNet_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "authorizeNet"
+        }
+      ]
+    },
+    "AMPLIFY_function_connections_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "connections"
+        }
+      ]
+    },
+    "AMPLIFY_function_connections_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "connections"
+        }
+      ]
+    },
+    "AMPLIFY_function_geoapify_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "geoapify"
+        }
+      ]
+    },
+    "AMPLIFY_function_geoapify_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "geoapify"
+        }
+      ]
+    },
+    "AMPLIFY_function_handleBlogsTrigger_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "handleBlogsTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_handleBlogsTrigger_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "handleBlogsTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_handleReviewsTrigger_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "handleReviewsTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_handleReviewsTrigger_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "handleReviewsTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_handleSignupTrigger_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "handleSignupTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_handleSignupTrigger_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "handleSignupTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_masterPermissions_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "masterPermissions"
+        }
+      ]
+    },
+    "AMPLIFY_function_masterPermissions_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "masterPermissions"
+        }
+      ]
+    },
+    "AMPLIFY_function_membershipToolsPerms_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "membershipToolsPerms"
+        }
+      ]
+    },
+    "AMPLIFY_function_membershipToolsPerms_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "membershipToolsPerms"
+        }
+      ]
+    },
+    "AMPLIFY_function_nounProjectAPI_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "nounProjectAPI"
+        }
+      ]
+    },
+    "AMPLIFY_function_nounProjectAPI_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "nounProjectAPI"
+        }
+      ]
+    },
+    "AMPLIFY_function_openAiCalls_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "openAiCalls"
+        }
+      ]
+    },
+    "AMPLIFY_function_openAiCalls_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "openAiCalls"
+        }
+      ]
+    },
+    "AMPLIFY_function_openAiProxy_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "openAiProxy"
+        }
+      ]
+    },
+    "AMPLIFY_function_openAiProxy_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "openAiProxy"
+        }
+      ]
+    },
+    "AMPLIFY_function_sendGrid_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sendGrid"
+        }
+      ]
+    },
+    "AMPLIFY_function_sendGrid_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "sendGrid"
+        }
+      ]
+    },
+    "AMPLIFY_function_serviceTitan_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "serviceTitan"
+        }
+      ]
+    },
+    "AMPLIFY_function_serviceTitan_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "serviceTitan"
+        }
+      ]
+    },
+    "AMPLIFY_function_slack_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "slack"
+        }
+      ]
+    },
+    "AMPLIFY_function_slack_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "slack"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripe_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripe"
+        }
+      ]
+    },
+    "AMPLIFY_function_stripe_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "stripe"
+        }
+      ]
+    },
+    "AMPLIFY_function_tglmonday_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "tglmonday"
+        }
+      ]
+    },
+    "AMPLIFY_function_tglmonday_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "tglmonday"
+        }
+      ]
+    },
+    "AMPLIFY_function_userManagement_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "userManagement"
+        }
+      ]
+    },
+    "AMPLIFY_function_userManagement_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "userManagement"
+        }
+      ]
+    },
+    "AMPLIFY_function_websiteBlogManagement_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "websiteBlogManagement"
+        }
+      ]
+    },
+    "AMPLIFY_function_websiteBlogManagement_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "websiteBlogManagement"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "userFiles": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3"
+    }
+  }
+}

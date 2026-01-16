@@ -1,0 +1,7 @@
+---
+alwaysApply: false
+description: use whenever a component will need to be in a loading state
+---
+
+- we should always use mui skeletons for loading indication when we are waiting on components to load on screen
+- we should use a centralized loading indicator over the page when we are waiting on the page to load

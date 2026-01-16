@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/slack": {
+      "name": "/slack",
+      "lambdaFunction": "slack",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

@@ -1,12 +1,11 @@
 # Mobile App Webpages Test
 
-A simple test mobile application built with Next.js, Capacitor, and Material UI that serves webpages and exposes background audio recording capabilities.
+A mobile application built with Next.js, Capacitor, and Material UI that serves webpages and exposes background audio recording capabilities.
 
 ## Features
 
 - WebView integration to load webpages from webpages.thegraphitelab.com
 - Background audio recording (works when app is minimized)
-- Test webpage for testing audio recording functionality
 - iOS support with native audio recording
 
 ## Prerequisites
@@ -93,7 +92,7 @@ Open `ios/App/App/Info.plist` and add:
 
 ### 5. Configure WebView URL
 
-By default, the app loads a local test page. To load webpages from your server:
+By default, the app loads a configured webpage URL. To load webpages from your server:
 
 1. Create a `.env.local` file:
    ```
@@ -134,18 +133,6 @@ Visit `http://localhost:3000` to test the web version.
    - Click the Run button (▶️)
    - The app will install and launch on your device
 
-## Testing Audio Recording
-
-1. Open the app on your iPhone
-2. The test page should load automatically
-3. Click "Start Recording"
-4. Grant microphone permission when prompted
-5. Minimize the app (press home button)
-6. Wait a few seconds
-7. Return to the app
-8. Click "Stop Recording"
-9. Check the status to verify recording worked
-
 ## Project Structure
 
 ```
@@ -159,7 +146,6 @@ Visit `http://localhost:3000` to test the web version.
 │   ├── AudioRecording.web.ts  # Web implementation
 │   └── definitions.ts     # Type definitions
 ├── public/                # Static files
-│   └── test-page.html    # Test webpage
 ├── ios/                   # iOS native code (generated)
 │   └── App/
 │       └── App/
@@ -204,39 +190,6 @@ if (window.audioRecording || window.Capacitor?.Plugins?.AudioRecording) {
 - Run `npm run build` before `npx cap sync`
 - Clean build: `rm -rf out ios` then rebuild
 - Check Node.js version (18+ required)
-
-## Version Management
-
-The app version is automatically synchronized from `package.json` to the test page. The version appears in:
-- The version badge next to the "Audio Recorder" title
-- The dev info section at the bottom
-
-### Automatic Version Updates
-
-The version is automatically updated:
-- **Before builds**: The `prebuild` script runs `inject-version.js` before every build
-- **During development**: The `dev` script runs the injection script
-- **Before commits**: A git pre-commit hook ensures the version is updated (if git is initialized)
-
-### Manual Version Update
-
-To manually update the version:
-
-```bash
-npm run inject-version
-```
-
-Or update `package.json` and run any build/dev command - it will update automatically.
-
-### Setting Up Git Hooks
-
-If you initialize a git repository, set up the pre-commit hook:
-
-```bash
-./scripts/setup-git-hooks.sh
-```
-
-This ensures the version is always in sync before commits.
 
 ## Next Steps
 

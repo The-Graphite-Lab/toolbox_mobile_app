@@ -1,0 +1,14 @@
+{
+  "resourceName": "userFiles",
+  "policyUUID": "aa2a7bfc",
+  "bucketName": "tgltoolboxuserfiles",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

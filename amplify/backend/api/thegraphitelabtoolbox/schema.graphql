@@ -1,0 +1,2512 @@
+type Users @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  username: String!
+    @index(
+      name: "byUsername"
+      queryField: "usersByUsername"
+      sortKeyFields: ["type"]
+    )
+  email: String!
+    @index(
+      name: "byEmail"
+      queryField: "usersByEmail"
+      sortKeyFields: ["username"]
+    )
+  name: String
+  phone: String
+  type: String
+    @index(
+      name: "byType"
+      queryField: "usersByType"
+      sortKeyFields: ["username"]
+    )
+  hasAgreedToTerms: Boolean
+  status: String
+    @index(
+      name: "byStatus"
+      queryField: "usersByStatus"
+      sortKeyFields: ["username"]
+    )
+  profilePic: String
+  membershipType: String
+  notificationSettings: AWSJSON
+  permissions: AWSJSON
+  onboardingDone: Boolean
+  onboardingResponses: AWSJSON
+  proxyUserID: ID
+    @index(
+      name: "byProxyUser"
+      queryField: "usersByProxyUserID"
+      sortKeyFields: ["username"]
+    )
+  proxyClientID: ID
+    @index(
+      name: "byProxyClient"
+      queryField: "usersByProxyClientID"
+      sortKeyFields: ["username"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "usersByClientID"
+      sortKeyFields: ["username"]
+    )
+  Projects: [Projects] @manyToMany(relationName: "UserProjects")
+  AssignedClients: [Clients] @manyToMany(relationName: "UserClients")
+}
+
+type Apps @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  url: String
+  authType: String
+  type: String
+    @index(name: "byType", queryField: "appsByType", sortKeyFields: ["name"])
+  description: String
+  createdAt: String
+  updatedAt: String
+}
+
+type IngestionTasks @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  bundle: AWSJSON
+  taskType: String
+  entityType: String
+  status: String
+  status_updatedAt: String
+  errorType: String
+  createdAt: String
+  updatedAt: String
+
+  AppID: ID!
+    @index(
+      name: "byApp"
+      queryField: "ingestionTasksByAppID"
+      sortKeyFields: ["updatedAt"]
+    )
+  ConnectionID: ID!
+    @index(
+      name: "byConnection"
+      queryField: "ingestionTasksByConnectionID"
+      sortKeyFields: ["updatedAt"]
+    )
+    @index(
+      name: "byConnectionByStatus_updatedAt"
+      queryField: "ingestionTasksByConnectionIDByStatus_updatedAt"
+      sortKeyFields: ["status_updatedAt"]
+    )
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "ingestionTasksByClientID"
+      sortKeyFields: ["updatedAt"]
+    )
+  AppID_ClientID_ConnectionID_EntityType: String
+    @index(
+      name: "byAppID_ClientID_ConnectionID_EntityType"
+      queryField: "ingestionTasksByAppID_ClientID_ConnectionID_EntityType"
+      sortKeyFields: ["updatedAt"]
+    )
+}
+
+type IngestionTaskErrorHandlers @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  status: String
+  errorType: String
+  status_updatedAt: String
+  createdAt: String
+  updatedAt: String
+
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "ingestionTaskErrorHandlersByClientID"
+      sortKeyFields: ["id"]
+    )
+  AppID: ID!
+    @index(
+      name: "byApp"
+      queryField: "ingestionTaskErrorHandlersByAppID"
+      sortKeyFields: ["id"]
+    )
+  ConnectionID: ID!
+    @index(
+      name: "byConnectionByStatus_updatedAt"
+      queryField: "ingestionTaskErrorHandlersByConnectionIDByStatus_updatedAt"
+      sortKeyFields: ["status_updatedAt"]
+    )
+}
+
+type Connections @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  appName: String!
+  status: String
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "connectionsByClientID"
+      sortKeyFields: ["id"]
+    )
+  AppID: ID!
+    @index(
+      name: "byApp"
+      queryField: "connectionsByAppID"
+      sortKeyFields: ["id"]
+    )
+    @index(
+      name: "byAppByStatus"
+      queryField: "connectionsByAppIDByStatus"
+      sortKeyFields: ["status"]
+    )
+}
+
+type MasterPermissions @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  permissions: AWSJSON
+}
+
+type Clients @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  uniqueIdentifier: String
+    @index(
+      name: "byUniqueIdentifier"
+      queryField: "clientsByUniqueIdentifier"
+      sortKeyFields: ["name"]
+    )
+  name: String!
+  lowercaseName: String
+  employeeRange: String
+  industries: [String]
+  csm: String
+    @index(name: "byCSM", queryField: "clientsByCSM", sortKeyFields: ["name"])
+  street1: String
+  street2: String
+  city: String
+  state: String
+  zip: String
+  country: String
+  latitude: String
+  longitude: String
+  annualRevenue: Float
+  phone: String
+  email: String
+  website: String
+    @index(
+      name: "byWebsite"
+      queryField: "clientsByWebsite"
+      sortKeyFields: ["name"]
+    )
+  logo: String
+  status: String
+  createdAt: String
+  updatedAt: String
+  software: [String]
+  membership: String
+  membershipStartDate: String
+  primaryColor: String
+  secondaryColor: String
+  StripeCustomerID: String
+  TwilioSubUserID: String
+    @index(
+      name: "byTwilioSubUserID"
+      queryField: "clientsByTwilioSubUserID"
+      sortKeyFields: ["id"]
+    )
+  SendGridSubUserID: String
+  SendGridIntegrationVersion: Int
+  MembershipID: String
+  HarvestClientID: String
+  onboardingDone: Boolean
+  accountType: String
+    @index(
+      name: "byAccountType"
+      queryField: "clientsByAccountType"
+      sortKeyFields: ["name"]
+    )
+  isLead: String
+    @index(
+      name: "byIsLead"
+      queryField: "clientsByIsLead"
+      sortKeyFields: ["name"]
+    )
+  ParentClientID: ID
+    @index(
+      name: "byParentClient"
+      queryField: "clientsByParentClientID"
+      sortKeyFields: ["name"]
+    )
+  rivetBalance: Float
+  rivetBalanceUpdatedAt: String
+  onRivetsModel: Boolean
+  clientType: ClientType
+    @index(
+      name: "byClientType"
+      queryField: "clientsByType"
+      sortKeyFields: ["name"]
+    )
+  AssignedUsers: [Users] @manyToMany(relationName: "UserClients")
+}
+
+type ClientContactMethods @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  value: String!
+    @index(
+      name: "byValue"
+      queryField: "clientContactMethodsByValue"
+      sortKeyFields: ["type"]
+    )
+  type: String!
+    @index(
+      name: "byType"
+      queryField: "clientContactMethodsByType"
+      sortKeyFields: ["value"]
+    )
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "clientContactMethodsByClientID"
+      sortKeyFields: ["value"]
+    )
+  verified: String
+  verificationMethod: String
+  verifiedAt: String
+  createdAt: String
+  updatedAt: String
+}
+
+type ClientAddresses @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  street1: String
+  street2: String
+  city: String
+  state: String
+  zip: String
+  country: String
+  latitude: String
+  longitude: String
+  type: String
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "clientAddressesByClientID"
+      sortKeyFields: ["id"]
+    )
+  createdAt: String
+  updatedAt: String
+}
+
+type ClientContactActivityEvents @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientContactID: ID!
+  ActivityTypeID: ID!
+  description: String
+  links: AWSJSON
+  createdAt: String
+  updatedAt: String
+}
+
+type ClientContactActivityTypes @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  createdAt: String
+  updatedAt: String
+}
+
+type ClientContacts @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "clientContactsByClientID"
+      sortKeyFields: ["id"]
+    )
+  name: String!
+  memo: String
+  occupation: String
+  birthday: String
+  anniversary: String
+  createdAt: String
+  updatedAt: String
+  TypeID: ID
+    @index(
+      name: "byType"
+      queryField: "clientContactsByTypeID"
+      sortKeyFields: ["id"]
+    )
+}
+
+type ClientContactTypes @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  instructions: String
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "clientContactTypesByClientID"
+      sortKeyFields: ["id"]
+    )
+}
+
+type ClientEmailTemplates @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "emailTemplatesByClientID"
+      sortKeyFields: ["id"]
+    )
+  description: String
+  mergeTags: AWSJSON
+  createdAt: String
+  updatedAt: String
+}
+
+type ClientTools @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "clientToolsByClientID"
+      sortKeyFields: ["id"]
+    )
+  ToolID: ID!
+    @index(
+      name: "byTool"
+      queryField: "clientToolsByToolID"
+      sortKeyFields: ["id"]
+    )
+  clientName: String
+  toolName: String
+  enabled: Boolean
+}
+
+type ClientGroups @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  type: String
+  typeID: ID
+  typeTypeID: String
+  createdAt: String
+  updatedAt: String
+  options: AWSJSON
+  enabled: Boolean
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "clientGroupsByClientID"
+      sortKeyFields: ["type"]
+    )
+    @index(
+      name: "byTypeTypeID"
+      queryField: "clientGroupsByTypeTypeID"
+      sortKeyFields: ["typeTypeID"]
+    )
+}
+
+# we are deleting the below as we do not need it.
+type ClientGroupAssignments @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientGroupID: ID!
+    @index(
+      name: "byClientGroup"
+      queryField: "clientGroupAssignmentsByClientGroupID"
+      sortKeyFields: ["createdAt"]
+    )
+  EntityID: ID!
+    @index(
+      name: "byEntity"
+      queryField: "clientGroupAssignmentsByEntityID"
+      sortKeyFields: ["createdAt"]
+    )
+  EntityType: String!
+    @index(
+      name: "byEntityType"
+      queryField: "clientGroupAssignmentsByEntityType"
+      sortKeyFields: ["createdAt"]
+    )
+  EntitySubType: String
+  EntityTypeSubType: String!
+    @index(
+      name: "byEntityTypeSubType"
+      queryField: "clientGroupAssignmentsByEntityTypeSubType"
+      sortKeyFields: ["createdAt"]
+    )
+  EntityIDTypeSubType: String!
+    @index(
+      name: "byEntityIDTypeSubType"
+      queryField: "clientGroupAssignmentsByEntityIDTypeSubType"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+  createdBy: ID
+    @index(
+      name: "byCreatedBy"
+      queryField: "clientGroupAssignmentsByCreatedBy"
+      sortKeyFields: ["createdAt"]
+    )
+  updatedBy: ID
+    @index(
+      name: "byUpdatedBy"
+      queryField: "clientGroupAssignmentsByUpdatedBy"
+      sortKeyFields: ["updatedAt"]
+    )
+  updatedAt: String
+}
+
+type DataSources @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "dataSourcesByClientID"
+      sortKeyFields: ["id"]
+    )
+  source: String
+  createdAt: String
+  updatedAt: String
+  createdBy: String
+  description: String
+  fields: AWSJSON
+  path: String
+}
+
+type Interfaces @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  componentType: String
+  requiredFields: AWSJSON
+  availableFields: AWSJSON
+  actions: AWSJSON
+  createdAt: String
+  updatedAt: String
+}
+
+type InterfaceInstances @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String
+  description: String
+  metadata: AWSJSON
+  InterfaceID: ID!
+    @index(
+      name: "byInterface"
+      queryField: "interfaceInstancesByInterfaceID"
+      sortKeyFields: ["id"]
+    )
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "interfaceInstancesByClientID"
+      sortKeyFields: ["id"]
+    )
+    @index(
+      name: "byInterfaceByClient"
+      queryField: "interfaceInstancesByInterfaceByClient"
+      sortKeyFields: ["InterfaceID"]
+    )
+  DataSource: String
+    @index(
+      name: "byDataSource"
+      queryField: "interfaceInstancesByDataSourceID"
+      sortKeyFields: ["id"]
+    )
+  OutputDataSourceID: ID!
+    @index(
+      name: "byOutputDataSource"
+      queryField: "interfaceInstancesByOutputDataSourceID"
+      sortKeyFields: ["id"]
+    )
+  ClientGroupID: ID
+  createdAt: String
+  updatedAt: String
+}
+
+type Softwares @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  logo: String
+  identifiers: [SoftwareIdentifier]
+    @hasMany(indexName: "bySoftware", fields: ["id"])
+}
+
+type ClientSoftwares @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "clientSoftwaresByClientID"
+      sortKeyFields: ["id"]
+    )
+  SoftwareID: ID!
+    @index(
+      name: "bySoftware"
+      queryField: "clientSoftwaresBySoftwareID"
+      sortKeyFields: ["id"]
+    )
+}
+
+type Usage @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "usageByClientID"
+      sortKeyFields: ["id"]
+    )
+  ToolID: ID
+    @index(name: "byTool", queryField: "usageByToolID", sortKeyFields: ["id"])
+  UserID: ID
+    @index(name: "byUser", queryField: "usageByUserID", sortKeyFields: ["id"])
+  createdAt: String
+  updatedAt: String
+  metadata: AWSJSON
+  units: Float
+}
+
+type Tools @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  uniqueIdentifier: String
+    @index(
+      name: "byUniqueIdentifier"
+      queryField: "toolsByUniqueIdentifier"
+      sortKeyFields: ["name"]
+    )
+  name: String!
+  description: String
+  category: String
+  s3Icon: String
+  isZapierTool: Boolean
+  hasUI: Boolean
+  hasAPI: Boolean
+  alecartePrice: Float
+  alecartePeriod: String
+  pricePerExecution: Float
+  landingPageURL: String
+  costMetricType: CostMetricType
+  costValue: Float
+  costPeriod: String
+  permissions: AWSJSON
+  userOptions: AWSJSON
+  clientOptions: AWSJSON
+  isPremium: Boolean
+  premiumBillingType: PremiumBillingType
+  usagePlanStructure: UsagePlanStructure
+}
+
+type UsagePlanStructure {
+  unitsPerPack: Int
+  rivetsPerPack: Float
+}
+
+type MembershipTypes @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  price: Float
+  period: String
+  toolDiscount: Float
+  features: AWSJSON
+  StripeProductID: String
+  StripePriceObjectID: String
+}
+
+type Memberships @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  MembershipTypeID: ID!
+    @index(
+      name: "byMembershipType"
+      queryField: "membershipsByMembershipTypeID"
+      sortKeyFields: ["id"]
+    )
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "membershipsByClientID"
+      sortKeyFields: ["id"]
+    )
+  StripeSubscriptionID: String
+  StripeSubscriptionItemID: String
+  startDate: String
+  endDate: String
+  status: String
+  toolDiscount: Float
+  price: Float
+  period: String
+}
+
+type MembershipTypeTools @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  MembershipTypeID: ID!
+    @index(
+      name: "byMembershipType"
+      queryField: "membershipTypeToolsByMembershipTypeID"
+      sortKeyFields: ["id"]
+    )
+  ToolID: ID!
+    @index(
+      name: "byTool"
+      queryField: "membershipTypeToolsByToolID"
+      sortKeyFields: ["id"]
+    )
+  overrideAlecartePrice: Boolean
+  alecartePrice: Float
+  overridePricePerExecution: Boolean
+  pricePerExecution: Float
+}
+
+type MembershipTools @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  MembershipID: ID!
+    @index(
+      name: "byMembership"
+      queryField: "membershipToolsByMembershipID"
+      sortKeyFields: ["id"]
+    )
+  ToolID: ID!
+    @index(
+      name: "byTool"
+      queryField: "membershipToolsByToolID"
+      sortKeyFields: ["id"]
+    )
+  StripeSubscriptionItemID: String
+  overrideAlecartePrice: Boolean
+  alecartePrice: Float
+  overridePricePerExecution: Boolean
+  pricePerExecution: Float
+}
+
+type ToolSubscriptions @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ToolID: ID!
+    @index(
+      name: "byTool"
+      queryField: "toolSubscriptionsByToolID"
+      sortKeyFields: ["id"]
+    )
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "toolSubscriptionsByClientID"
+      sortKeyFields: ["id"]
+    )
+  StripeSubscriptionID: String
+  StripeSubscriptionItemID: String
+  status: String
+}
+
+type Activity @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  title: String!
+  details: String
+  type: String
+  createdAt: String
+  typeCreatedAt: String
+  referenceNumber: String
+  ToolID: ID
+    @index(
+      name: "byTool"
+      queryField: "activityByToolID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byToolByTypebyCreatedAt"
+      queryField: "activityByToolIDByTypebyCreatedAt"
+      sortKeyFields: ["typeCreatedAt"]
+    )
+    @index(
+      name: "byToolByReferenceNumber"
+      queryField: "activityByToolIDByReferenceNumber"
+      sortKeyFields: ["referenceNumber"]
+    )
+  UserID: ID
+    @index(
+      name: "byUser"
+      queryField: "activityByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byUserByTypebyCreatedAt"
+      queryField: "activityByUserIDByTypebyCreatedAt"
+      sortKeyFields: ["typeCreatedAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "activityByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byClientByTypebyCreatedAt"
+      queryField: "activityByClientIDByTypebyCreatedAt"
+      sortKeyFields: ["typeCreatedAt"]
+    )
+  ProjectID: ID
+    @index(
+      name: "byProject"
+      queryField: "activityByProjectID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byProjectByTypebyCreatedAt"
+      queryField: "activityByProjectIDByTypebyCreatedAt"
+      sortKeyFields: ["typeCreatedAt"]
+    )
+}
+
+type Messages @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  message: String!
+  direction: String
+  from: String
+  to: String
+  createdAt: String
+  updatedAt: String
+  externalID: String
+    @index(
+      name: "byExternalID"
+      queryField: "messagesByExternalID"
+      sortKeyFields: ["createdAt"]
+    )
+  ThreadID: ID
+    @index(
+      name: "byThread"
+      queryField: "messagesByThreadID"
+      sortKeyFields: ["createdAt"]
+    )
+  ToUserID: ID
+    @index(
+      name: "byToUser"
+      queryField: "messagesByToUserID"
+      sortKeyFields: ["createdAt"]
+    )
+  FromUserID: ID
+    @index(
+      name: "byFromUser"
+      queryField: "messagesByFromUserID"
+      sortKeyFields: ["createdAt"]
+    )
+  ProjectID: ID
+    @index(
+      name: "byProject"
+      queryField: "messagesByProjectID"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "messagesByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type MessageThreads @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+}
+
+type MessageThreadUsers @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  MessageThreadID: ID
+    @index(
+      name: "byMessageThread"
+      queryField: "messageThreadUsersByMessageThreadID"
+      sortKeyFields: ["id"]
+    )
+  UserID: ID
+    @index(
+      name: "byUser"
+      queryField: "messageThreadUsersByUserID"
+      sortKeyFields: ["id"]
+    )
+}
+
+type InformationRequests @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  title: String!
+  summary: String
+  status: String
+  fields: AWSJSON
+  responses: AWSJSON
+  requestedById: ID
+    @index(
+      name: "byUser"
+      queryField: "informationRequestsByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+  requestedOn: String
+  dueDate: String
+  recipients: [String]
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "informationRequestsByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+  ProjectID: ID
+    @index(
+      name: "byProject"
+      queryField: "informationRequestsByProjectID"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+}
+
+type ClientMeeting @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  MeetingOrganizer: ID
+    @index(
+      name: "byMeetingOrganizer"
+      queryField: "clientMeetingByMeetingOrganizer"
+      sortKeyFields: ["dateTime"]
+    )
+  status: String
+  sendAgenda: String
+    @index(
+      name: "bySendAgenda"
+      queryField: "clientMeetingBySendAgenda"
+      sortKeyFields: ["dateTime"]
+    )
+  dateTime: String
+  attendees: [String]
+  meetingLocation: String
+  recording: String
+  summary: String
+  agenda: AWSJSON
+  keyDiscussionPoints: [String]
+  decisionsMade: [String]
+  actionItems: [String]
+  customerActionItems: [String]
+  customerFeedbackAndConcerns: [String]
+  internalObservations: [String]
+  customerSentiment: Int
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "clientMeetingByClientID"
+      sortKeyFields: ["dateTime"]
+    )
+}
+
+type ProductCatelogs @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String
+  description: String
+  importType: String
+  Products: [Products] @hasMany(indexName: "byProductCatelog", fields: ["id"])
+  user: String
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "productCatelogsByUser"
+      sortKeyFields: ["name"]
+    )
+}
+
+type Products @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  descriptionKey: String!
+  values: AWSJSON
+  ProductCatelogID: ID! @index(name: "byProductCatelog")
+  user: String
+  UserID: ID @index(name: "byUserID", queryField: "productsByUser")
+}
+
+type Blogs
+  @model
+  @auth(
+    rules: [
+      { allow: private }
+      {
+        allow: public
+        provider: apiKey
+        operations: [create, read, update, delete]
+      }
+    ]
+  ) {
+  id: ID!
+  title: String!
+  style: String
+  keywords: String
+  summary: String
+  createdAt: String
+  content: String
+  excerpt: String
+  status: String!
+  tags: [String]
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "blogsByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "blogsByUser"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type Reviews @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  approved: Boolean
+  rating: String
+  ratingScale: String
+  responseLength: String
+  reviewer: String
+  createdAt: String
+  approvedAt: String
+  reviewContent: String!
+  reviewSource: String
+  status: String!
+  content: String
+  externalID: String
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "reviewsByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byUserByApprovedAt"
+      queryField: "reviewsByUserIDByApprovedAt"
+      sortKeyFields: ["approvedAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "reviewsByUser"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byUserIDByApprovedAt"
+      queryField: "reviewsByUserByApprovedAt"
+      sortKeyFields: ["approvedAt"]
+    )
+}
+
+type openAiQueue @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  type: String
+  keyToPopulate: String
+  dynamoDBTable: String
+  status: String
+}
+
+type ScriptFields @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  display: AWSJSON
+  type: String!
+  viewType: String
+  required: AWSJSON
+  relevant: AWSJSON
+  data: AWSJSON
+  user: String
+}
+
+type ScriptStages @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  question: String!
+  fields: AWSJSON
+  transitions: AWSJSON
+  user: String
+}
+
+type CallScripts @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String
+  stages: AWSJSON
+  user: String
+}
+
+type Identifier @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  label: String
+  SoftwareID: ID
+  identifier: String
+  IdentifierTypeID: ID
+  SoftwareIdentifierType: String
+  ClientID: ID
+    @index(
+      name: "byClientByIdentifier"
+      sortKeyFields: ["identifier"]
+      queryField: "identifiersByClientAndIdentifier"
+    )
+    @index(
+      name: "byClientBySoftware"
+      sortKeyFields: ["SoftwareID"]
+      queryField: "identifiersByClientAndSoftwareID"
+    )
+    @index(
+      name: "byClientByIdentifierType"
+      sortKeyFields: ["IdentifierTypeID"]
+      queryField: "identifiersByClientAndIdentifierTypeID"
+    )
+    @index(
+      name: "byClientBySoftwareIdentifierType"
+      sortKeyFields: ["SoftwareIdentifierType"]
+      queryField: "identifiersByClientAndSoftwareIdentifierType"
+    )
+}
+
+type IdentifierMapping @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  primaryIdentifierID: String
+  secondaryIdentifierID: String
+  ClientID: ID
+    @index(
+      name: "byClientByPrimaryIdentifier"
+      sortKeyFields: ["primaryIdentifierID"]
+      queryField: "identifierMappingsByClientAndPrimaryIdentifier"
+    )
+    @index(
+      name: "byClientBySecondaryIdentifier"
+      sortKeyFields: ["secondaryIdentifierID"]
+      queryField: "identifierMappingsByClientAndSecondaryIdentifier"
+    )
+}
+
+type IdentifierType @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String
+  softwares: [SoftwareIdentifier]
+    @hasMany(indexName: "byIdentifierType", fields: ["id"])
+}
+
+type SoftwareIdentifier @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  software: Softwares @belongsTo(fields: ["softwareId"])
+  identifierType: IdentifierType @belongsTo(fields: ["identifierTypeId"])
+  softwareId: ID!
+    @index(name: "bySoftware", sortKeyFields: ["identifierTypeId"])
+  identifierTypeId: ID!
+    @index(name: "byIdentifierType", sortKeyFields: ["softwareId"])
+}
+
+type Rubriks @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  rubrikText: String
+  category: String
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "rubriksByClientID"
+      sortKeyFields: ["category"]
+    )
+    @index(
+      name: "byClientByCategory"
+      queryField: "rubriksByClientIDByCategory"
+      sortKeyFields: ["category"]
+    )
+}
+
+type Calls @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  externalID: String
+  transcriptID: String
+  transcriptPath: String
+  callName: String
+  agent: String
+  category: String
+    @index(
+      name: "byCategory"
+      queryField: "callsByCategory"
+      sortKeyFields: ["createdAt"]
+    )
+  opportunities: AWSJSON
+  actionItems: AWSJSON
+  rubrikScore: AWSJSON
+  summary: String
+  contactDetails: AWSJSON
+  importantNotes: AWSJSON
+  source: String
+  wins: AWSJSON
+  requiresFollowUp: String
+  requiresManagerAttention: String
+  technicianNotes: AWSJSON
+  duration: String
+  managerMessage: String
+  from: String
+  to: String
+  direction: String
+  isLeadOpportunity: String
+  isBooked: String
+  isUpset: String
+  isCustomerCall: String
+  objections: AWSJSON
+  recordingURL: String
+  aiPredictedEmployee: String
+  aiPredictionReason: String
+  aiPredictionStatus: String
+  aiPredictionUpdatedAt: String
+  recordingType: String
+    @index(
+      name: "byType"
+      queryField: "callsByType"
+      sortKeyFields: ["createdAt"]
+    )
+  transcriptStatus: String
+    @index(
+      name: "byStatus"
+      queryField: "callsByStatus"
+      sortKeyFields: ["createdAt"]
+    )
+  transcript: String
+  sentiment: String
+    @index(
+      name: "bySentiment"
+      queryField: "callsBySentiment"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+  EmployeeID: ID
+    @index(
+      name: "byEmployee"
+      queryField: "callsByEmployeeID"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "callsByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byClientByExternalID"
+      queryField: "callsByClientIDByExternalID"
+      sortKeyFields: ["externalID"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "callsByUser"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type Employees @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String
+  email: String
+  phone: String
+  street: String
+  street2: String
+  city: String
+  state: String
+  zip: String
+  country: String
+  birthDate: String
+  hireDate: String
+  jobTitle: String
+  photo: String
+  ManagerID: ID
+    @index(
+      name: "byManager"
+      queryField: "employeesByManagerID"
+      sortKeyFields: ["name"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "employeesByClientID"
+      sortKeyFields: ["name"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "employeesByUser"
+      sortKeyFields: ["name"]
+    )
+}
+
+type EmployeeExternalIDs @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  externalID: String
+  entityType: String
+  EmployeeID: ID
+    @index(
+      name: "byEmployee"
+      queryField: "employeeExternalIDsByEmployeeID"
+      sortKeyFields: ["ClientID"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "employeeExternalIDsByClientID"
+      sortKeyFields: ["EmployeeID"]
+    )
+  SoftwareID: ID
+    @index(
+      name: "bySoftware"
+      queryField: "employeeExternalIDsBySoftwareID"
+      sortKeyFields: ["ClientID"]
+    )
+}
+
+type Icons @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String
+  location: [String]
+  data: String
+  s3URL: String
+  createdAt: String
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "iconsByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "iconsByUser"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type Integrations @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  serviceName: String!
+  description: String
+  integrationKeys: String
+  options: String
+  externalID: String
+    @index(
+      name: "byExternalID"
+      queryField: "integrationsByExternalID"
+      sortKeyFields: ["serviceName"]
+    )
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "integrationsByUser"
+      sortKeyFields: ["serviceName"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "integrationsByUserID"
+      sortKeyFields: ["serviceName"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "integrationsByClientID"
+      sortKeyFields: ["serviceName"]
+    )
+  IntegrationTypeID: ID
+    @index(
+      name: "byIntegrationType"
+      queryField: "integrationsByIntegrationTypeID"
+      sortKeyFields: ["serviceName"]
+    )
+}
+
+type IntegrationTypes @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String
+}
+
+type Approvals @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  approvalText: String
+  details: AWSJSON
+  type: String
+  requestedDate: String
+  respondedDate: String
+  createdAt: String
+  response: ResponseEnum
+  approverName: String
+  approverEmail: String
+  responseRecipients: String
+  referenceNumber: String
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "approvalsByUser"
+      sortKeyFields: ["requestedDate"]
+    )
+    @index(
+      name: "byUserByRespondedDate"
+      queryField: "approvalsByUserByRespondedDate"
+      sortKeyFields: ["respondedDate"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "approvalsByUserID"
+      sortKeyFields: ["requestedDate"]
+    )
+    @index(
+      name: "byUserIDByRespondedDate"
+      queryField: "approvalsByUserIDByRespondedDate"
+      sortKeyFields: ["respondedDate"]
+    )
+}
+
+type Dashboard @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  isTemplate: String
+    @index(name: "byIsTemplate", queryField: "dashboardsByIsTemplate")
+  layout: AWSJSON
+  user: String @index(name: "byUser", queryField: "dashboardsByUser")
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "dashboardsByUserID"
+      sortKeyFields: ["name"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "dashboardsByClientID"
+      sortKeyFields: ["name"]
+    )
+  dashboardType: DashboardType
+  webhookInstanceID: ID
+    @index(
+      name: "byWebhookInstance"
+      queryField: "dashboardsByWebhookInstanceID"
+    )
+}
+
+type ZapierTools @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  url: String
+  video: String
+  requestFields: String
+}
+
+type Providers @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  additional: String
+  services: String
+  affiliateLink: String
+  phone: String
+  logo: String
+  email: String
+  offer: String
+}
+
+type OCRJobs @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  source: String
+  name: String
+  metaData: AWSJSON
+  totalPageCount: String
+  extractedPageData: AWSJSON
+  status: String
+    @index(
+      name: "byStatus"
+      queryField: "ocrJobsByStatus"
+      sortKeyFields: ["createdAt"]
+    )
+  fileLocation: String
+  createdAt: String
+  updatedAt: String
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "ocrJobsByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "ocrJobsByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type Invoices @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  OCRJobID: ID
+    @index(
+      name: "byOCRJobID"
+      sortKeyFields: ["id"]
+      queryField: "invoicesByOCRJobID"
+    )
+  jobID: String @index(name: "jobIDIndex", sortKeyFields: ["id"])
+  confirmedAt: String
+  textractData: AWSJSON
+  fileLink: String
+  originalFileLink: String
+  type: String
+  source: String
+  percentageConfidence: Int
+  lineItems: AWSJSON
+  customFields: AWSJSON
+  textractStatus: String
+  receivedStatus: String
+  vendorName: String
+  vendorAddress: String
+  vendorUrl: String
+  vendorContact: String
+  vendorABN: String
+  vendorGST: String
+  vendorPAN: String
+  vendorVAT: String
+  clientUrl: String
+  clientName: String
+  clientAddress: String
+  clientPhone: String
+  clientABN: String
+  clientGST: String
+  clientPAN: String
+  clientVAT: String
+  customerTaxID: String
+  customerNumber: String
+  customerAccount: String
+  invoiceNumber: String
+  invoiceDate: String
+  dueDate: String
+  paymentMethod: String
+  orderDate: String
+  deliveryDate: String
+  poNumber: String
+  serviceCharge: String
+  gratuity: String
+  discount: String
+  priorBalance: String
+  amountDue: String
+  amountPaid: String
+  subTotal: String
+  shippingHandling: String
+  total: String
+  tax: String
+  createdAt: String
+  updatedAt: String
+  ClientGroupID: ID
+    @index(
+      name: "byClientGroup"
+      queryField: "invoicesByClientGroupID"
+      sortKeyFields: ["createdAt"]
+    )
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "invoicesByUser"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byUserByStatus"
+      queryField: "invoicesByUserByStatus"
+      sortKeyFields: ["textractStatus"]
+    )
+    @index(
+      name: "byUserByUpdatedAt"
+      queryField: "invoicesByUserByUpdatedAt"
+      sortKeyFields: ["updatedAt"]
+    )
+  clientID: ID
+    @index(
+      name: "byClient"
+      queryField: "invoicesByClient"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byClientByConfirmedAt"
+      queryField: "invoicesByClientByConfirmedAt"
+      sortKeyFields: ["confirmedAt"]
+    )
+    @index(
+      name: "byClientByStatus"
+      queryField: "invoicesByClientByStatus"
+      sortKeyFields: ["textractStatus"]
+    )
+    @index(
+      name: "byClientByUpdatedAt"
+      queryField: "invoicesByClientByUpdatedAt"
+      sortKeyFields: ["updatedAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "invoicesByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byUserIDByStatus"
+      queryField: "invoicesByUserIDByStatus"
+      sortKeyFields: ["textractStatus"]
+    )
+    @index(
+      name: "byUserIDByUpdatedAt"
+      queryField: "invoicesByUserIDByUpdatedAt"
+      sortKeyFields: ["updatedAt"]
+    )
+}
+
+type DataCleaningQueue @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  services: String
+  type: String
+  steps: AWSJSON
+  options: AWSJSON
+  dateStarted: String
+  dateCompleted: String
+  status: String
+    @index(
+      name: "byStatus"
+      queryField: "dataCleaningQueueByStatus"
+      sortKeyFields: ["services"]
+    )
+  DataCleaningItems: [DataCleaningItems]
+    @hasMany(indexName: "byDataCleaningQueue", fields: ["id"])
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "dataCleaningQueueByUser"
+      sortKeyFields: ["services"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "dataCleaningQueueByUserID"
+      sortKeyFields: ["services"]
+    )
+}
+
+type DataCleaningItems @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  data: AWSJSON
+  status: String
+  types: String
+  service: String
+  DataCleaningQueueID: ID!
+    @index(
+      name: "byDataCleaningQueue"
+      queryField: "dataCleaningItemsByDataCleaningQueueID"
+      sortKeyFields: ["status"]
+    )
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "dataCleaningItemsByUser"
+      sortKeyFields: ["status"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "dataCleaningItemsByUserID"
+      sortKeyFields: ["status"]
+    )
+}
+
+type Projects @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  title: String!
+  description: String
+  status: String
+  technologies: String
+  constraints: String
+  keyPlayers: String
+  createdAt: String
+  updatedAt: String
+  startedAt: String
+  createdBy: String
+  updatedBy: String
+  priority: String
+  approvedBy: String
+  approvedOn: String
+  expectedHours: Float
+  softwares: [String]
+  tools: [String]
+  painPoints: [String]
+  completedAt: String
+  dueAt: String
+  assignedTo: ID
+    @index(
+      name: "byAssignedTo"
+      queryField: "projectsByAssignedTo"
+      sortKeyFields: ["status"]
+    )
+  clientID: ID
+    @index(
+      name: "byClient"
+      queryField: "projectsByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+  Tasks: [Tasks] @hasMany(indexName: "byProject", fields: ["id"])
+  Notes: [Notes] @hasMany(indexName: "byProject", fields: ["id"])
+  Users: [Users] @manyToMany(relationName: "UserProjects")
+}
+
+type Tasks @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  title: String!
+  description: String
+  expectedHours: Float
+  dependsOn: ID
+    @index(
+      name: "byDependsOn"
+      queryField: "tasksByDependsOn"
+      sortKeyFields: ["createdAt"]
+    )
+  parent: ID
+  order: Int
+  progress: String
+  status: String
+  type: String
+  createdAt: String
+  updatedAt: String
+  completedAt: String
+  startAt: String
+  dueAt: String
+  createdBy: String
+  updatedBy: String
+  isAdmin: String
+    @index(
+      name: "byIsAdmin"
+      queryField: "tasksByIsAdmin"
+      sortKeyFields: ["createdAt"]
+    )
+  pagePath: String
+    @index(
+      name: "byPagePath"
+      queryField: "tasksByPagePath"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byPagePathByIsAdmin"
+      queryField: "tasksByPagePathByIsAdmin"
+      sortKeyFields: ["isAdmin"]
+    )
+    @index(
+      name: "byPagePathByAssignedTo"
+      queryField: "tasksByPagePathByAssignedTo"
+      sortKeyFields: ["assignedTo"]
+    )
+    @index(
+      name: "byPagePathByClientID"
+      queryField: "tasksByPagePathByClientID"
+      sortKeyFields: ["clientID"]
+    )
+  assignedTo: String
+    @index(
+      name: "byAssignedTo"
+      queryField: "tasksByAssignedTo"
+      sortKeyFields: ["status"]
+    )
+  projectID: ID
+    @index(
+      name: "byProject"
+      queryField: "projectTasksByProjectID"
+      sortKeyFields: ["createdAt"]
+    )
+  clientID: ID
+    @index(
+      name: "byClient"
+      queryField: "projectTasksByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "projectTasksByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "tasksByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClientID"
+      queryField: "tasksByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+  GroupingID: ID
+    @index(
+      name: "byGroupingIDByClientID"
+      queryField: "tasksByGroupingIDByClientID"
+      sortKeyFields: ["ClientID"]
+    )
+}
+
+type TaskLinks @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  source: ID! @index(name: "bySource", queryField: "linksBySource")
+  target: ID! @index(name: "byTarget", queryField: "linksByTarget")
+  type: String
+  createdAt: String
+  updatedAt: String
+  createdBy: String
+  updatedBy: String
+}
+
+type Notifications @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  title: String!
+  description: String
+  status: String
+  link: String
+  createdAt: String
+  updatedAt: String
+  readAt: String
+  type: String
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "notificationsByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "notificationsByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type Notes @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  note: String!
+  createdAt: String
+  updatedAt: String
+  updatedBy: String
+  isAdmin: String
+    @index(
+      name: "byIsAdmin"
+      queryField: "notesByIsAdmin"
+      sortKeyFields: ["createdAt"]
+    )
+  pinned: Boolean
+  pagePath: String
+    @index(
+      name: "byPagePath"
+      queryField: "notesByPagePath"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byPagePathByIsAdmin"
+      queryField: "notesByPagePathByIsAdmin"
+      sortKeyFields: ["isAdmin"]
+    )
+    @index(
+      name: "byPagePathByUser"
+      queryField: "notesByPagePathByUser"
+      sortKeyFields: ["user"]
+    )
+    @index(
+      name: "byPagePathByClientID"
+      queryField: "notesByPagePathByClientID"
+      sortKeyFields: ["ClientID"]
+    )
+  user: String
+    @index(
+      name: "byUser"
+      queryField: "notesByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  ProjectID: ID
+    @index(
+      name: "byProject"
+      queryField: "notesByProjectID"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "notesByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+  ThreadID: ID
+    @index(
+      name: "byThread"
+      queryField: "notesByThreadID"
+      sortKeyFields: ["createdAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "notesByUserID"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type Threads @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  createdAt: String
+  updatedAt: String
+  Notes: [Notes] @hasMany(indexName: "byThread", fields: ["id"])
+}
+
+type ChatBots @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  name: String!
+  description: String
+  instructions: String
+  isGlobal: String
+    @index(
+      name: "byIsGlobal"
+      queryField: "chatBotsByIsGlobal"
+      sortKeyFields: ["name"]
+    )
+  emailKey: String
+  externalID: String
+    @index(
+      name: "byExternalID"
+      queryField: "chatBotsByExternalID"
+      sortKeyFields: ["name"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "chatBotsByUser"
+      sortKeyFields: ["name"]
+    )
+}
+
+type ChatFiles @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  externalID: String
+    @index(
+      name: "byExternalID"
+      queryField: "chatFilesByExternalID"
+      sortKeyFields: ["createdAt"]
+    )
+  ChatBotID: ID!
+    @index(
+      name: "byChatBot"
+      queryField: "chatFilesByChatBotID"
+      sortKeyFields: ["createdAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUser"
+      queryField: "chatFilesByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+  updatedAt: String
+}
+
+type Chats @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  creationMethod: String
+  from: String
+  externalID: String
+    @index(
+      name: "byExternalID"
+      queryField: "chatsByExternalID"
+      sortKeyFields: ["createdAt"]
+    )
+  ChatBotID: ID!
+    @index(
+      name: "byChatBot"
+      queryField: "chatsByChatBotID"
+      sortKeyFields: ["createdAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "chatsByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+  updatedAt: String
+}
+
+type ChatMessages @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  message: String
+  externalID: String
+    @index(
+      name: "byExternalID"
+      queryField: "chatMessagesByExternalID"
+      sortKeyFields: ["createdAt"]
+    )
+  ChatID: ID!
+    @index(
+      name: "byChat"
+      queryField: "chatMessagesByChatID"
+      sortKeyFields: ["createdAt"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "chatMessagesByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+  updatedAt: String
+}
+
+type Webhooks @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  title: String!
+  description: String
+  html: String
+  style: String
+  variables: AWSJSON
+  passwordProtected: Boolean
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "webhooksByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "webhooksByClient"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+  updatedAt: String
+}
+
+type WebhookInstances @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  password: String
+  externalID: String
+  inputs: String
+  numberOfVisits: Int
+  WebhookID: ID!
+    @index(
+      name: "byWebhook"
+      queryField: "webhookInstancesByWebhookID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byWebhookByExternalID"
+      queryField: "webhookInstancesByWebhookIDByExternalID"
+      sortKeyFields: ["externalID"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "webhookInstancesByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "webhookInstancesByClient"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+  updatedAt: String
+}
+
+type WebhookInstanceEvents @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  queryParams: String
+  body: String
+  headers: String
+  ipAddress: String
+  type: String
+  WebhookInstanceID: ID!
+    @index(
+      name: "byWebhookInstance"
+      queryField: "webhookInstanceEventsByWebhookInstanceID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byWebhookInstanceByType"
+      queryField: "webhookInstanceEventsByWebhookInstanceIDByType"
+      sortKeyFields: ["type"]
+    )
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "webhookInstanceEventsByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "webhookInstanceEventsByClient"
+      sortKeyFields: ["createdAt"]
+    )
+  createdAt: String
+  updatedAt: String
+}
+
+type FilledPDFTemplates @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  templateID: String
+  createdAt: String
+  updatedAt: String
+  uniquePath: String
+  fileName: String
+  expiration: String
+  UserID: ID
+    @index(
+      name: "byUserID"
+      queryField: "filledPDFTemplatesByUser"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "filledPDFTemplatesByClient"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type UserToolsSettings @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  settings: AWSJSON
+  bookmarked: String
+    @index(
+      name: "byBookmarked"
+      queryField: "userToolsSettingsByBookmarked"
+      sortKeyFields: ["id"]
+    )
+  UserID: ID
+    @index(
+      name: "byUser"
+      queryField: "userToolsSettingsByUser"
+      sortKeyFields: ["bookmarked"]
+    )
+  ToolID: ID
+    @index(
+      name: "byTool"
+      queryField: "userToolsSettingsByTool"
+      sortKeyFields: ["bookmarked"]
+    )
+}
+
+type ClientToolsSettings @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  settings: AWSJSON
+  bookmarked: String
+    @index(
+      name: "byBookmarked"
+      queryField: "clientToolsSettingsByBookmarked"
+      sortKeyFields: ["id"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "clientToolsSettingsByClient"
+      sortKeyFields: ["bookmarked"]
+    )
+  ToolID: ID
+    @index(
+      name: "byTool"
+      queryField: "clientToolsSettingsByTool"
+      sortKeyFields: ["bookmarked"]
+    )
+}
+
+type UserToolPermissions @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  permissions: AWSJSON
+  hasAccess: String
+    @index(
+      name: "byHasAccess"
+      queryField: "userToolPermissionsByHasAccess"
+      sortKeyFields: ["id"]
+    )
+  UserID: ID
+    @index(
+      name: "byUser"
+      queryField: "userToolPermissionsByUser"
+      sortKeyFields: ["hasAccess"]
+    )
+  ToolID: ID
+    @index(
+      name: "byTool"
+      queryField: "userToolPermissionsByTool"
+      sortKeyFields: ["hasAccess"]
+    )
+}
+
+type Assignments @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  tableName: String
+  title: String
+  description: String
+  dueDate: String
+  status: String
+  type: String
+  createdAt: String
+  updatedAt: String
+  completedAt: String
+  dueAt: String
+  createdBy: String
+  updatedBy: String
+  pagePath: String
+    @index(
+      name: "byPagePath"
+      queryField: "assignmentsByPagePath"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byPagePathByAssignedTo"
+      queryField: "assignmentsByPagePathByAssignedTo"
+      sortKeyFields: ["assignedTo"]
+    )
+    @index(
+      name: "byPagePathByClientID"
+      queryField: "assignmentsByPagePathByClientID"
+      sortKeyFields: ["ClientID"]
+    )
+  assignedTo: ID
+    @index(
+      name: "byAssignedTo"
+      queryField: "assignmentsByAssignedTo"
+      sortKeyFields: ["dueAt"]
+    )
+  subassignees: [String]
+  refID: ID
+    @index(
+      name: "byRefID"
+      queryField: "assignmentsByRefID"
+      sortKeyFields: ["dueAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "assignmentsByClientID"
+      sortKeyFields: ["dueAt"]
+    )
+}
+
+type RivetTransactions @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "rivetTransactionsByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byClientByReference"
+      queryField: "rivetTransactionsByClientIDByReference"
+      sortKeyFields: ["reference"]
+    )
+    @index(
+      name: "byClientByTransactionType"
+      queryField: "rivetTransactionsByClientIDByTransactionType"
+      sortKeyFields: ["transactionType"]
+    )
+  amount: Float
+  balanceAfter: Float
+  transactionType: RivetTransactionType
+  createdAt: String
+  createdBy: String
+  ReferenceID: ID
+  referenceType: RivetReferenceType
+  reference: String
+}
+
+type UsagePacks @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "usagePacksByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byClientByPurchasedAt"
+      queryField: "usagePacksByClientIDByPurchasedAt"
+      sortKeyFields: ["purchasedAt"]
+    )
+  ToolID: ID!
+    @index(
+      name: "byTool"
+      queryField: "usagePacksByToolID"
+      sortKeyFields: ["purchasedAt"]
+    )
+  RivetTransactionID: ID
+    @index(
+      name: "byRivetTransactionID"
+      queryField: "usagePacksByRivetTransactionID"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byRivetTransactionIDByPurchasedAt"
+      queryField: "usagePacksByRivetTransactionIDByPurchasedAt"
+      sortKeyFields: ["purchasedAt"]
+    )
+  packName: String
+  totalUnits: Int
+  unitsRemaining: Int
+  unitType: String
+  rivetsCost: Float
+  purchasedAt: String
+  createdAt: String
+}
+
+type ToolUsage @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "toolUsageByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+  ToolID: ID!
+    @index(
+      name: "byTool"
+      queryField: "toolUsageByToolID"
+      sortKeyFields: ["createdAt"]
+    )
+  units: Float
+  createdAt: String
+  actorUserID: ID
+}
+
+type ToolUsageUsagePacks @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ToolUsageID: ID!
+    @index(
+      name: "byToolUsage"
+      queryField: "toolUsageUsagePacksByToolUsageID"
+      sortKeyFields: ["createdAt"]
+    )
+  UsagePackID: ID!
+    @index(
+      name: "byUsagePack"
+      queryField: "toolUsageUsagePacksByUsagePackID"
+      sortKeyFields: ["createdAt"]
+    )
+  units: Int
+  createdAt: String
+}
+
+type TemplatedAssemblies @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  code: String
+    @index(
+      name: "byCode"
+      queryField: "templatedAssembliesByCode"
+      sortKeyFields: ["name"]
+    )
+  icon: String
+  name: String
+  intakeFormVersion: Int
+  department: String
+    @index(
+      name: "byDepartment"
+      queryField: "templatedAssembliesByDepartment"
+      sortKeyFields: ["name"]
+    )
+  category: String
+    @index(
+      name: "byCategory"
+      queryField: "templatedAssembliesByCategory"
+      sortKeyFields: ["name"]
+    )
+  video: String
+  description: String
+  rivetCost: Float
+  businessImpactScore: Float
+  businessImpactReasoning: String
+  regulationSafetyScore: Float
+  cyberPrivacyScore: Float
+  operationalExcellenceScore: Float
+  insightForesightScore: Float
+  peopleCultureScore: Float
+  financialEfficiencyScore: Float
+  laborLeverageScore: Float
+  strategicFitScore: Float
+  complexityTier: ComplexityTier
+  activeStatus: ActiveStatus
+    @index(
+      name: "byActiveStatus"
+      queryField: "templatedAssembliesByActiveStatus"
+      sortKeyFields: ["name"]
+    )
+    @index(
+      name: "byActiveStatusByDepartment"
+      queryField: "templatedAssembliesByActiveStatusByDepartment"
+      sortKeyFields: ["department"]
+    )
+    @index(
+      name: "byActiveStatusByCategory"
+      queryField: "templatedAssembliesByActiveStatusByCategory"
+      sortKeyFields: ["category"]
+    )
+    @index(
+      name: "byActiveStatusByUpdatedAt"
+      queryField: "templatedAssembliesByActiveStatusByUpdatedAt"
+      sortKeyFields: ["updatedAt"]
+    )
+  createdAt: String
+  updatedAt: String
+    @index(
+      name: "byUpdatedAt"
+      queryField: "templatedAssembliesByUpdatedAt"
+      sortKeyFields: ["name"]
+    )
+  intakeFormActiveVersion: Int
+}
+
+type ClientAssemblies @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "clientAssembliesByClientIDByCreatedAt"
+      sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byClientByStatus"
+      queryField: "clientAssembliesByClientIDByStatus"
+      sortKeyFields: ["status"]
+    )
+  TemplatedAssemblyID: ID
+    @index(
+      name: "byTemplatedAssembly"
+      queryField: "clientAssembliesByTemplatedAssemblyIDByCreatedAt"
+      sortKeyFields: ["createdAt"]
+    )
+  status: ClientAssemblyStatus
+  requestedBy: ID
+  activeSince: String
+  name: String
+  description: String
+  icon: String
+  department: String
+  category: String
+  video: String
+  rivetCostAtRequest: Float
+  RivetTransactionID: ID
+  businessImpactScoreAtRequest: Float
+  businessImpactReasoningAtRequest: String
+  regulationSafetyScoreAtRequest: Float
+  cyberPrivacyScoreAtRequest: Float
+  operationalExcellenceScoreAtRequest: Float
+  insightForesightScoreAtRequest: Float
+  peopleCultureScoreAtRequest: Float
+  financialEfficiencyScoreAtRequest: Float
+  laborLeverageScoreAtRequest: Float
+  strategicFitScoreAtRequest: Float
+  complexityTier: ComplexityTier
+  createdAt: String
+  updatedAt: String
+  intakeFormActiveVersion: Int
+}
+
+type ToolEmails @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+
+  ClientID: ID!
+  ToolID: ID!
+
+  # Primary query key: "{ClientID}#{ToolID}"
+  clientTool: String!
+    @index(
+      name: "byClientTool"
+      queryField: "toolEmailsByClientTool"
+      sortKeyFields: ["createdAt"]
+    )
+
+  # Fast unread/read filter:
+  # "{ClientID}#{ToolID}#UNREAD" or "{ClientID}#{ToolID}#READ"
+  clientToolReadStatus: String!
+    @index(
+      name: "byClientToolReadStatus"
+      queryField: "toolEmailsByClientToolReadStatus"
+      sortKeyFields: ["createdAt"]
+    )
+
+  # Minimal list metadata
+  subject: String
+  preview: String
+  from: String
+  receivedAt: String
+
+  # Usable files produced/stored for this email
+  fileCount: Int
+
+  # Optional: conversation view
+  threadId: ID
+    @index(
+      name: "byThread"
+      queryField: "toolEmailsByThreadId"
+      sortKeyFields: ["createdAt"]
+    )
+
+  # State
+  readAt: String
+
+  createdAt: String!
+  updatedAt: String
+}
+
+enum ComplexityTier {
+  T1
+  T2
+  T3
+  T4
+  T5
+}
+
+enum ActiveStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ResponseEnum {
+  PENDING
+  APPROVED
+  DENIED
+}
+
+enum CostMetricType {
+  FLAT_RATE
+  PER_EXECUTION
+  OTHER
+}
+
+enum DashboardType {
+  STANDARD
+  WEBPAGE
+}
+
+enum RivetTransactionType {
+  MONTHLY_ALLOWANCE
+  TEMPLATED_ASSEMBLY
+  CUSTOM_ASSEMBLY
+  TOOL_USAGE
+  ADJUSTMENT
+  RIVET_PURCHASE
+}
+
+enum RivetReferenceType {
+  TEMPLATED_ASSEMBLY
+  CLIENT_ASSEMBLY
+  USAGE_PACK
+  TOOL_USAGE
+}
+
+enum PremiumBillingType {
+  PER_USAGE
+  SESSION_BLOCKS
+}
+
+enum ClientAssemblyStatus {
+  REQUESTED
+  LIVE
+  REJECTED
+}
+
+enum ClientType {
+  LEAD
+  CLIENT
+  PARTNER
+  PROSPECT
+}

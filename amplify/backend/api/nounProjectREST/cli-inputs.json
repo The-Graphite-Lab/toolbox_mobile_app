@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/icons": {
+      "name": "/icons",
+      "lambdaFunction": "nounProjectAPI",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

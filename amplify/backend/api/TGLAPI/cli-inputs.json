@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/tglapi": {
+      "name": "/tglapi",
+      "lambdaFunction": "TGLFunction",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

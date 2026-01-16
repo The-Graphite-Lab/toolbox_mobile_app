@@ -1,0 +1,114 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-thegraphitelabtoolbo-staging-210135-authRole",
+      "UnauthRoleArn": "arn:aws:iam::843563127054:role/amplify-thegraphitelabtoolbo-staging-210135-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::843563127054:role/amplify-thegraphitelabtoolbo-staging-210135-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+      "UnauthRoleName": "amplify-thegraphitelabtoolbo-staging-210135-unauthRole",
+      "StackName": "amplify-thegraphitelabtoolbo-staging-210135",
+      "StackId": "arn:aws:cloudformation:us-east-2:843563127054:stack/amplify-thegraphitelabtoolbo-staging-210135/a6737900-8629-11ed-8cf4-023097eb25aa",
+      "AmplifyAppId": "d1tr91hbkfe2m0",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-thegraphitelabtoolbo-staging-210135-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    },
+    "categories": {
+      "auth": {
+        "TheGraphiteLabToolbox": {}
+      },
+      "function": {
+        "TGLFunction": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/TGLFunction-50356c534d6a72566364-build.zip"
+        },
+        "aibpa": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/aibpa-33377052615751425654-build.zip"
+        },
+        "apigateway": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/apigateway-547a46574d2f6e6f656d-build.zip"
+        },
+        "assemblyCalls": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/assemblyCalls-553666426869534d3564-build.zip"
+        },
+        "authorizeNet": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/authorizeNet-6e313961556b4b65674f-build.zip"
+        },
+        "connections": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/connections-6f7450456c724f786f2b-build.zip"
+        },
+        "geoapify": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/geoapify-4b552f37733774325470-build.zip"
+        },
+        "handleBlogsTrigger": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/handleBlogsTrigger-694e7542536c58473733-build.zip"
+        },
+        "handleReviewsTrigger": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/handleReviewsTrigger-5a562f67597752356b74-build.zip"
+        },
+        "handleSignupTrigger": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/handleSignupTrigger-31617441682b6e55545a-build.zip"
+        },
+        "masterPermissions": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/masterPermissions-63584f575872536e7072-build.zip"
+        },
+        "membershipToolsPerms": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/membershipToolsPerms-4856656f336a34746864-build.zip"
+        },
+        "nounProjectAPI": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/nounProjectAPI-7053784c7a576d75625a-build.zip"
+        },
+        "openAiCalls": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/openAiCalls-502f656255477a674b76-build.zip"
+        },
+        "openAiProxy": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/openAiProxy-305570414877416b5433-build.zip"
+        },
+        "sendGrid": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/sendGrid-32436b4158324b65674a-build.zip"
+        },
+        "serviceTitan": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/serviceTitan-4955354851614850574b-build.zip"
+        },
+        "slack": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/slack-61475942683157584755-build.zip"
+        },
+        "stripe": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/stripe-43374d48312b6e4b5a51-build.zip"
+        },
+        "tglmonday": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/tglmonday-75774377435a4d343064-build.zip"
+        },
+        "userManagement": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/userManagement-743673434262324b486a-build.zip"
+        },
+        "websiteBlogManagement": {
+          "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
+          "s3Key": "amplify-builds/websiteBlogManagement-57474b7649632b347368-build.zip"
+        }
+      },
+      "storage": {
+        "userFiles": {}
+      }
+    }
+  }
+}

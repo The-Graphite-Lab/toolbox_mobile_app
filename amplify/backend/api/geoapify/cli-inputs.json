@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/geoapify": {
+      "name": "/geoapify",
+      "lambdaFunction": "geoapify",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

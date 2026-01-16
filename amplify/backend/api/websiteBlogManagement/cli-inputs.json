@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/websiteBlogs": {
+      "name": "/websiteBlogs",
+      "lambdaFunction": "websiteBlogManagement",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

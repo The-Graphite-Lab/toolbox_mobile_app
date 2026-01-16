@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/getAPIKey": {
+      "name": "/getAPIKey",
+      "lambdaFunction": "apigateway",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

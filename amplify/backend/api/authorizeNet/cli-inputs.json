@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "paths": {
+    "/processPayment": {
+      "name": "/processPayment",
+      "lambdaFunction": "authorizeNet",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/createCustomerProfileToken": {
+      "name": "/createCustomerProfileToken",
+      "lambdaFunction": "authorizeNet",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/customerProfile": {
+      "name": "/customerProfile",
+      "lambdaFunction": "authorizeNet",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/customerPaymentProfile": {
+      "name": "/customerPaymentProfile",
+      "lambdaFunction": "authorizeNet",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/customerTransactions": {
+      "name": "/customerTransactions",
+      "lambdaFunction": "authorizeNet",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/chargeCustomerPaymentProfile": {
+      "name": "/chargeCustomerPaymentProfile",
+      "lambdaFunction": "authorizeNet",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

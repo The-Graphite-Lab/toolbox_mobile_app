@@ -1,0 +1,12 @@
+{
+  "AppSyncApiName": "thegraphitelabtoolbox",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authTheGraphiteLabToolbox",
+      "Outputs.UserPoolId"
+    ]
+  },
+  "AuthModeLastUpdated": "2025-10-12T06:17:06.434Z"
+}

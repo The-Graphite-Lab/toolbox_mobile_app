@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/monday": {
+      "name": "/monday",
+      "lambdaFunction": "tglmonday",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

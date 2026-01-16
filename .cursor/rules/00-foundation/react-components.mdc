@@ -1,0 +1,10 @@
+---
+alwaysApply: false
+description: use when editing or creating any react code
+---
+
+- no 1 react component should be to overloaded with content/capabilities. Break things down into smaller, reusable components where possible
+- if we need content many places, like the current user, then make it accessible using hooks so there is a standard access point everywhere in the app
+- if we can use a component in other parts of the app, it should be stored in a relevant components directory
+- if a component is only used on a specific page/route then it can be in a subcomponents folder
+- we should use mui components where possible unless the use case truly needs a custom component
