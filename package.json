@@ -1,0 +1,40 @@
+{
+  "name": "mobile-app-webpages",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prebuild": "node scripts/inject-version.js",
+    "dev": "node scripts/inject-version.js && next dev",
+    "build": "next build",
+    "postbuild": "node scripts/inject-version.js",
+    "start": "next start",
+    "lint": "next lint",
+    "cap:sync": "cap sync",
+    "cap:ios": "cap open ios",
+    "clean:ios": "bash scripts/clean-ios-build.sh",
+    "rebuild": "npm run inject-version && npm run build && npm run inject-version && npm run cap:sync",
+    "rebuild:ios": "npm run inject-version && npm run build && npm run inject-version && npm run cap:sync && npm run cap:ios",
+    "inject-version": "node scripts/inject-version.js"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "next": "^14.2.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@mui/material": "^5.16.0",
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@capacitor/app": "^6.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0"
+  }
+}
+

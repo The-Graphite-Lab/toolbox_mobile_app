@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Recorder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 32px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .version-badge {
+            font-size: 11px;
+            font-weight: 400;
+            color: #999;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            background: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .status {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            color: #666;
+        }
+        
+        .status.recording {
+            background: #1a1a1a;
+            color: #ffffff;
+            border-color: #1a1a1a;
+        }
+        
+        .status.error {
+            background: #fff5f5;
+            border-color: #ffcccc;
+            color: #cc0000;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        
+        button {
+            background: #1a1a1a;
+            color: #ffffff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, opacity 0.2s;
+        }
+        
+        button:hover:not(:disabled) {
+            background: #333;
+        }
+        
+        button:active:not(:disabled) {
+            background: #000;
+        }
+        
+        button:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        button.secondary {
+            background: #ffffff;
+            color: #1a1a1a;
+            border: 1px solid #e0e0e0;
+        }
+        
+        button.secondary:hover:not(:disabled) {
+            background: #f9f9f9;
+        }
+        
+        .log-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .log-header h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .log-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .clear-log,
+        .copy-log {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 4px 8px;
+            text-decoration: underline;
+        }
+        
+        .clear-log:hover,
+        .copy-log:hover {
+            color: #1a1a1a;
+        }
+        
+        .copy-log.copied {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        
+        .log-container {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        
+        .log-entry {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .log-time {
+            color: #999;
+            margin-right: 8px;
+        }
+        
+        .log-event {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .log-details {
+            color: #666;
+            margin-top: 2px;
+            font-size: 10px;
+        }
+        
+        .log-entry.start .log-event {
+            color: #0066cc;
+        }
+        
+        .log-entry.stop .log-event {
+            color: #cc6600;
+        }
+        
+        .log-entry.error .log-event {
+            color: #cc0000;
+        }
+        
+        .log-entry.status .log-event {
+            color: #666;
+        }
+        
+        .dev-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #666;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+        }
+        
+        .dev-info-item {
+            margin-bottom: 4px;
+        }
+        
+        .dev-info-item:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>
+            Audio Recorder
+            <span class="version-badge" id="versionBadge">v0.1.0</span>
+        </h1>
+        
+        <div id="status" class="status">
+            Initializing...
+        </div>
+        
+        <div class="button-group">
+            <button id="startBtn" onclick="startRecording()">Start Recording</button>
+            <button id="stopBtn" onclick="stopRecording()" disabled>Stop Recording</button>
+            <button id="statusBtn" onclick="checkStatus()" class="secondary">Check Status</button>
+        </div>
+        
+        <div class="log-section">
+            <div class="log-header">
+                <h2>Session Log</h2>
+                <div class="log-actions">
+                    <button class="copy-log" id="copyLogBtn" onclick="copyLogToClipboard()">Copy</button>
+                    <button class="clear-log" onclick="clearLog()">Clear</button>
+                </div>
+            </div>
+            <div id="logContainer" class="log-container">
+                <div class="log-entry status">
+                    <span class="log-time">--:--:--</span>
+                    <span class="log-event">App initialized</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dev-info" id="devInfo">
+            <div class="dev-info-item">Platform: Checking...</div>
+            <div class="dev-info-item">API: Checking...</div>
+        </div>
+    </div>
+
+    <script>
+        let isRecording = false;
+        let statusCheckInterval = null;
+        let sessionLog = [];
+        let sessionStartTime = Date.now();
+
+        // Session logging
+        function logEvent(event, details = {}) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            const logEntry = {
+                time: timeStr,
+                timestamp: Date.now(),
+                event: event,
+                details: details
+            };
+            
+            sessionLog.push(logEntry);
+            updateLogDisplay();
+            
+            // Console log for dev
+            console.log(`[${timeStr}] ${event}`, details);
+        }
+
+        function updateLogDisplay() {
+            const container = document.getElementById('logContainer');
+            container.innerHTML = '';
+            
+            // Show last 50 entries
+            const recentLogs = sessionLog.slice(-50);
+            
+            recentLogs.forEach(entry => {
+                const logDiv = document.createElement('div');
+                logDiv.className = `log-entry ${entry.event.toLowerCase()}`;
+                
+                let detailsHtml = '';
+                if (Object.keys(entry.details).length > 0) {
+                    const detailsStr = Object.entries(entry.details)
+                        .map(([key, value]) => `${key}: ${value}`)
+                        .join(', ');
+                    detailsHtml = `<div class="log-details">${detailsStr}</div>`;
+                }
+                
+                logDiv.innerHTML = `
+                    <span class="log-time">${entry.time}</span>
+                    <span class="log-event">${entry.event}</span>
+                    ${detailsHtml}
+                `;
+                
+                container.appendChild(logDiv);
+            });
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearLog() {
+            sessionLog = [];
+            updateLogDisplay();
+            logEvent('Log cleared');
+        }
+
+        async function copyLogToClipboard() {
+            try {
+                // Format the log entries as text
+                const logText = sessionLog.map(entry => {
+                    let line = `[${entry.time}] ${entry.event}`;
+                    if (Object.keys(entry.details).length > 0) {
+                        const detailsStr = Object.entries(entry.details)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join(', ');
+                        line += ` - ${detailsStr}`;
+                    }
+                    return line;
+                }).join('\n');
+                
+                // Copy to clipboard
+                await navigator.clipboard.writeText(logText);
+                
+                // Show feedback
+                const copyBtn = document.getElementById('copyLogBtn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+                
+                logEvent('Log copied to clipboard');
+            } catch (error) {
+                console.error('Failed to copy log:', error);
+                logEvent('Copy to clipboard failed', { error: error.message });
+                
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = sessionLog.map(entry => {
+                    let line = `[${entry.time}] ${entry.event}`;
+                    if (Object.keys(entry.details).length > 0) {
+                        const detailsStr = Object.entries(entry.details)
+                            .map(([key, value]) => `${key}: ${value}`)
+                            .join(', ');
+                        line += ` - ${detailsStr}`;
+                    }
+                    return line;
+                }).join('\n');
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    const copyBtn = document.getElementById('copyLogBtn');
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.classList.add('copied');
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                    logEvent('Log copied to clipboard (fallback)');
+                } catch (fallbackError) {
+                    logEvent('Copy to clipboard failed (fallback)', { error: fallbackError.message });
+                }
+                document.body.removeChild(textarea);
+            }
+        }
+
+        // Check if we're in the Capacitor app
+        function isInApp() {
+            const hasCapacitor = typeof window.Capacitor !== 'undefined';
+            const hasAudioAPI = typeof window.audioRecording !== 'undefined';
+            const hasCapacitorPlugin = window.Capacitor && 
+                                      window.Capacitor.Plugins && 
+                                      window.Capacitor.Plugins.AudioRecording;
+            const hasUserAgent = navigator.userAgent.includes('Capacitor');
+            
+            return hasCapacitor || hasAudioAPI || hasCapacitorPlugin || hasUserAgent;
+        }
+
+        function getAudioAPI() {
+            if (window.audioRecording) {
+                return window.audioRecording;
+            }
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AudioRecording) {
+                return window.Capacitor.Plugins.AudioRecording;
+            }
+            return null;
+        }
+
+        function updateStatus(message, isRecording = false, isError = false) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = 'status';
+            if (isRecording) {
+                statusEl.classList.add('recording');
+            }
+            if (isError) {
+                statusEl.classList.add('error');
+            }
+        }
+
+        function updateDevInfo() {
+            const devInfo = document.getElementById('devInfo');
+            const platform = typeof window.Capacitor !== 'undefined' && window.Capacitor.isNativePlatform() 
+                ? 'Native (iOS/Android)' 
+                : 'Web';
+            const api = getAudioAPI() ? 'Available' : 'Not Available';
+            const version = '0.1.0';
+            
+            devInfo.innerHTML = `
+                <div class="dev-info-item">Version: ${version}</div>
+                <div class="dev-info-item">Platform: ${platform}</div>
+                <div class="dev-info-item">API: ${api}</div>
+                <div class="dev-info-item">User Agent: ${navigator.userAgent.substring(0, 50)}...</div>
+            `;
+        }
+
+        // Initialize - wait for capacitorReady event or check after a delay
+        function initializeApp() {
+            logEvent('Initializing app');
+            
+            // Wait a bit for bridge injection if we're in an iframe
+            if (window.parent !== window) {
+                logEvent('Running in iframe, waiting for bridge');
+                window.addEventListener('capacitorReady', () => {
+                    checkAndInitialize();
+                });
+                
+                setTimeout(() => {
+                    if (!isInApp()) {
+                        setTimeout(checkAndInitialize, 500);
+                    } else {
+                        checkAndInitialize();
+                    }
+                }, 100);
+            } else {
+                checkAndInitialize();
+            }
+        }
+
+        function checkAndInitialize() {
+            const inApp = isInApp();
+            const api = getAudioAPI();
+            
+            logEvent('Environment check', {
+                inApp: inApp,
+                hasAPI: !!api,
+                hasCapacitor: typeof window.Capacitor !== 'undefined',
+                hasWindowAPI: typeof window.audioRecording !== 'undefined'
+            });
+            
+            updateDevInfo();
+            
+            if (!inApp || !api) {
+                const errorMsg = !inApp 
+                    ? 'Not in Capacitor app. Audio recording requires native app.'
+                    : 'Audio recording API not available';
+                updateStatus(errorMsg, false, true);
+                logEvent('Initialization failed', { error: errorMsg });
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = true;
+            } else {
+                updateStatus('Ready to record');
+                logEvent('Initialization successful');
+            }
+        }
+
+        async function startRecording() {
+            try {
+                logEvent('Start recording requested');
+                const api = getAudioAPI();
+                
+                if (!api) {
+                    throw new Error('Audio recording API not available');
+                }
+
+                const result = await api.start({ filename: `recording-${Date.now()}.m4a` });
+                
+                logEvent('Start recording response', result);
+
+                if (result.success) {
+                    isRecording = true;
+                    updateUI();
+                    startStatusCheck();
+                    updateStatus('Recording...', true);
+                    logEvent('Recording started', { filename: result.filename || 'default' });
+                } else {
+                    throw new Error(result.message || 'Failed to start recording');
+                }
+            } catch (error) {
+                const errorMsg = error.message || 'Unknown error';
+                updateStatus(`Error: ${errorMsg}`, false, true);
+                logEvent('Start recording error', { error: errorMsg });
+                console.error('Start recording error:', error);
+            }
+        }
+
+        async function stopRecording() {
+            try {
+                logEvent('Stop recording requested');
+                const api = getAudioAPI();
+                
+                if (!api) {
+                    throw new Error('Audio recording API not available');
+                }
+
+                const result = await api.stop();
+                
+                logEvent('Stop recording response', result);
+
+                if (result.success) {
+                    isRecording = false;
+                    updateUI();
+                    stopStatusCheck();
+                    const duration = result.duration || 0;
+                    updateStatus(`Stopped. Duration: ${duration}s`);
+                    logEvent('Recording stopped', { 
+                        duration: `${duration}s`,
+                        filePath: result.filePath || 'N/A'
+                    });
+                    
+                    if (result.filePath) {
+                        console.log('Recording saved to:', result.filePath);
+                    }
+                } else {
+                    throw new Error('Failed to stop recording');
+                }
+            } catch (error) {
+                const errorMsg = error.message || 'Unknown error';
+                updateStatus(`Error: ${errorMsg}`, false, true);
+                logEvent('Stop recording error', { error: errorMsg });
+                console.error('Stop recording error:', error);
+            }
+        }
+
+        async function checkStatus() {
+            try {
+                logEvent('Status check requested');
+                const api = getAudioAPI();
+                
+                if (!api) {
+                    throw new Error('Audio recording API not available');
+                }
+
+                const result = await api.getStatus();
+                
+                logEvent('Status check response', result);
+
+                const statusText = result.isRecording 
+                    ? `Recording... Duration: ${result.duration || 0}s`
+                    : 'Not recording';
+                updateStatus(statusText, result.isRecording);
+                isRecording = result.isRecording;
+                updateUI();
+            } catch (error) {
+                const errorMsg = error.message || 'Unknown error';
+                updateStatus(`Error: ${errorMsg}`, false, true);
+                logEvent('Status check error', { error: errorMsg });
+                console.error('Status check error:', error);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('startBtn').disabled = isRecording;
+            document.getElementById('stopBtn').disabled = !isRecording;
+        }
+
+        function startStatusCheck() {
+            if (statusCheckInterval) return;
+            statusCheckInterval = setInterval(() => {
+                if (isRecording) {
+                    checkStatus();
+                }
+            }, 2000);
+        }
+
+        function stopStatusCheck() {
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+                statusCheckInterval = null;
+            }
+        }
+
+        // Start initialization
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+</body>
+</html>
