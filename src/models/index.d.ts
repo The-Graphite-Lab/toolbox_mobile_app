@@ -66,6 +66,13 @@ export enum ClientType {
   PROSPECT = "PROSPECT"
 }
 
+export enum RideAlongStatus {
+  SCHEDULED = "SCHEDULED",
+  LIVE = "LIVE",
+  PAUSED = "PAUSED",
+  ENDED = "ENDED"
+}
+
 type EagerUsagePlanStructure = {
   readonly unitsPerPack?: number | null;
   readonly rivetsPerPack?: number | null;
@@ -898,6 +905,44 @@ export declare const InterfaceInstances: (new (init: ModelInit<InterfaceInstance
   copyOf(source: InterfaceInstances, mutator: (draft: MutableModel<InterfaceInstances>) => MutableModel<InterfaceInstances> | void): InterfaceInstances;
 }
 
+type EagerAssemblies = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Assemblies, 'id'>;
+  };
+  readonly id: string;
+  readonly ClientID: string;
+  readonly code: string;
+  readonly name: string;
+  readonly category: string;
+  readonly department: string;
+  readonly activeSince?: string | null;
+  readonly description?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+type LazyAssemblies = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Assemblies, 'id'>;
+  };
+  readonly id: string;
+  readonly ClientID: string;
+  readonly code: string;
+  readonly name: string;
+  readonly category: string;
+  readonly department: string;
+  readonly activeSince?: string | null;
+  readonly description?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+export declare type Assemblies = LazyLoading extends LazyLoadingDisabled ? EagerAssemblies : LazyAssemblies
+
+export declare const Assemblies: (new (init: ModelInit<Assemblies>) => Assemblies) & {
+  copyOf(source: Assemblies, mutator: (draft: MutableModel<Assemblies>) => MutableModel<Assemblies> | void): Assemblies;
+}
+
 type EagerSoftwares = {
   readonly [__modelMeta__]: {
     identifier: ManagedIdentifier<Softwares, 'id'>;
@@ -1023,6 +1068,7 @@ type EagerTools = {
   readonly isPremium?: boolean | null;
   readonly premiumBillingType?: PremiumBillingType | keyof typeof PremiumBillingType | null;
   readonly usagePlanStructure?: UsagePlanStructure | null;
+  readonly usagePacks?: (UsagePacks | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -1054,6 +1100,7 @@ type LazyTools = {
   readonly isPremium?: boolean | null;
   readonly premiumBillingType?: PremiumBillingType | keyof typeof PremiumBillingType | null;
   readonly usagePlanStructure?: UsagePlanStructure | null;
+  readonly usagePacks: AsyncCollection<UsagePacks>;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -2492,10 +2539,22 @@ type EagerOCRJobs = {
   readonly metaData?: string | null;
   readonly totalPageCount?: string | null;
   readonly extractedPageData?: string | null;
+  readonly parsing_status?: string | null;
+  readonly page_count?: number | null;
+  readonly last_active_stage?: string | null;
+  readonly total_transaction_count?: number | null;
+  readonly avg_transaction_size?: number | null;
+  readonly is_transaction_file?: boolean | null;
+  readonly error_message?: string | null;
+  readonly ToolEmailID?: string | null;
+  readonly ToolEmailAttachmentID?: string | null;
   readonly status?: string | null;
   readonly fileLocation?: string | null;
   readonly createdAt?: string | null;
+  readonly parsingStartedAt?: string | null;
+  readonly parsingCompletedAt?: string | null;
   readonly updatedAt?: string | null;
+  readonly completedAt?: string | null;
   readonly UserID?: string | null;
   readonly ClientID?: string | null;
 }
@@ -2510,10 +2569,22 @@ type LazyOCRJobs = {
   readonly metaData?: string | null;
   readonly totalPageCount?: string | null;
   readonly extractedPageData?: string | null;
+  readonly parsing_status?: string | null;
+  readonly page_count?: number | null;
+  readonly last_active_stage?: string | null;
+  readonly total_transaction_count?: number | null;
+  readonly avg_transaction_size?: number | null;
+  readonly is_transaction_file?: boolean | null;
+  readonly error_message?: string | null;
+  readonly ToolEmailID?: string | null;
+  readonly ToolEmailAttachmentID?: string | null;
   readonly status?: string | null;
   readonly fileLocation?: string | null;
   readonly createdAt?: string | null;
+  readonly parsingStartedAt?: string | null;
+  readonly parsingCompletedAt?: string | null;
   readonly updatedAt?: string | null;
+  readonly completedAt?: string | null;
   readonly UserID?: string | null;
   readonly ClientID?: string | null;
 }
@@ -2522,6 +2593,42 @@ export declare type OCRJobs = LazyLoading extends LazyLoadingDisabled ? EagerOCR
 
 export declare const OCRJobs: (new (init: ModelInit<OCRJobs>) => OCRJobs) & {
   copyOf(source: OCRJobs, mutator: (draft: MutableModel<OCRJobs>) => MutableModel<OCRJobs> | void): OCRJobs;
+}
+
+type EagerOCRJobPages = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<OCRJobPages, 'id'>;
+  };
+  readonly id: string;
+  readonly status?: string | null;
+  readonly pageIndex?: number | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+  readonly ClientID?: string | null;
+  readonly OCRJobPageGroupID?: string | null;
+  readonly OCRJobID: string;
+  readonly InvoiceID?: string | null;
+}
+
+type LazyOCRJobPages = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<OCRJobPages, 'id'>;
+  };
+  readonly id: string;
+  readonly status?: string | null;
+  readonly pageIndex?: number | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+  readonly ClientID?: string | null;
+  readonly OCRJobPageGroupID?: string | null;
+  readonly OCRJobID: string;
+  readonly InvoiceID?: string | null;
+}
+
+export declare type OCRJobPages = LazyLoading extends LazyLoadingDisabled ? EagerOCRJobPages : LazyOCRJobPages
+
+export declare const OCRJobPages: (new (init: ModelInit<OCRJobPages>) => OCRJobPages) & {
+  copyOf(source: OCRJobPages, mutator: (draft: MutableModel<OCRJobPages>) => MutableModel<OCRJobPages> | void): OCRJobPages;
 }
 
 type EagerInvoices = {
@@ -3485,6 +3592,11 @@ type EagerRivetTransactions = {
   readonly ReferenceID?: string | null;
   readonly referenceType?: RivetReferenceType | keyof typeof RivetReferenceType | null;
   readonly reference?: string | null;
+  readonly ClientAssemblyID?: string | null;
+  readonly TemplatedAssemblyID?: string | null;
+  readonly clientAssembly?: ClientAssemblies | null;
+  readonly templatedAssembly?: TemplatedAssemblies | null;
+  readonly usagePacks?: (UsagePacks | null)[] | null;
   readonly updatedAt?: string | null;
 }
 
@@ -3503,6 +3615,11 @@ type LazyRivetTransactions = {
   readonly ReferenceID?: string | null;
   readonly referenceType?: RivetReferenceType | keyof typeof RivetReferenceType | null;
   readonly reference?: string | null;
+  readonly ClientAssemblyID?: string | null;
+  readonly TemplatedAssemblyID?: string | null;
+  readonly clientAssembly: AsyncItem<ClientAssemblies | undefined>;
+  readonly templatedAssembly: AsyncItem<TemplatedAssemblies | undefined>;
+  readonly usagePacks: AsyncCollection<UsagePacks>;
   readonly updatedAt?: string | null;
 }
 
@@ -3528,6 +3645,8 @@ type EagerUsagePacks = {
   readonly rivetsCost?: number | null;
   readonly purchasedAt?: string | null;
   readonly createdAt?: string | null;
+  readonly tool?: Tools | null;
+  readonly rivetTransaction?: RivetTransactions | null;
   readonly updatedAt?: string | null;
 }
 
@@ -3547,6 +3666,8 @@ type LazyUsagePacks = {
   readonly rivetsCost?: number | null;
   readonly purchasedAt?: string | null;
   readonly createdAt?: string | null;
+  readonly tool: AsyncItem<Tools | undefined>;
+  readonly rivetTransaction: AsyncItem<RivetTransactions | undefined>;
   readonly updatedAt?: string | null;
 }
 
@@ -3651,6 +3772,7 @@ type EagerTemplatedAssemblies = {
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly intakeFormActiveVersion?: number | null;
+  readonly purchaseTransactions?: (RivetTransactions | null)[] | null;
 }
 
 type LazyTemplatedAssemblies = {
@@ -3682,6 +3804,7 @@ type LazyTemplatedAssemblies = {
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly intakeFormActiveVersion?: number | null;
+  readonly purchaseTransactions: AsyncCollection<RivetTransactions>;
 }
 
 export declare type TemplatedAssemblies = LazyLoading extends LazyLoadingDisabled ? EagerTemplatedAssemblies : LazyTemplatedAssemblies
@@ -3708,6 +3831,7 @@ type EagerClientAssemblies = {
   readonly video?: string | null;
   readonly rivetCostAtRequest?: number | null;
   readonly RivetTransactionID?: string | null;
+  readonly purchaseTransactions?: (RivetTransactions | null)[] | null;
   readonly businessImpactScoreAtRequest?: number | null;
   readonly businessImpactReasoningAtRequest?: string | null;
   readonly regulationSafetyScoreAtRequest?: number | null;
@@ -3742,6 +3866,7 @@ type LazyClientAssemblies = {
   readonly video?: string | null;
   readonly rivetCostAtRequest?: number | null;
   readonly RivetTransactionID?: string | null;
+  readonly purchaseTransactions: AsyncCollection<RivetTransactions>;
   readonly businessImpactScoreAtRequest?: number | null;
   readonly businessImpactReasoningAtRequest?: string | null;
   readonly regulationSafetyScoreAtRequest?: number | null;
@@ -3777,6 +3902,8 @@ type EagerToolEmails = {
   readonly preview?: string | null;
   readonly from?: string | null;
   readonly receivedAt?: string | null;
+  readonly inReplyTo?: string | null;
+  readonly messageID?: string | null;
   readonly fileCount?: number | null;
   readonly threadId?: string | null;
   readonly readAt?: string | null;
@@ -3797,6 +3924,8 @@ type LazyToolEmails = {
   readonly preview?: string | null;
   readonly from?: string | null;
   readonly receivedAt?: string | null;
+  readonly inReplyTo?: string | null;
+  readonly messageID?: string | null;
   readonly fileCount?: number | null;
   readonly threadId?: string | null;
   readonly readAt?: string | null;
@@ -3808,6 +3937,180 @@ export declare type ToolEmails = LazyLoading extends LazyLoadingDisabled ? Eager
 
 export declare const ToolEmails: (new (init: ModelInit<ToolEmails>) => ToolEmails) & {
   copyOf(source: ToolEmails, mutator: (draft: MutableModel<ToolEmails>) => MutableModel<ToolEmails> | void): ToolEmails;
+}
+
+type EagerToolEmailAttachments = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<ToolEmailAttachments, 'id'>;
+  };
+  readonly id: string;
+  readonly ToolEmailID: string;
+  readonly name?: string | null;
+  readonly contentID?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+  readonly type?: string | null;
+  readonly threadId?: string | null;
+  readonly OCRJobID?: string | null;
+  readonly ClientID?: string | null;
+}
+
+type LazyToolEmailAttachments = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<ToolEmailAttachments, 'id'>;
+  };
+  readonly id: string;
+  readonly ToolEmailID: string;
+  readonly name?: string | null;
+  readonly contentID?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+  readonly type?: string | null;
+  readonly threadId?: string | null;
+  readonly OCRJobID?: string | null;
+  readonly ClientID?: string | null;
+}
+
+export declare type ToolEmailAttachments = LazyLoading extends LazyLoadingDisabled ? EagerToolEmailAttachments : LazyToolEmailAttachments
+
+export declare const ToolEmailAttachments: (new (init: ModelInit<ToolEmailAttachments>) => ToolEmailAttachments) & {
+  copyOf(source: ToolEmailAttachments, mutator: (draft: MutableModel<ToolEmailAttachments>) => MutableModel<ToolEmailAttachments> | void): ToolEmailAttachments;
+}
+
+type EagerRideAlongs = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<RideAlongs, 'id'>;
+  };
+  readonly id: string;
+  readonly name: string;
+  readonly address?: string | null;
+  readonly location?: string | null;
+  readonly scheduledAt?: string | null;
+  readonly startedAt?: string | null;
+  readonly endedAt?: string | null;
+  readonly status?: RideAlongStatus | keyof typeof RideAlongStatus | null;
+  readonly statusScheduledAt?: string | null;
+  readonly ClientID: string;
+  readonly UserID: string;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+type LazyRideAlongs = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<RideAlongs, 'id'>;
+  };
+  readonly id: string;
+  readonly name: string;
+  readonly address?: string | null;
+  readonly location?: string | null;
+  readonly scheduledAt?: string | null;
+  readonly startedAt?: string | null;
+  readonly endedAt?: string | null;
+  readonly status?: RideAlongStatus | keyof typeof RideAlongStatus | null;
+  readonly statusScheduledAt?: string | null;
+  readonly ClientID: string;
+  readonly UserID: string;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+export declare type RideAlongs = LazyLoading extends LazyLoadingDisabled ? EagerRideAlongs : LazyRideAlongs
+
+export declare const RideAlongs: (new (init: ModelInit<RideAlongs>) => RideAlongs) & {
+  copyOf(source: RideAlongs, mutator: (draft: MutableModel<RideAlongs>) => MutableModel<RideAlongs> | void): RideAlongs;
+}
+
+type EagerRideAlongSessions = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<RideAlongSessions, 'id'>;
+  };
+  readonly id: string;
+  readonly RideAlongID: string;
+  readonly ClientID: string;
+  readonly UserID: string;
+  readonly sessionStartTime: string;
+  readonly sessionEndTime?: string | null;
+  readonly sessionTerminationReason?: string | null;
+  readonly assemblySessionId?: string | null;
+  readonly recordingDurationSeconds?: number | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+type LazyRideAlongSessions = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<RideAlongSessions, 'id'>;
+  };
+  readonly id: string;
+  readonly RideAlongID: string;
+  readonly ClientID: string;
+  readonly UserID: string;
+  readonly sessionStartTime: string;
+  readonly sessionEndTime?: string | null;
+  readonly sessionTerminationReason?: string | null;
+  readonly assemblySessionId?: string | null;
+  readonly recordingDurationSeconds?: number | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+export declare type RideAlongSessions = LazyLoading extends LazyLoadingDisabled ? EagerRideAlongSessions : LazyRideAlongSessions
+
+export declare const RideAlongSessions: (new (init: ModelInit<RideAlongSessions>) => RideAlongSessions) & {
+  copyOf(source: RideAlongSessions, mutator: (draft: MutableModel<RideAlongSessions>) => MutableModel<RideAlongSessions> | void): RideAlongSessions;
+}
+
+type EagerRideAlongSessionTurns = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<RideAlongSessionTurns, 'id'>;
+  };
+  readonly id: string;
+  readonly RideAlongSessionID: string;
+  readonly RideAlongID: string;
+  readonly ClientID: string;
+  readonly UserID: string;
+  readonly type?: string | null;
+  readonly turnOrder: number;
+  readonly turnIsFormatted: boolean;
+  readonly endOfTurn: boolean;
+  readonly transcript: string;
+  readonly utterance?: string | null;
+  readonly languageCode?: string | null;
+  readonly languageConfidence?: number | null;
+  readonly endOfTurnConfidence?: number | null;
+  readonly words?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+type LazyRideAlongSessionTurns = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<RideAlongSessionTurns, 'id'>;
+  };
+  readonly id: string;
+  readonly RideAlongSessionID: string;
+  readonly RideAlongID: string;
+  readonly ClientID: string;
+  readonly UserID: string;
+  readonly type?: string | null;
+  readonly turnOrder: number;
+  readonly turnIsFormatted: boolean;
+  readonly endOfTurn: boolean;
+  readonly transcript: string;
+  readonly utterance?: string | null;
+  readonly languageCode?: string | null;
+  readonly languageConfidence?: number | null;
+  readonly endOfTurnConfidence?: number | null;
+  readonly words?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+export declare type RideAlongSessionTurns = LazyLoading extends LazyLoadingDisabled ? EagerRideAlongSessionTurns : LazyRideAlongSessionTurns
+
+export declare const RideAlongSessionTurns: (new (init: ModelInit<RideAlongSessionTurns>) => RideAlongSessionTurns) & {
+  copyOf(source: RideAlongSessionTurns, mutator: (draft: MutableModel<RideAlongSessionTurns>) => MutableModel<RideAlongSessionTurns> | void): RideAlongSessionTurns;
 }
 
 type EagerUserProjects = {

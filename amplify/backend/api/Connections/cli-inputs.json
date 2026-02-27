@@ -13,6 +13,19 @@
           "delete"
         ]
       }
+    },
+    "/ridealongs": {
+      "name": "/ridealongs",
+      "lambdaFunction": "connections",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
     }
   }
 }

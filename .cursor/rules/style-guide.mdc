@@ -1,0 +1,28 @@
+---
+alwaysApply: true
+description: Front-end visual design standards for consistent UI styling.
+---
+
+# Style Guide
+
+## Color Usage
+- Use color tokens from `app/globals.css` instead of hardcoded hex values when a token exists.
+- Primary brand accent is `var(--color-brand-marigold)`.
+- Primary text uses `var(--color-text)` and supporting text uses `var(--color-text-muted)`.
+- Borders should use `var(--color-border)` unless a semantic support color is required.
+
+## Surfaces And Shape
+- Default card/background surface is white with subtle border contrast.
+- Preferred card radii are between `10px` and `16px` for consistency across panels.
+- Keep visual treatments clean and avoid heavy gradients unless a feature explicitly calls for it.
+
+## Motion And Visual Density
+- Use subtle animation that improves legibility, not decoration.
+- Avoid visual clutter in utility panels; favor simple contrast and clear hierarchy.
+
+## Audio Visualizer Styling
+- Session monitor waveform should render mirrored pill-shaped bars with 19 total bars.
+- Use vertical bars only; do not render horizontal guide lines.
+- Waveform bars should use `var(--color-brand-marigold)` with restrained opacity changes for level feedback.
+- Bars should be bottom-aligned and grow upward only from a shared baseline.
+- The waveform should represent current-time speech energy (speech-reactive), not a timeline trail effect.

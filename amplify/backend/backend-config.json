@@ -295,7 +295,17 @@
     },
     "connections": {
       "build": true,
-      "dependsOn": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
+          ],
+          "category": "api",
+          "resourceName": "thegraphitelabtoolbox"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },

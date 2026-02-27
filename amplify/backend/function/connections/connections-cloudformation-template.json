@@ -15,6 +15,18 @@
     },
     "s3Key": {
       "Type": "String"
+    },
+    "apithegraphitelabtoolboxGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Default": "apithegraphitelabtoolboxGraphQLAPIEndpointOutput"
+    },
+    "apithegraphitelabtoolboxGraphQLAPIIdOutput": {
+      "Type": "String",
+      "Default": "apithegraphitelabtoolboxGraphQLAPIIdOutput"
+    },
+    "apithegraphitelabtoolboxGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Default": "apithegraphitelabtoolboxGraphQLAPIKeyOutput"
     }
   },
   "Conditions": {
@@ -69,6 +81,15 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
+            },
+            "API_THEGRAPHITELABTOOLBOX_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apithegraphitelabtoolboxGraphQLAPIEndpointOutput"
+            },
+            "API_THEGRAPHITELABTOOLBOX_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "apithegraphitelabtoolboxGraphQLAPIIdOutput"
+            },
+            "API_THEGRAPHITELABTOOLBOX_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apithegraphitelabtoolboxGraphQLAPIKeyOutput"
             }
           }
         },
@@ -78,7 +99,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs18.x",
+        "Runtime": "nodejs22.x",
         "Layers": [],
         "Timeout": 25
       }
@@ -160,6 +181,136 @@
                   }
                 ]
               }
+            }
+          ]
+        }
+      }
+    },
+    "rideAlongLambdaAccessPolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "ridealong-lambda-access-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "appsync:GraphQL"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "secretsmanager:GetSecretValue"
+              ],
+              "Resource": {
+                "Fn::Sub": "arn:aws:secretsmanager:us-east-2:${AWS::AccountId}:secret:AssemblyAI/APIKey*"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "AmplifyResourcesPolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "amplify-lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "appsync:GraphQL"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apithegraphitelabtoolboxGraphQLAPIIdOutput"
+                      },
+                      "/types/Query/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apithegraphitelabtoolboxGraphQLAPIIdOutput"
+                      },
+                      "/types/Mutation/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apithegraphitelabtoolboxGraphQLAPIIdOutput"
+                      },
+                      "/types/Subscription/*"
+                    ]
+                  ]
+                }
+              ]
             }
           ]
         }

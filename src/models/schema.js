@@ -2761,6 +2761,116 @@ export const schema = {
                 }
             ]
         },
+        "Assemblies": {
+            "name": "Assemblies",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "ClientID": {
+                    "name": "ClientID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "code": {
+                    "name": "code",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "name": {
+                    "name": "name",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "category": {
+                    "name": "category",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "department": {
+                    "name": "department",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "activeSince": {
+                    "name": "activeSince",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "description": {
+                    "name": "description",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                }
+            },
+            "syncable": true,
+            "pluralName": "Assemblies",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClient",
+                        "queryField": "assembliesByClientID",
+                        "fields": [
+                            "ClientID",
+                            "code"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "private",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
         "Softwares": {
             "name": "Softwares",
             "fields": {
@@ -3218,6 +3328,22 @@ export const schema = {
                     },
                     "isRequired": false,
                     "attributes": []
+                },
+                "usagePacks": {
+                    "name": "usagePacks",
+                    "isArray": true,
+                    "type": {
+                        "model": "UsagePacks"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "tool"
+                        ]
+                    }
                 },
                 "createdAt": {
                     "name": "createdAt",
@@ -7882,6 +8008,69 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "parsing_status": {
+                    "name": "parsing_status",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "page_count": {
+                    "name": "page_count",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "last_active_stage": {
+                    "name": "last_active_stage",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "total_transaction_count": {
+                    "name": "total_transaction_count",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "avg_transaction_size": {
+                    "name": "avg_transaction_size",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "is_transaction_file": {
+                    "name": "is_transaction_file",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "error_message": {
+                    "name": "error_message",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "ToolEmailID": {
+                    "name": "ToolEmailID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "ToolEmailAttachmentID": {
+                    "name": "ToolEmailAttachmentID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "status": {
                     "name": "status",
                     "isArray": false,
@@ -7903,8 +8092,29 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "parsingStartedAt": {
+                    "name": "parsingStartedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "parsingCompletedAt": {
+                    "name": "parsingCompletedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "updatedAt": {
                     "name": "updatedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "completedAt": {
+                    "name": "completedAt",
                     "isArray": false,
                     "type": "String",
                     "isRequired": false,
@@ -7931,6 +8141,28 @@ export const schema = {
                 {
                     "type": "model",
                     "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byToolEmail",
+                        "queryField": "ocrJobsByToolEmailID",
+                        "fields": [
+                            "ToolEmailID",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byToolEmailAttachment",
+                        "queryField": "ocrJobsByToolEmailAttachmentID",
+                        "fields": [
+                            "ToolEmailAttachmentID",
+                            "createdAt"
+                        ]
+                    }
                 },
                 {
                     "type": "key",
@@ -7962,6 +8194,176 @@ export const schema = {
                         "fields": [
                             "ClientID",
                             "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClientByName",
+                        "queryField": "ocrJobsByClientByName",
+                        "fields": [
+                            "ClientID",
+                            "name"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClientByStatus",
+                        "queryField": "ocrJobsByClientByStatus",
+                        "fields": [
+                            "ClientID",
+                            "status"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClientByStatusByCreatedAt",
+                        "queryField": "ocrJobsByClientByStatusByCreatedAt",
+                        "fields": [
+                            "ClientID",
+                            "status",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "private",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "OCRJobPages": {
+            "name": "OCRJobPages",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "status": {
+                    "name": "status",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "pageIndex": {
+                    "name": "pageIndex",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "ClientID": {
+                    "name": "ClientID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "OCRJobPageGroupID": {
+                    "name": "OCRJobPageGroupID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "OCRJobID": {
+                    "name": "OCRJobID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "InvoiceID": {
+                    "name": "InvoiceID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                }
+            },
+            "syncable": true,
+            "pluralName": "OCRJobPages",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byStatus",
+                        "queryField": "ocrJobPagesByStatus",
+                        "fields": [
+                            "status",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byOCRJobID",
+                        "queryField": "ocrJobPagesByOCRJobID",
+                        "fields": [
+                            "OCRJobID",
+                            "pageIndex"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byOCRJobByStatus",
+                        "queryField": "ocrJobPagesByOCRJobByStatus",
+                        "fields": [
+                            "OCRJobID",
+                            "status"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byInvoiceID",
+                        "queryField": "ocrJobPagesByInvoiceID",
+                        "fields": [
+                            "InvoiceID",
+                            "pageIndex"
                         ]
                     }
                 },
@@ -8481,6 +8883,28 @@ export const schema = {
                         "fields": [
                             "clientID",
                             "textractStatus"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClientByInvoiceNumber",
+                        "queryField": "invoicesByClientByInvoiceNumber",
+                        "fields": [
+                            "clientID",
+                            "invoiceNumber"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClientByPONumber",
+                        "queryField": "invoicesByClientByPONumber",
+                        "fields": [
+                            "clientID",
+                            "poNumber"
                         ]
                     }
                 },
@@ -11630,6 +12054,66 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "ClientAssemblyID": {
+                    "name": "ClientAssemblyID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "TemplatedAssemblyID": {
+                    "name": "TemplatedAssemblyID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "clientAssembly": {
+                    "name": "clientAssembly",
+                    "isArray": false,
+                    "type": {
+                        "model": "ClientAssemblies"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetNames": [
+                            "ClientAssemblyID"
+                        ]
+                    }
+                },
+                "templatedAssembly": {
+                    "name": "templatedAssembly",
+                    "isArray": false,
+                    "type": {
+                        "model": "TemplatedAssemblies"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetNames": [
+                            "TemplatedAssemblyID"
+                        ]
+                    }
+                },
+                "usagePacks": {
+                    "name": "usagePacks",
+                    "isArray": true,
+                    "type": {
+                        "model": "UsagePacks"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "rivetTransaction"
+                        ]
+                    }
+                },
                 "updatedAt": {
                     "name": "updatedAt",
                     "isArray": false,
@@ -11676,6 +12160,28 @@ export const schema = {
                         "fields": [
                             "ClientID",
                             "transactionType"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClientAssembly",
+                        "queryField": "rivetTransactionsByClientAssemblyID",
+                        "fields": [
+                            "ClientAssemblyID",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byTemplatedAssembly",
+                        "queryField": "rivetTransactionsByTemplatedAssemblyID",
+                        "fields": [
+                            "TemplatedAssemblyID",
+                            "createdAt"
                         ]
                     }
                 },
@@ -11777,6 +12283,36 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "tool": {
+                    "name": "tool",
+                    "isArray": false,
+                    "type": {
+                        "model": "Tools"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetNames": [
+                            "ToolID"
+                        ]
+                    }
+                },
+                "rivetTransaction": {
+                    "name": "rivetTransaction",
+                    "isArray": false,
+                    "type": {
+                        "model": "RivetTransactions"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "association": {
+                        "connectionType": "BELONGS_TO",
+                        "targetNames": [
+                            "RivetTransactionID"
+                        ]
+                    }
+                },
                 "updatedAt": {
                     "name": "updatedAt",
                     "isArray": false,
@@ -11829,7 +12365,7 @@ export const schema = {
                 {
                     "type": "key",
                     "properties": {
-                        "name": "byRivetTransactionID",
+                        "name": "byRivetTransaction",
                         "queryField": "usagePacksByRivetTransactionID",
                         "fields": [
                             "RivetTransactionID",
@@ -12242,6 +12778,22 @@ export const schema = {
                     "type": "Int",
                     "isRequired": false,
                     "attributes": []
+                },
+                "purchaseTransactions": {
+                    "name": "purchaseTransactions",
+                    "isArray": true,
+                    "type": {
+                        "model": "RivetTransactions"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "templatedAssembly"
+                        ]
+                    }
                 }
             },
             "syncable": true,
@@ -12459,6 +13011,22 @@ export const schema = {
                     "type": "ID",
                     "isRequired": false,
                     "attributes": []
+                },
+                "purchaseTransactions": {
+                    "name": "purchaseTransactions",
+                    "isArray": true,
+                    "type": {
+                        "model": "RivetTransactions"
+                    },
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true,
+                    "association": {
+                        "connectionType": "HAS_MANY",
+                        "associatedWith": [
+                            "clientAssembly"
+                        ]
+                    }
                 },
                 "businessImpactScoreAtRequest": {
                     "name": "businessImpactScoreAtRequest",
@@ -12685,6 +13253,20 @@ export const schema = {
                     "isRequired": false,
                     "attributes": []
                 },
+                "inReplyTo": {
+                    "name": "inReplyTo",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "messageID": {
+                    "name": "messageID",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "fileCount": {
                     "name": "fileCount",
                     "isArray": false,
@@ -12742,6 +13324,17 @@ export const schema = {
                 {
                     "type": "key",
                     "properties": {
+                        "name": "byClientToolByMessageID",
+                        "queryField": "toolEmailsByClientToolByMessageID",
+                        "fields": [
+                            "clientTool",
+                            "messageID"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
                         "name": "byClientToolReadStatus",
                         "queryField": "toolEmailsByClientToolReadStatus",
                         "fields": [
@@ -12767,6 +13360,666 @@ export const schema = {
                         "rules": [
                             {
                                 "allow": "private",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "ToolEmailAttachments": {
+            "name": "ToolEmailAttachments",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "ToolEmailID": {
+                    "name": "ToolEmailID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "name": {
+                    "name": "name",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "contentID": {
+                    "name": "contentID",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "type": {
+                    "name": "type",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "threadId": {
+                    "name": "threadId",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "OCRJobID": {
+                    "name": "OCRJobID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "ClientID": {
+                    "name": "ClientID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                }
+            },
+            "syncable": true,
+            "pluralName": "ToolEmailAttachments",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byToolEmail",
+                        "queryField": "toolEmailAttachmentsByToolEmailID",
+                        "fields": [
+                            "ToolEmailID",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byThread",
+                        "queryField": "toolEmailAttachmentsByThreadId",
+                        "fields": [
+                            "threadId",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byOCRJob",
+                        "queryField": "toolEmailAttachmentsByOCRJobID",
+                        "fields": [
+                            "OCRJobID",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClient",
+                        "queryField": "toolEmailAttachmentsByClientID",
+                        "fields": [
+                            "ClientID",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "private",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "RideAlongs": {
+            "name": "RideAlongs",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "name": {
+                    "name": "name",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "address": {
+                    "name": "address",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "location": {
+                    "name": "location",
+                    "isArray": false,
+                    "type": "AWSJSON",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "scheduledAt": {
+                    "name": "scheduledAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "startedAt": {
+                    "name": "startedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "endedAt": {
+                    "name": "endedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "status": {
+                    "name": "status",
+                    "isArray": false,
+                    "type": {
+                        "enum": "RideAlongStatus"
+                    },
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "statusScheduledAt": {
+                    "name": "statusScheduledAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "ClientID": {
+                    "name": "ClientID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "UserID": {
+                    "name": "UserID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                }
+            },
+            "syncable": true,
+            "pluralName": "RideAlongs",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClient",
+                        "queryField": "rideAlongsByClientID",
+                        "fields": [
+                            "ClientID",
+                            "name"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byUser",
+                        "queryField": "rideAlongsByUserID",
+                        "fields": [
+                            "UserID",
+                            "name"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byUserIDByStatus",
+                        "queryField": "rideAlongsByUserIDByStatus",
+                        "fields": [
+                            "UserID",
+                            "status",
+                            "createdAt"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "private",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            },
+                            {
+                                "allow": "private",
+                                "provider": "iam",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "RideAlongSessions": {
+            "name": "RideAlongSessions",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "RideAlongID": {
+                    "name": "RideAlongID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "ClientID": {
+                    "name": "ClientID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "UserID": {
+                    "name": "UserID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "sessionStartTime": {
+                    "name": "sessionStartTime",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "sessionEndTime": {
+                    "name": "sessionEndTime",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "sessionTerminationReason": {
+                    "name": "sessionTerminationReason",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "assemblySessionId": {
+                    "name": "assemblySessionId",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "recordingDurationSeconds": {
+                    "name": "recordingDurationSeconds",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                }
+            },
+            "syncable": true,
+            "pluralName": "RideAlongSessions",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byRideAlong",
+                        "queryField": "rideAlongSessionsByRideAlongID",
+                        "fields": [
+                            "RideAlongID",
+                            "sessionStartTime"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClient",
+                        "queryField": "rideAlongSessionsByClientID",
+                        "fields": [
+                            "ClientID",
+                            "sessionStartTime"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byUser",
+                        "queryField": "rideAlongSessionsByUserID",
+                        "fields": [
+                            "UserID",
+                            "sessionStartTime"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "private",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            },
+                            {
+                                "allow": "private",
+                                "provider": "iam",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "RideAlongSessionTurns": {
+            "name": "RideAlongSessionTurns",
+            "fields": {
+                "id": {
+                    "name": "id",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "RideAlongSessionID": {
+                    "name": "RideAlongSessionID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "RideAlongID": {
+                    "name": "RideAlongID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "ClientID": {
+                    "name": "ClientID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "UserID": {
+                    "name": "UserID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "type": {
+                    "name": "type",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "turnOrder": {
+                    "name": "turnOrder",
+                    "isArray": false,
+                    "type": "Int",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "turnIsFormatted": {
+                    "name": "turnIsFormatted",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "endOfTurn": {
+                    "name": "endOfTurn",
+                    "isArray": false,
+                    "type": "Boolean",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "transcript": {
+                    "name": "transcript",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "utterance": {
+                    "name": "utterance",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "languageCode": {
+                    "name": "languageCode",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "languageConfidence": {
+                    "name": "languageConfidence",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "endOfTurnConfidence": {
+                    "name": "endOfTurnConfidence",
+                    "isArray": false,
+                    "type": "Float",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "words": {
+                    "name": "words",
+                    "isArray": false,
+                    "type": "AWSJSON",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "createdAt": {
+                    "name": "createdAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "updatedAt": {
+                    "name": "updatedAt",
+                    "isArray": false,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": []
+                }
+            },
+            "syncable": true,
+            "pluralName": "RideAlongSessionTurns",
+            "attributes": [
+                {
+                    "type": "model",
+                    "properties": {}
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "bySession",
+                        "queryField": "rideAlongSessionTurnsByRideAlongSessionID",
+                        "fields": [
+                            "RideAlongSessionID",
+                            "turnOrder"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byRideAlong",
+                        "queryField": "rideAlongSessionTurnsByRideAlongID",
+                        "fields": [
+                            "RideAlongID",
+                            "turnOrder"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byClient",
+                        "queryField": "rideAlongSessionTurnsByClientID",
+                        "fields": [
+                            "ClientID",
+                            "turnOrder"
+                        ]
+                    }
+                },
+                {
+                    "type": "key",
+                    "properties": {
+                        "name": "byUser",
+                        "queryField": "rideAlongSessionTurnsByUserID",
+                        "fields": [
+                            "UserID",
+                            "turnOrder"
+                        ]
+                    }
+                },
+                {
+                    "type": "auth",
+                    "properties": {
+                        "rules": [
+                            {
+                                "allow": "private",
+                                "operations": [
+                                    "create",
+                                    "update",
+                                    "delete",
+                                    "read"
+                                ]
+                            },
+                            {
+                                "allow": "private",
+                                "provider": "iam",
                                 "operations": [
                                     "create",
                                     "update",
@@ -13092,6 +14345,15 @@ export const schema = {
                 "PARTNER",
                 "PROSPECT"
             ]
+        },
+        "RideAlongStatus": {
+            "name": "RideAlongStatus",
+            "values": [
+                "SCHEDULED",
+                "LIVE",
+                "PAUSED",
+                "ENDED"
+            ]
         }
     },
     "nonModels": {
@@ -13116,5 +14378,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.4.4",
-    "version": "006ba21cf471100b54f62b0dc4e49e5c"
+    "version": "d45201669831167108a397184cc80033"
 };

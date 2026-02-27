@@ -66,7 +66,14 @@ const ClientType = {
   "PROSPECT": "PROSPECT"
 };
 
-const { Users, Apps, IngestionTasks, IngestionTaskErrorHandlers, Connections, MasterPermissions, Clients, ClientContactMethods, ClientAddresses, ClientContactActivityEvents, ClientContactActivityTypes, ClientContacts, ClientContactTypes, ClientEmailTemplates, ClientTools, ClientGroups, ClientGroupAssignments, DataSources, Interfaces, InterfaceInstances, Softwares, ClientSoftwares, Usage, Tools, MembershipTypes, Memberships, MembershipTypeTools, MembershipTools, ToolSubscriptions, Activity, Messages, MessageThreads, MessageThreadUsers, InformationRequests, ClientMeeting, ProductCatelogs, Products, Blogs, Reviews, openAiQueue, ScriptFields, ScriptStages, CallScripts, Identifier, IdentifierMapping, IdentifierType, SoftwareIdentifier, Rubriks, Calls, Employees, EmployeeExternalIDs, Icons, Integrations, IntegrationTypes, Approvals, Dashboard, ZapierTools, Providers, OCRJobs, Invoices, DataCleaningQueue, DataCleaningItems, Projects, Tasks, TaskLinks, Notifications, Notes, Threads, ChatBots, ChatFiles, Chats, ChatMessages, Webhooks, WebhookInstances, WebhookInstanceEvents, FilledPDFTemplates, UserToolsSettings, ClientToolsSettings, UserToolPermissions, Assignments, RivetTransactions, UsagePacks, ToolUsage, ToolUsageUsagePacks, TemplatedAssemblies, ClientAssemblies, ToolEmails, UserProjects, UserClients, UsagePlanStructure } = initSchema(schema);
+const RideAlongStatus = {
+  "SCHEDULED": "SCHEDULED",
+  "LIVE": "LIVE",
+  "PAUSED": "PAUSED",
+  "ENDED": "ENDED"
+};
+
+const { Users, Apps, IngestionTasks, IngestionTaskErrorHandlers, Connections, MasterPermissions, Clients, ClientContactMethods, ClientAddresses, ClientContactActivityEvents, ClientContactActivityTypes, ClientContacts, ClientContactTypes, ClientEmailTemplates, ClientTools, ClientGroups, ClientGroupAssignments, DataSources, Interfaces, InterfaceInstances, Assemblies, Softwares, ClientSoftwares, Usage, Tools, MembershipTypes, Memberships, MembershipTypeTools, MembershipTools, ToolSubscriptions, Activity, Messages, MessageThreads, MessageThreadUsers, InformationRequests, ClientMeeting, ProductCatelogs, Products, Blogs, Reviews, openAiQueue, ScriptFields, ScriptStages, CallScripts, Identifier, IdentifierMapping, IdentifierType, SoftwareIdentifier, Rubriks, Calls, Employees, EmployeeExternalIDs, Icons, Integrations, IntegrationTypes, Approvals, Dashboard, ZapierTools, Providers, OCRJobs, OCRJobPages, Invoices, DataCleaningQueue, DataCleaningItems, Projects, Tasks, TaskLinks, Notifications, Notes, Threads, ChatBots, ChatFiles, Chats, ChatMessages, Webhooks, WebhookInstances, WebhookInstanceEvents, FilledPDFTemplates, UserToolsSettings, ClientToolsSettings, UserToolPermissions, Assignments, RivetTransactions, UsagePacks, ToolUsage, ToolUsageUsagePacks, TemplatedAssemblies, ClientAssemblies, ToolEmails, ToolEmailAttachments, RideAlongs, RideAlongSessions, RideAlongSessionTurns, UserProjects, UserClients, UsagePlanStructure } = initSchema(schema);
 
 export {
   Users,
@@ -89,6 +96,7 @@ export {
   DataSources,
   Interfaces,
   InterfaceInstances,
+  Assemblies,
   Softwares,
   ClientSoftwares,
   Usage,
@@ -128,6 +136,7 @@ export {
   ZapierTools,
   Providers,
   OCRJobs,
+  OCRJobPages,
   Invoices,
   DataCleaningQueue,
   DataCleaningItems,
@@ -156,6 +165,10 @@ export {
   TemplatedAssemblies,
   ClientAssemblies,
   ToolEmails,
+  ToolEmailAttachments,
+  RideAlongs,
+  RideAlongSessions,
+  RideAlongSessionTurns,
   UserProjects,
   UserClients,
   ComplexityTier,
@@ -168,5 +181,6 @@ export {
   PremiumBillingType,
   ClientAssemblyStatus,
   ClientType,
+  RideAlongStatus,
   UsagePlanStructure
 };

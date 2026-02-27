@@ -64,6 +64,7 @@ exports.handler = async (event) => {
             ],
             redact_pii_audio: true,
           });
+          console.log("AssemblyAI transcribe result:", transcript);
 
           // Process the transcript without combining utterances.
           const processedTranscript = convertTranscript(transcript);
@@ -82,9 +83,11 @@ exports.handler = async (event) => {
           // Remove the 'public/' prefix to build the transcriptPath
           const transcriptPath = s3Key.replace(/^public\//, "");
 
-          const { redacted_audio_url } = await client.transcripts.redactions(
+          const redactionResult = await client.transcripts.redactions(
             transcript.id
           );
+          console.log("AssemblyAI redaction result:", redactionResult);
+          const { redacted_audio_url } = redactionResult;
 
           const redactedFile = await axios.get(redacted_audio_url, {
             responseType: "arraybuffer",

@@ -527,6 +527,24 @@ type InterfaceInstances @model @auth(rules: [{ allow: private }]) {
   updatedAt: String
 }
 
+type Assemblies @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "assembliesByClientID"
+      sortKeyFields: ["code"]
+    )
+  code: String!
+  name: String!
+  category: String!
+  department: String!
+  activeSince: String
+  description: String
+  createdAt: String
+  updatedAt: String
+}
+
 type Softwares @model @auth(rules: [{ allow: private }]) {
   id: ID!
   name: String!
@@ -598,6 +616,7 @@ type Tools @model @auth(rules: [{ allow: private }]) {
   isPremium: Boolean
   premiumBillingType: PremiumBillingType
   usagePlanStructure: UsagePlanStructure
+  usagePacks: [UsagePacks] @hasMany(indexName: "byTool", fields: ["id"])
 }
 
 type UsagePlanStructure {
@@ -1409,6 +1428,25 @@ type OCRJobs @model @auth(rules: [{ allow: private }]) {
   metaData: AWSJSON
   totalPageCount: String
   extractedPageData: AWSJSON
+  parsing_status: String
+  page_count: Float
+  last_active_stage: String
+  total_transaction_count: Float
+  avg_transaction_size: Float
+  is_transaction_file: Boolean
+  error_message: String
+  ToolEmailID: ID
+    @index(
+      name: "byToolEmail"
+      queryField: "ocrJobsByToolEmailID"
+      sortKeyFields: ["createdAt"]
+    )
+  ToolEmailAttachmentID: ID
+    @index(
+      name: "byToolEmailAttachment"
+      queryField: "ocrJobsByToolEmailAttachmentID"
+      sortKeyFields: ["createdAt"]
+    )
   status: String
     @index(
       name: "byStatus"
@@ -1417,7 +1455,10 @@ type OCRJobs @model @auth(rules: [{ allow: private }]) {
     )
   fileLocation: String
   createdAt: String
+  parsingStartedAt: String
+  parsingCompletedAt: String
   updatedAt: String
+  completedAt: String
   UserID: ID
     @index(
       name: "byUserID"
@@ -1429,6 +1470,53 @@ type OCRJobs @model @auth(rules: [{ allow: private }]) {
       name: "byClient"
       queryField: "ocrJobsByClientID"
       sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byClientByName"
+      queryField: "ocrJobsByClientByName"
+      sortKeyFields: ["name"]
+    )
+    @index(
+      name: "byClientByStatus"
+      queryField: "ocrJobsByClientByStatus"
+      sortKeyFields: ["status"]
+    )
+    @index(
+      name: "byClientByStatusByCreatedAt"
+      queryField: "ocrJobsByClientByStatusByCreatedAt"
+      sortKeyFields: ["status", "createdAt"]
+    )
+}
+
+type OCRJobPages @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  status: String
+    @index(
+      name: "byStatus"
+      queryField: "ocrJobPagesByStatus"
+      sortKeyFields: ["createdAt"]
+    )
+  pageIndex: Int
+  createdAt: String
+  updatedAt: String
+  ClientID: ID
+  OCRJobPageGroupID: ID
+  OCRJobID: ID!
+    @index(
+      name: "byOCRJobID"
+      queryField: "ocrJobPagesByOCRJobID"
+      sortKeyFields: ["pageIndex"]
+    )
+    @index(
+      name: "byOCRJobByStatus"
+      queryField: "ocrJobPagesByOCRJobByStatus"
+      sortKeyFields: ["status"]
+    )
+  InvoiceID: ID
+    @index(
+      name: "byInvoiceID"
+      queryField: "ocrJobPagesByInvoiceID"
+      sortKeyFields: ["pageIndex"]
     )
 }
 
@@ -1527,6 +1615,16 @@ type Invoices @model @auth(rules: [{ allow: private }]) {
       name: "byClientByStatus"
       queryField: "invoicesByClientByStatus"
       sortKeyFields: ["textractStatus"]
+    )
+    @index(
+      name: "byClientByInvoiceNumber"
+      queryField: "invoicesByClientByInvoiceNumber"
+      sortKeyFields: ["invoiceNumber"]
+    )
+    @index(
+      name: "byClientByPONumber"
+      queryField: "invoicesByClientByPONumber"
+      sortKeyFields: ["poNumber"]
     )
     @index(
       name: "byClientByUpdatedAt"
@@ -2208,6 +2306,26 @@ type RivetTransactions @model @auth(rules: [{ allow: private }]) {
   ReferenceID: ID
   referenceType: RivetReferenceType
   reference: String
+
+  ClientAssemblyID: ID
+    @index(
+      name: "byClientAssembly"
+      queryField: "rivetTransactionsByClientAssemblyID"
+      sortKeyFields: ["createdAt"]
+    )
+  TemplatedAssemblyID: ID
+    @index(
+      name: "byTemplatedAssembly"
+      queryField: "rivetTransactionsByTemplatedAssemblyID"
+      sortKeyFields: ["createdAt"]
+    )
+
+  clientAssembly: ClientAssemblies @belongsTo(fields: ["ClientAssemblyID"])
+  templatedAssembly: TemplatedAssemblies
+    @belongsTo(fields: ["TemplatedAssemblyID"])
+
+  usagePacks: [UsagePacks]
+    @hasMany(indexName: "byRivetTransaction", fields: ["id"])
 }
 
 type UsagePacks @model @auth(rules: [{ allow: private }]) {
@@ -2231,7 +2349,7 @@ type UsagePacks @model @auth(rules: [{ allow: private }]) {
     )
   RivetTransactionID: ID
     @index(
-      name: "byRivetTransactionID"
+      name: "byRivetTransaction"
       queryField: "usagePacksByRivetTransactionID"
       sortKeyFields: ["createdAt"]
     )
@@ -2247,6 +2365,8 @@ type UsagePacks @model @auth(rules: [{ allow: private }]) {
   rivetsCost: Float
   purchasedAt: String
   createdAt: String
+  tool: Tools @belongsTo(fields: ["ToolID"])
+  rivetTransaction: RivetTransactions @belongsTo(fields: ["RivetTransactionID"])
 }
 
 type ToolUsage @model @auth(rules: [{ allow: private }]) {
@@ -2352,6 +2472,8 @@ type TemplatedAssemblies @model @auth(rules: [{ allow: private }]) {
       sortKeyFields: ["name"]
     )
   intakeFormActiveVersion: Int
+  purchaseTransactions: [RivetTransactions]
+    @hasMany(indexName: "byTemplatedAssembly", fields: ["id"])
 }
 
 type ClientAssemblies @model @auth(rules: [{ allow: private }]) {
@@ -2384,6 +2506,8 @@ type ClientAssemblies @model @auth(rules: [{ allow: private }]) {
   video: String
   rivetCostAtRequest: Float
   RivetTransactionID: ID
+  purchaseTransactions: [RivetTransactions]
+    @hasMany(indexName: "byClientAssembly", fields: ["id"])
   businessImpactScoreAtRequest: Float
   businessImpactReasoningAtRequest: String
   regulationSafetyScoreAtRequest: Float
@@ -2404,6 +2528,7 @@ type ToolEmails @model @auth(rules: [{ allow: private }]) {
   id: ID!
 
   ClientID: ID!
+
   ToolID: ID!
 
   # Primary query key: "{ClientID}#{ToolID}"
@@ -2412,6 +2537,11 @@ type ToolEmails @model @auth(rules: [{ allow: private }]) {
       name: "byClientTool"
       queryField: "toolEmailsByClientTool"
       sortKeyFields: ["createdAt"]
+    )
+    @index(
+      name: "byClientToolByMessageID"
+      queryField: "toolEmailsByClientToolByMessageID"
+      sortKeyFields: ["messageID"]
     )
 
   # Fast unread/read filter:
@@ -2428,6 +2558,8 @@ type ToolEmails @model @auth(rules: [{ allow: private }]) {
   preview: String
   from: String
   receivedAt: String
+  inReplyTo: String
+  messageID: String
 
   # Usable files produced/stored for this email
   fileCount: Int
@@ -2444,6 +2576,145 @@ type ToolEmails @model @auth(rules: [{ allow: private }]) {
   readAt: String
 
   createdAt: String!
+  updatedAt: String
+}
+
+type ToolEmailAttachments @model @auth(rules: [{ allow: private }]) {
+  id: ID!
+  ToolEmailID: ID!
+    @index(
+      name: "byToolEmail"
+      queryField: "toolEmailAttachmentsByToolEmailID"
+      sortKeyFields: ["createdAt"]
+    )
+  name: String
+  contentID: String
+  createdAt: String
+  updatedAt: String
+  type: String
+  threadId: ID
+    @index(
+      name: "byThread"
+      queryField: "toolEmailAttachmentsByThreadId"
+      sortKeyFields: ["createdAt"]
+    )
+  OCRJobID: ID
+    @index(
+      name: "byOCRJob"
+      queryField: "toolEmailAttachmentsByOCRJobID"
+      sortKeyFields: ["createdAt"]
+    )
+  ClientID: ID
+    @index(
+      name: "byClient"
+      queryField: "toolEmailAttachmentsByClientID"
+      sortKeyFields: ["createdAt"]
+    )
+}
+
+type RideAlongs
+  @model
+  @auth(rules: [{ allow: private }, { allow: private, provider: iam }]) {
+  id: ID!
+  name: String!
+  address: String
+  location: AWSJSON
+  scheduledAt: String
+  startedAt: String
+  endedAt: String
+  status: RideAlongStatus
+  statusScheduledAt: String
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "rideAlongsByClientID"
+      sortKeyFields: ["name"]
+    )
+  UserID: ID!
+    @index(
+      name: "byUser"
+      queryField: "rideAlongsByUserID"
+      sortKeyFields: ["name"]
+    )
+    @index(
+      name: "byUserIDByStatus"
+      queryField: "rideAlongsByUserIDByStatus"
+      sortKeyFields: ["status", "createdAt"]
+    )
+  createdAt: String
+  updatedAt: String
+}
+
+type RideAlongSessions
+  @model
+  @auth(rules: [{ allow: private }, { allow: private, provider: iam }]) {
+  id: ID!
+  RideAlongID: ID!
+    @index(
+      name: "byRideAlong"
+      queryField: "rideAlongSessionsByRideAlongID"
+      sortKeyFields: ["sessionStartTime"]
+    )
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "rideAlongSessionsByClientID"
+      sortKeyFields: ["sessionStartTime"]
+    )
+  UserID: ID!
+    @index(
+      name: "byUser"
+      queryField: "rideAlongSessionsByUserID"
+      sortKeyFields: ["sessionStartTime"]
+    )
+  sessionStartTime: String!
+  sessionEndTime: String
+  sessionTerminationReason: String
+  assemblySessionId: String
+  recordingDurationSeconds: Float
+  createdAt: String
+  updatedAt: String
+}
+
+type RideAlongSessionTurns
+  @model
+  @auth(rules: [{ allow: private }, { allow: private, provider: iam }]) {
+  id: ID!
+  RideAlongSessionID: ID!
+    @index(
+      name: "bySession"
+      queryField: "rideAlongSessionTurnsByRideAlongSessionID"
+      sortKeyFields: ["turnOrder"]
+    )
+  RideAlongID: ID!
+    @index(
+      name: "byRideAlong"
+      queryField: "rideAlongSessionTurnsByRideAlongID"
+      sortKeyFields: ["turnOrder"]
+    )
+  ClientID: ID!
+    @index(
+      name: "byClient"
+      queryField: "rideAlongSessionTurnsByClientID"
+      sortKeyFields: ["turnOrder"]
+    )
+  UserID: ID!
+    @index(
+      name: "byUser"
+      queryField: "rideAlongSessionTurnsByUserID"
+      sortKeyFields: ["turnOrder"]
+    )
+  type: String
+  turnOrder: Int!
+  turnIsFormatted: Boolean!
+  endOfTurn: Boolean!
+  transcript: String!
+  utterance: String
+  languageCode: String
+  languageConfidence: Float
+  endOfTurnConfidence: Float
+  words: AWSJSON
+  createdAt: String
   updatedAt: String
 }
 
@@ -2510,3 +2781,11 @@ enum ClientType {
   PARTNER
   PROSPECT
 }
+
+enum RideAlongStatus {
+  SCHEDULED
+  LIVE
+  PAUSED
+  ENDED
+}
+ 

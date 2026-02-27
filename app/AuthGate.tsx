@@ -1,7 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { fetchUserAttributes, getCurrentUser, signIn } from 'aws-amplify/auth'
 import { Hub } from 'aws-amplify/utils'
 import { AuthProvider } from './AuthContext'
@@ -14,40 +14,103 @@ type AuthGateProps = {
   children: ReactNode
 }
 
-type AuthStatus = 'checking' | 'signedIn' | 'signedOut'
+type AuthStatus = 'checking' | 'signedIn' | 'signedOut' | 'error'
+
+const getClientIdFromAttributes = (
+  attributes: Record<string, string | undefined>
+) => {
+  const keys = ['custom:clientID', 'custom:clientId', 'custom:clientid']
+  for (const key of keys) {
+    const value = attributes[key]
+    if (value && value.trim().length > 0) {
+      return value
+    }
+  }
+  return null
+}
 
 export default function AuthGate({ children }: AuthGateProps) {
   const [status, setStatus] = useState<AuthStatus>('checking')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [displayName, setDisplayName] = useState<string | null>(null)
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
+  const [currentClientId, setCurrentClientId] = useState<string | null>(null)
+  const [authError, setAuthError] = useState<string | null>(null)
 
-  const loadUserProfile = async () => {
+  const loadUserProfile = useCallback(async () => {
     const user = await getCurrentUser()
     const attributes = await fetchUserAttributes()
-    const name = attributes.name || user.username
-    return name
+    const safeAttributes = attributes as Record<string, string | undefined>
+    const name = safeAttributes.name || user.username
+    const clientId = getClientIdFromAttributes(safeAttributes)
+    const userId = user.userId || user.username
+    return { name, userId, clientId }
+  }, [])
+
+  const isUnauthenticatedError = (err: unknown) => {
+    if (!(err instanceof Error)) {
+      return false
+    }
+    const unauthenticatedNames = new Set([
+      'UserUnAuthenticatedException',
+      'UserUnauthenticatedException',
+      'NotAuthorizedException',
+    ])
+    return unauthenticatedNames.has(err.name)
   }
+
+  const checkSession = useCallback(async () => {
+    setStatus('checking')
+    setAuthError(null)
+    try {
+      const profile = await loadUserProfile()
+      setDisplayName(profile.name)
+      setCurrentUserId(profile.userId)
+      setCurrentClientId(profile.clientId)
+      setStatus('signedIn')
+    } catch (err) {
+      setDisplayName(null)
+      setCurrentUserId(null)
+      setCurrentClientId(null)
+      if (isUnauthenticatedError(err)) {
+        setStatus('signedOut')
+        return
+      }
+      setStatus('error')
+      setAuthError('We could not verify your session. Please try again.')
+    }
+  }, [loadUserProfile])
 
   useEffect(() => {
     let isActive = true
 
-    const checkSession = async () => {
+    const checkSessionSafe = async () => {
       try {
-        const name = await loadUserProfile()
+        const profile = await loadUserProfile()
         if (isActive) {
-          setDisplayName(name)
+          setDisplayName(profile.name)
+          setCurrentUserId(profile.userId)
+          setCurrentClientId(profile.clientId)
           setStatus('signedIn')
+          setAuthError(null)
         }
       } catch (err) {
         if (isActive) {
-          setStatus('signedOut')
           setDisplayName(null)
+          setCurrentUserId(null)
+          setCurrentClientId(null)
+          if (isUnauthenticatedError(err)) {
+            setStatus('signedOut')
+          } else {
+            setStatus('error')
+            setAuthError('We could not verify your session. Please try again.')
+          }
         }
       }
     }
 
-    checkSession()
+    checkSessionSafe()
 
     const unsubscribe = Hub.listen('auth', ({ payload }) => {
       if (!isActive) {
@@ -58,10 +121,13 @@ export default function AuthGate({ children }: AuthGateProps) {
         setStatus('signedOut')
         setError(null)
         setDisplayName(null)
+        setCurrentUserId(null)
+        setCurrentClientId(null)
+        setAuthError(null)
       }
 
       if (payload.event === 'signedIn') {
-        checkSession()
+        checkSessionSafe()
       }
     })
 
@@ -87,8 +153,10 @@ export default function AuthGate({ children }: AuthGateProps) {
     try {
       const response = await signIn({ username, password })
       if (response.isSignedIn) {
-        const name = await loadUserProfile()
-        setDisplayName(name)
+        const profile = await loadUserProfile()
+        setDisplayName(profile.name)
+        setCurrentUserId(profile.userId)
+        setCurrentClientId(profile.clientId)
         setStatus('signedIn')
         return
       }
@@ -111,6 +179,35 @@ export default function AuthGate({ children }: AuthGateProps) {
     )
   }
 
+  if (status === 'error') {
+    return (
+      <AuthPageShell>
+        <AuthCard
+          heading="Unable to verify session"
+          subheading={authError ?? 'We ran into an issue while loading your account.'}
+        >
+          <button
+            type="button"
+            onClick={checkSession}
+            style={{
+              border: 'none',
+              borderRadius: '999px',
+              padding: '12px 20px',
+              fontSize: '14px',
+              fontWeight: 600,
+              backgroundColor: 'var(--color-brand-marigold)',
+              color: 'var(--color-neutral-graphite)',
+              cursor: 'pointer',
+              width: '100%',
+            }}
+          >
+            Try again
+          </button>
+        </AuthCard>
+      </AuthPageShell>
+    )
+  }
+
   if (status === 'signedOut') {
     return (
       <AuthPageShell>
@@ -130,7 +227,7 @@ export default function AuthGate({ children }: AuthGateProps) {
   }
 
   return (
-    <AuthProvider value={{ name: displayName }}>
+    <AuthProvider value={{ name: displayName, userId: currentUserId, clientId: currentClientId }}>
       {children}
     </AuthProvider>
   )

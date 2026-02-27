@@ -2,9 +2,24 @@
 
 import type { CSSProperties } from 'react'
 
-export default function LoadingScreen() {
+type LoadingScreenProps = {
+  variant?: 'fullscreen' | 'inline'
+}
+
+export default function LoadingScreen({ variant = 'fullscreen' }: LoadingScreenProps) {
+  const screenStyle: CSSProperties = variant === 'inline'
+    ? {
+      ...styles.screen,
+      position: 'absolute',
+      inset: 0,
+      width: '100%',
+      height: '100%',
+      zIndex: 5,
+    }
+    : styles.screen
+
   return (
-    <div style={styles.screen}>
+    <div style={screenStyle}>
       <div style={styles.stage}>
         <div style={styles.card}>
           <img
@@ -48,23 +63,23 @@ export default function LoadingScreen() {
         @keyframes eliGlintSweep {
           0% {
             opacity: 0;
-            transform: translateX(-140%) rotate(18deg);
+            transform: translateX(-120%) translateY(4%) rotate(12deg) scaleY(0.92);
           }
-          35% {
+          38% {
             opacity: 0;
-            transform: translateX(-60%) rotate(18deg);
+            transform: translateX(-70%) translateY(2%) rotate(12deg) scaleY(0.92);
           }
-          50% {
-            opacity: 0.45;
-            transform: translateX(0%) rotate(18deg);
+          52% {
+            opacity: 0.22;
+            transform: translateX(-5%) translateY(0%) rotate(12deg) scaleY(0.96);
           }
-          65% {
-            opacity: 0.15;
-            transform: translateX(70%) rotate(18deg);
+          70% {
+            opacity: 0.08;
+            transform: translateX(65%) translateY(-1%) rotate(12deg) scaleY(0.96);
           }
           100% {
             opacity: 0;
-            transform: translateX(140%) rotate(18deg);
+            transform: translateX(120%) translateY(-2%) rotate(12deg) scaleY(0.92);
           }
         }
       `}</style>
@@ -134,14 +149,14 @@ const styles: Record<string, CSSProperties> = {
   },
   glint: {
     position: 'absolute',
-    inset: '8% 10%',
-    borderRadius: '30px',
+    inset: '12% 16%',
+    borderRadius: '26px',
     background:
-      'linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.85) 45%, transparent 60%)',
+      'linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.55) 32%, rgba(255, 255, 255, 0.16) 48%, transparent 64%)',
     mixBlendMode: 'screen',
     animation: 'eliGlintSweep 3.4s ease-in-out infinite',
     zIndex: 4,
     pointerEvents: 'none',
-    filter: 'blur(0.6px)',
+    filter: 'blur(1.4px)',
   },
 }

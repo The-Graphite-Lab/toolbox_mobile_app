@@ -31,7 +31,7 @@
         },
         "assemblyCalls": {
           "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
-          "s3Key": "amplify-builds/assemblyCalls-553666426869534d3564-build.zip"
+          "s3Key": "amplify-builds/assemblyCalls-304b444b71314d705654-build.zip"
         },
         "authorizeNet": {
           "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
@@ -39,7 +39,7 @@
         },
         "connections": {
           "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
-          "s3Key": "amplify-builds/connections-6f7450456c724f786f2b-build.zip"
+          "s3Key": "amplify-builds/connections-5578497174776657716b-build.zip"
         },
         "geoapify": {
           "deploymentBucketName": "amplify-thegraphitelabtoolbo-staging-210135-deployment",
@@ -108,6 +108,23 @@
       },
       "storage": {
         "userFiles": {}
+      },
+      "api": {
+        "Connections": {},
+        "TGLAPI": {},
+        "apigateway": {},
+        "authorizeNet": {},
+        "geoapify": {},
+        "nounProjectREST": {},
+        "openAi": {},
+        "sendGrid": {},
+        "serviceTitan": {},
+        "slack": {},
+        "stripe": {},
+        "tglmonday": {},
+        "thegraphitelabtoolbox": {},
+        "userManagement": {},
+        "websiteBlogManagement": {}
       }
     }
   }
