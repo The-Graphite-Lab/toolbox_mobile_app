@@ -1,5 +1,3 @@
-<<<<<<< Current (Your changes)
-=======
 import { fetchAuthSession } from 'aws-amplify/auth'
 import { generateClient, post } from 'aws-amplify/api'
 import { Amplify } from 'aws-amplify'
@@ -576,4 +574,3 @@ export const uploadRideAlongRecordingBlob = async ({
     throw new Error(`Failed to upload recording file. Status: ${response.status}`)
   }
 }
->>>>>>> Incoming (Background Agent changes)

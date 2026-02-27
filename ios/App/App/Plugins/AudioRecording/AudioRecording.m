@@ -13,9 +13,5 @@ CAP_PLUGIN(AudioRecordingPlugin, "AudioRecording",
            CAP_PLUGIN_METHOD(startRideAlongSession, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(stopRideAlongSession, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getRideAlongSessionState, CAPPluginReturnPromise);
-<<<<<<< Current (Your changes)
-=======
-           CAP_PLUGIN_METHOD(uploadRideAlongRecordingToUrl, CAPPluginReturnPromise);
->>>>>>> Incoming (Background Agent changes)
+           CAP_PLUGIN_METHOD(uploadRideAlongRecording, CAPPluginReturnPromise);
 )
-

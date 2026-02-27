@@ -1,9 +1,6 @@
-<<<<<<< Current (Your changes)
-=======
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Capacitor } from '@capacitor/core'
 import { AudioRecording } from '@/plugins/AudioRecording'
 import RideAlongsList from './RideAlongsList'
 import RideAlongDetail from './RideAlongDetail'
@@ -801,8 +798,6 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
             }
           }
           let uploadWarning: string | null = null
-          const isNativeIos = Capacitor.getPlatform() === 'ios'
-          const useNativeUpload = isNativeIos && typeof result.filePath === 'string' && result.filePath.length > 0
           const shouldAttemptWebUpload =
             typeof result.filePath === 'string' &&
             /^(blob:|data:|https?:)/.test(result.filePath)
@@ -812,31 +807,7 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
             !/^(blob:|data:|https?:)/.test(result.filePath)
           const hasBase64Recording =
             typeof result.base64Data === 'string' && result.base64Data.length > 0
-<<<<<<< Current (Your changes)
-
-          if (useNativeUpload) {
-            try {
-              const uploadData = await getRideAlongRecordingUploadUrl({
-                sessionId,
-                clientId: selectedRideAlong.ClientID,
-                rideAlongId: selectedRideAlong.id,
-                contentType: result.mimeType || 'audio/m4a',
-              })
-              if (uploadData.signedUrl) {
-                await AudioRecording.uploadRecordingToSignedUrl({
-                  signedUrl: uploadData.signedUrl,
-                  contentType: result.mimeType || 'audio/m4a',
-                  filePath: result.filePath as string,
-                })
-              }
-            } catch (uploadError) {
-              uploadWarning = 'Session ended, but recording upload failed.'
-              console.warn('[RideAlongs] Recording upload warning:', uploadError)
-            }
-          } else if (shouldAttemptWebUpload || hasBase64Recording) {
-=======
           if (shouldAttemptWebUpload || hasBase64Recording || hasNativeFilePath) {
->>>>>>> Incoming (Background Agent changes)
             try {
               const uploadData = await getRideAlongRecordingUploadUrl({
                 sessionId,
@@ -1500,4 +1471,3 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     </div>
   )
 }
->>>>>>> Incoming (Background Agent changes)

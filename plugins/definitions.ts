@@ -27,16 +27,7 @@ export interface AudioRecordingPlugin {
   }): Promise<{ success: boolean; message: string; sessionId?: string }>
   stopRideAlongSession(options?: {
     terminationReason?: string
-<<<<<<< Current (Your changes)
   }): Promise<{ success: boolean; message?: string; sessionId?: string; duration?: number; filePath?: string; base64Data?: string; mimeType?: string }>
-=======
-  }): Promise<{ success: boolean; message?: string; sessionId?: string; duration?: number; filePath?: string; mimeType?: string }>
-  uploadRideAlongRecordingToUrl?(options: {
-    signedUrl: string
-    filePath: string
-    contentType?: string
-  }): Promise<{ success: boolean }>
->>>>>>> Incoming (Background Agent changes)
   getRideAlongSessionState(): Promise<{
     isActive: boolean
     isStreaming: boolean
@@ -45,6 +36,7 @@ export interface AudioRecordingPlugin {
     duration?: number
     isPaused?: boolean
   }>
+  uploadRideAlongRecording(options: { signedUrl: string; filePath: string }): Promise<{ success: boolean; message?: string }>
   addListener(
     eventName: 'rideAlongSessionBegin',
     listenerFunc: (event: {
@@ -76,4 +68,3 @@ export interface AudioRecordingPlugin {
   ): Promise<PluginListenerHandle>
   removeAllListeners(): Promise<void>
 }
-

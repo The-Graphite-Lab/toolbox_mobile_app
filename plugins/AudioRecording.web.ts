@@ -1040,6 +1040,9 @@ export class AudioRecordingWeb extends WebPlugin implements AudioRecordingPlugin
       sessionId: this.rideAlongSessionId || undefined,
     }
   }
+  async uploadRideAlongRecording(_options: { signedUrl: string; filePath: string }): Promise<{ success: boolean; message?: string }> {
+    return Promise.reject(new Error('Recording upload on web is done via JS; use blob upload.'))
+  }
 }
 
 

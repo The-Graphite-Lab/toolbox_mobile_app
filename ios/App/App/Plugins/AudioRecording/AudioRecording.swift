@@ -401,38 +401,46 @@ public class AudioRecordingPlugin: CAPPlugin {
 
     @objc func stopRideAlongSession(_ call: CAPPluginCall) {
         let endedAt = rideAlongDateFormatter.string(from: Date())
-        let sessionId = rideAlongSessionID
-        let filePath = recordingURL?.path
 
         stopRideAlongAudioEngine()
         sendRideAlongForceEndpointMessage()
+        let sessionIdToEmit = rideAlongSessionID
+        let recordingURLToUse = recordingURL
+        let startTimeToUse = startTime
+        let totalPauseToUse = totalPauseDuration
+        let pauseStartToUse = pauseStartTime
+        let wasPaused = isPaused
+        let recorderToStop = audioRecorder
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+        DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
             self.sendRideAlongTerminateMessage()
             self.stopRideAlongWebSocket()
 
-            if self.isPaused {
-                self.audioRecorder?.record()
-                self.isPaused = false
-                if let pauseStart = self.pauseStartTime {
-                    self.totalPauseDuration += Date().timeIntervalSince(pauseStart)
-                    self.pauseStartTime = nil
-                }
+            if wasPaused, let recorder = recorderToStop {
+                recorder.record()
             }
 
-            if self.audioRecorder?.isRecording == true {
-                self.audioRecorder?.stop()
+            var totalPauseDurationForDuration = totalPauseToUse
+            if wasPaused, let pauseStart = pauseStartToUse {
+                totalPauseDurationForDuration += Date().timeIntervalSince(pauseStart)
+            }
+
+            if recorderToStop?.isRecording == true {
+                recorderToStop?.stop()
             }
 
             let duration: Int
-            if let start = self.startTime {
+            if let start = startTimeToUse {
                 let totalTime = Date().timeIntervalSince(start)
-                let actualDuration = totalTime - self.totalPauseDuration
+                let actualDuration = totalTime - totalPauseDurationForDuration
                 duration = Int(actualDuration)
             } else {
                 duration = 0
             }
+
+            let filePath = recordingURLToUse?.path
+            let sessionId = sessionIdToEmit
 
             if let sessionId = sessionId {
                 DispatchQueue.main.async {
@@ -445,7 +453,7 @@ public class AudioRecordingPlugin: CAPPlugin {
 
             self.resetAfterRideAlongStop()
 
-            let response: [String: Any] = [
+            var response: [String: Any] = [
                 "success": true,
                 "sessionId": sessionId ?? "",
                 "duration": duration,
@@ -454,6 +462,7 @@ public class AudioRecordingPlugin: CAPPlugin {
             ]
             call.resolve(response)
         }
+        return
     }
 
     @objc func getRideAlongSessionState(_ call: CAPPluginCall) {
@@ -484,23 +493,23 @@ public class AudioRecordingPlugin: CAPPlugin {
         call.resolve(response)
     }
 
-    @objc func uploadRideAlongRecordingToUrl(_ call: CAPPluginCall) {
+    @objc func uploadRideAlongRecording(_ call: CAPPluginCall) {
         guard let signedUrlString = call.getString("signedUrl"),
-              !signedUrlString.isEmpty,
               let filePath = call.getString("filePath"),
+              !signedUrlString.isEmpty,
               !filePath.isEmpty else {
             call.reject("signedUrl and filePath are required")
             return
         }
-        let contentType = call.getString("contentType") ?? "audio/m4a"
 
         guard let url = URL(string: signedUrlString) else {
-            call.reject("Invalid signed URL")
+            call.reject("Invalid signedUrl")
             return
         }
+
         let fileURL = URL(fileURLWithPath: filePath)
-        guard FileManager.default.isReadableFile(atPath: filePath) else {
-            call.reject("File not readable at path: \(filePath)")
+        guard FileManager.default.fileExists(atPath: filePath) else {
+            call.reject("Recording file not found at path")
             return
         }
 
@@ -511,7 +520,7 @@ public class AudioRecordingPlugin: CAPPlugin {
 
         var request = URLRequest(url: url)
         request.httpMethod = "PUT"
-        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        request.setValue("audio/m4a", forHTTPHeaderField: "Content-Type")
         request.httpBody = fileData
 
         let task = URLSession.shared.dataTask(with: request) { _, response, error in
@@ -524,7 +533,7 @@ public class AudioRecordingPlugin: CAPPlugin {
                 return
             }
             guard (200...299).contains(http.statusCode) else {
-                call.reject("Upload failed with status \(http.statusCode)")
+                call.reject("Upload failed: HTTP \(http.statusCode)")
                 return
             }
             call.resolve(["success": true])
@@ -577,7 +586,7 @@ public class AudioRecordingPlugin: CAPPlugin {
         task.send(.string(payloadString)) { [weak self] error in
             if let error = error {
                 print("RideAlong websocket ForceEndpoint send failed: \(error.localizedDescription)")
-                self?.emitRideAlongSessionError(message: "WebSocket ForceEndpoint failed: \(error.localizedDescription)")
+                self?.emitRideAlongSessionError(message: "ForceEndpoint send failed: \(error.localizedDescription)")
             }
         }
     }
@@ -587,11 +596,16 @@ public class AudioRecordingPlugin: CAPPlugin {
         guard let payload = try? JSONSerialization.data(withJSONObject: ["type": "Terminate"]),
               let payloadString = String(data: payload, encoding: .utf8) else { return }
 
-        task.send(.string(payloadString)) { [weak self] error in
+        task.send(.string(payloadString)) { error in
             if let error = error {
-                print("RideAlong websocket Terminate send failed: \(error.localizedDescription)")
-                self?.emitRideAlongSessionError(message: "WebSocket Terminate failed: \(error.localizedDescription)")
+                print("RideAlong websocket terminate send failed: \(error.localizedDescription)")
             }
+        }
+    }
+
+    private func emitRideAlongSessionError(message: String) {
+        DispatchQueue.main.async { [weak self] in
+            self?.notifyListeners("rideAlongSessionError", data: ["message": message])
         }
     }
 
@@ -608,10 +622,10 @@ public class AudioRecordingPlugin: CAPPlugin {
                 return
             }
 
-            self.rideAlongWebSocketTask?.send(.data(pcmData)) { error in
+            self.rideAlongWebSocketTask?.send(.data(pcmData)) { [weak self] error in
                 if let error = error {
                     print("RideAlong websocket send error: \(error.localizedDescription)")
-                    self.emitRideAlongSessionError(message: "WebSocket send error: \(error.localizedDescription)")
+                    self?.emitRideAlongSessionError(message: "WebSocket send error: \(error.localizedDescription)")
                 }
             }
         }
@@ -684,7 +698,7 @@ public class AudioRecordingPlugin: CAPPlugin {
             switch result {
             case .failure(let error):
                 print("RideAlong websocket receive error: \(error.localizedDescription)")
-                self.emitRideAlongSessionError(message: "WebSocket error: \(error.localizedDescription)")
+                self.emitRideAlongSessionError(message: "WebSocket receive error: \(error.localizedDescription)")
             case .success(let message):
                 var jsonPayload: [String: Any]?
                 switch message {
@@ -785,12 +799,6 @@ public class AudioRecordingPlugin: CAPPlugin {
                 "clientId": clientId,
                 "userId": userId,
             ])
-        }
-    }
-
-    private func emitRideAlongSessionError(message: String) {
-        DispatchQueue.main.async { [weak self] in
-            self?.notifyListeners("rideAlongSessionError", data: ["message": message])
         }
     }
 
