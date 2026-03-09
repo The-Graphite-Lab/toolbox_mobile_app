@@ -23,8 +23,8 @@ export default function AuthPageShell({ children }: AuthPageShellProps) {
 
 const styles: Record<string, CSSProperties> = {
   page: {
-    width: '100vw',
-    height: '100vh',
+    width: '100%',
+    minHeight: '100dvh',
     display: 'grid',
     gridTemplateRows: '1fr auto',
     justifyItems: 'stretch',
@@ -32,7 +32,7 @@ const styles: Record<string, CSSProperties> = {
     backgroundImage: 'url(/images/TGL-WavesDots.svg)',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center top',
-    backgroundSize: 'auto 100vh',
+    backgroundSize: 'cover',
   },
   logoWrap: {
     display: 'flex',

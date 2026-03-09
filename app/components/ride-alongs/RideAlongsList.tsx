@@ -6,8 +6,24 @@ import type { RideAlong } from '@/src/lib/rideAlongs/client'
 type RideAlongsListProps = {
   rideAlongs: RideAlong[]
   onSelect: (rideAlong: RideAlong) => void
-  onRefresh: () => Promise<void>
+  onRefresh: () => Promise<void> | void
   isLoading: boolean
+}
+
+const getRideAlongSubtitle = (rideAlong: RideAlong) =>
+  rideAlong.location || rideAlong.address || 'Location details pending'
+
+const getScheduledLabel = (isoDate: string | null | undefined) => {
+  if (!isoDate) {
+    return 'Scheduled'
+  }
+
+  const parsed = new Date(isoDate)
+  if (Number.isNaN(parsed.getTime())) {
+    return 'Scheduled'
+  }
+
+  return `Scheduled ${parsed.toLocaleDateString()}`
 }
 
 export default function RideAlongsList({
@@ -17,133 +33,156 @@ export default function RideAlongsList({
   isLoading,
 }: RideAlongsListProps) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '10px',
-        }}
-      >
-        <h2
-          style={{
-            margin: 0,
-            fontSize: '18px',
-            color: 'var(--color-text)',
-          }}
-        >
-          Scheduled Ride Alongs
-        </h2>
+    <section style={sectionStyle} aria-label="Scheduled ride alongs">
+      <header style={headerStyle}>
+        <div style={headingGroupStyle}>
+          <h2 style={headingStyle}>Ride Alongs</h2>
+          <p style={subheadingStyle}>Pick a ride along to open technician mode.</p>
+        </div>
         <button
           type="button"
           onClick={() => {
             void onRefresh()
           }}
           style={refreshButtonStyle}
+          aria-label="Refresh ride along list"
         >
-          Refresh
+          <i className="fa-solid fa-rotate-right" aria-hidden="true" />
         </button>
-      </div>
+      </header>
 
       {isLoading ? (
-        <div style={emptyStateStyle}>Loading scheduled ride alongs...</div>
+        <div style={emptyStateStyle}>Loading ride alongs...</div>
       ) : null}
 
       {!isLoading && rideAlongs.length === 0 ? (
         <div style={emptyStateStyle}>
-          No scheduled ride alongs are assigned to you right now.
+          No scheduled ride alongs are available right now.
         </div>
       ) : null}
 
-      {!isLoading
-        ? rideAlongs.map((rideAlong) => (
-          <button
-            key={rideAlong.id}
-            type="button"
-            onClick={() => onSelect(rideAlong)}
-            style={cardStyle}
-          >
-            <div style={cardHeaderStyle}>
-              <div style={nameStyle}>{rideAlong.name}</div>
-              <span style={statusChipStyle}>SCHEDULED</span>
-            </div>
-            <div style={metaTextStyle}>
-              {rideAlong.address || 'No address provided'}
-            </div>
-            <div style={metaTextStyle}>
-              Tap to open ride along details
-            </div>
-          </button>
-        ))
-        : null}
-    </div>
+      {!isLoading && rideAlongs.length > 0 ? (
+        <div style={listStyle}>
+          {rideAlongs.map((rideAlong) => (
+            <button
+              key={rideAlong.id}
+              type="button"
+              onClick={() => onSelect(rideAlong)}
+              style={cardButtonStyle}
+            >
+              <div style={cardTopRowStyle}>
+                <div style={cardTitleStyle}>{rideAlong.name}</div>
+                <span style={statusChipStyle}>{getScheduledLabel(rideAlong.startedAt)}</span>
+              </div>
+              <div style={cardSubtitleStyle}>{getRideAlongSubtitle(rideAlong)}</div>
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </section>
   )
+}
+
+const sectionStyle: CSSProperties = {
+  border: '1px solid var(--color-border)',
+  borderRadius: '16px',
+  backgroundColor: '#ffffff',
+  padding: '14px',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '12px',
+}
+
+const headerStyle: CSSProperties = {
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'space-between',
+  gap: '10px',
+}
+
+const headingGroupStyle: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '4px',
+}
+
+const headingStyle: CSSProperties = {
+  margin: 0,
+  fontSize: '20px',
+  color: 'var(--color-text)',
+}
+
+const subheadingStyle: CSSProperties = {
+  margin: 0,
+  fontSize: '12px',
+  color: 'var(--color-text-muted)',
 }
 
 const refreshButtonStyle: CSSProperties = {
   border: '1px solid var(--color-border)',
   borderRadius: '999px',
+  minWidth: '34px',
+  height: '34px',
   backgroundColor: '#ffffff',
-  color: 'var(--color-text)',
-  fontSize: '12px',
-  fontWeight: 600,
-  padding: '8px 12px',
+  color: 'var(--color-text-muted)',
   cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
+
+const listStyle: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '8px',
 }
 
 const emptyStateStyle: CSSProperties = {
   border: '1px dashed var(--color-border)',
-  borderRadius: '16px',
-  backgroundColor: '#ffffff',
-  padding: '20px',
-  fontSize: '13px',
+  borderRadius: '12px',
+  backgroundColor: 'rgba(255, 255, 255, 0.88)',
   color: 'var(--color-text-muted)',
-  textAlign: 'center',
+  fontSize: '12px',
+  padding: '12px',
 }
 
-const cardStyle: CSSProperties = {
+const cardButtonStyle: CSSProperties = {
   border: '1px solid var(--color-border)',
-  borderRadius: '16px',
+  borderRadius: '14px',
   backgroundColor: '#ffffff',
   textAlign: 'left',
-  padding: '14px',
+  padding: '12px',
   cursor: 'pointer',
   display: 'flex',
   flexDirection: 'column',
-  gap: '8px',
-  boxShadow: '0 10px 20px rgba(36, 41, 101, 0.08)',
+  gap: '7px',
 }
 
-const cardHeaderStyle: CSSProperties = {
+const cardTopRowStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   gap: '8px',
 }
 
-const nameStyle: CSSProperties = {
-  fontSize: '15px',
+const cardTitleStyle: CSSProperties = {
+  fontSize: '14px',
   fontWeight: 700,
   color: 'var(--color-text)',
 }
 
 const statusChipStyle: CSSProperties = {
+  border: '1px solid rgba(36, 41, 101, 0.14)',
   borderRadius: '999px',
-  padding: '4px 10px',
-  fontSize: '10px',
-  fontWeight: 700,
-  color: '#ffffff',
-  backgroundColor: 'var(--color-support-info)',
+  padding: '4px 8px',
+  fontSize: '11px',
+  fontWeight: 600,
+  color: 'var(--color-brand-navy)',
+  backgroundColor: 'rgba(130, 190, 232, 0.14)',
+  whiteSpace: 'nowrap',
 }
 
-const metaTextStyle: CSSProperties = {
+const cardSubtitleStyle: CSSProperties = {
   fontSize: '12px',
   color: 'var(--color-text-muted)',
 }

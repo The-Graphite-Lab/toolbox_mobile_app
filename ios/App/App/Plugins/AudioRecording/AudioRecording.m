@@ -10,6 +10,7 @@ CAP_PLUGIN(AudioRecordingPlugin, "AudioRecording",
            CAP_PLUGIN_METHOD(resume, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getStatus, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getLevels, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getSpectrumLevels, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(startRideAlongSession, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(stopRideAlongSession, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(getRideAlongSessionState, CAPPluginReturnPromise);

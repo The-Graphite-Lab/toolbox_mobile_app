@@ -1,11 +1,11 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AudioRecording } from '@/plugins/AudioRecording'
 import RideAlongsList from './RideAlongsList'
-import RideAlongDetail from './RideAlongDetail'
-import RideAlongLiveSessionPanel from './RideAlongLiveSessionPanel'
-import RideAlongTurnsFeed from './RideAlongTurnsFeed'
+import RideAlongActiveHeader from './RideAlongActiveHeader'
+import RideAlongActiveControls from './RideAlongActiveControls'
 import {
   SPEECH_START_LEVEL_THRESHOLD,
   WAVEFORM_NOISE_FLOOR_LEVEL,
@@ -37,6 +37,10 @@ import {
 type RideAlongsTabProps = {
   clientId: string | null
   userId: string | null
+  /** When this value changes (and > 0), navigate back to the list (clear selected ride along). */
+  homeTrigger?: number
+  /** Top safe-area inset applied inside the scroll content. */
+  topContentInset?: string
 }
 
 type ViewMode = 'list' | 'rideAlong'
@@ -75,6 +79,19 @@ type VoiceDiagnostics = {
   sampleWindowSeconds: number
 }
 
+type TranscriptTurn = {
+  id: string
+  turnOrder: number
+  text: string
+  createdAt: string | null
+}
+
+type TranscriptSession = {
+  id: string
+  sessionStartTime: string | null | undefined
+  turns: TranscriptTurn[]
+}
+
 const defaultLiveSessionState: LiveSessionState = {
   isActive: false,
   isStreaming: false,
@@ -111,6 +128,16 @@ const average = (values: number[]) =>
   values.length > 0
     ? values.reduce((total, value) => total + value, 0) / values.length
     : 0
+
+const parseIsoTimestampMs = (value: string | null | undefined) => {
+  if (!value) {
+    return null
+  }
+
+  const parsed = new Date(value)
+  const timestamp = parsed.getTime()
+  return Number.isNaN(timestamp) ? null : timestamp
+}
 
 const evaluateSpeechIndicators = ({
   level,
@@ -240,6 +267,32 @@ const getErrorMessage = (error: unknown, fallback: string) => {
   return fallback
 }
 
+const normalizeTranscriptText = (value: unknown) =>
+  typeof value === 'string' ? value.replace(/\s+/g, ' ').trim() : ''
+
+const extractLiveTranscriptText = (
+  event: Record<string, unknown>,
+  turn: Record<string, unknown> | undefined
+) => {
+  const candidates = [
+    turn?.transcript,
+    turn?.utterance,
+    turn?.text,
+    event.transcript,
+    event.utterance,
+    event.text,
+  ]
+
+  for (const candidate of candidates) {
+    const normalized = normalizeTranscriptText(candidate)
+    if (normalized.length > 0) {
+      return normalized
+    }
+  }
+
+  return null
+}
+
 const getVoiceLevelBand = (
   level: number,
   isMonitoringEnabled: boolean
@@ -275,16 +328,19 @@ const getInitialVoiceDiagnostics = (): VoiceDiagnostics => ({
   sampleWindowSeconds: VOICE_DIAGNOSTIC_WINDOW_SECONDS,
 })
 
-export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) {
+export default function RideAlongsTab({
+  clientId,
+  userId,
+  homeTrigger = 0,
+  topContentInset = '14px',
+}: RideAlongsTabProps) {
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [scheduledRideAlongs, setScheduledRideAlongs] = useState<RideAlong[]>([])
   const [activeRideAlong, setActiveRideAlong] = useState<RideAlong | null>(null)
   const [selectedRideAlong, setSelectedRideAlong] = useState<RideAlong | null>(null)
   const [sessions, setSessions] = useState<RideAlongSession[]>([])
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null)
-  const [turns, setTurns] = useState<RideAlongSessionTurn[]>([])
+  const [isDetailsFlyoutOpen, setIsDetailsFlyoutOpen] = useState(false)
   const [isLoadingList, setIsLoadingList] = useState(false)
-  const [isLoadingTurns, setIsLoadingTurns] = useState(false)
   const [isBusy, setIsBusy] = useState(false)
   const [isStoppingSession, setIsStoppingSession] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -294,7 +350,12 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
   const [audioLevel, setAudioLevel] = useState<number | null>(null)
   const [audioSpectrum, setAudioSpectrum] = useState<number[] | null>(null)
   const [silenceSeconds, setSilenceSeconds] = useState(0)
-  const [voiceDiagnostics, setVoiceDiagnostics] = useState<VoiceDiagnostics>(
+  const [sessionTurnsById, setSessionTurnsById] = useState<
+    Record<string, RideAlongSessionTurn[]>
+  >({})
+  const [liveTranscriptPreview, setLiveTranscriptPreview] = useState<string | null>(null)
+  const [isDomReady, setIsDomReady] = useState(false)
+  const [, setVoiceDiagnostics] = useState<VoiceDiagnostics>(
     () => getInitialVoiceDiagnostics()
   )
 
@@ -320,14 +381,122 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
   const shouldMonitorSpeech = selectedRideAlong?.status === 'LIVE'
   const shouldRenderAudioVisualizer =
     viewMode === 'rideAlong' && Boolean(selectedRideAlong)
+  const isSpeechSessionActive =
+    liveSessionState.isActive ||
+    liveSessionState.isRecording ||
+    liveSessionState.isStreaming
 
-  const latestSession = useMemo(() => sessions[0] || null, [sessions])
+  const transcriptSessions = useMemo<TranscriptSession[]>(
+    () => {
+      const mappedSessions = sessions.map((session) => {
+        const transcriptTurns = (sessionTurnsById[session.id] || [])
+          .map((turn) => {
+            const text = normalizeTranscriptText(turn.transcript || turn.utterance)
+            return {
+              id: turn.id,
+              turnOrder: turn.turnOrder,
+              text,
+              createdAt: turn.createdAt || turn.updatedAt || null,
+            }
+          })
+          .filter((turn) => turn.text.length > 0)
+          .sort((a, b) => a.turnOrder - b.turnOrder)
+
+        return {
+          id: session.id,
+          sessionStartTime: session.sessionStartTime,
+          turns: transcriptTurns,
+        }
+      })
+
+      const getSessionSortTime = (sessionStartTime: string | null | undefined) => {
+        if (!sessionStartTime) {
+          return 0
+        }
+        const parsed = new Date(sessionStartTime)
+        if (Number.isNaN(parsed.getTime())) {
+          return 0
+        }
+        return parsed.getTime()
+      }
+
+      return mappedSessions.sort((left, right) => {
+        const leftTime = getSessionSortTime(left.sessionStartTime)
+        const rightTime = getSessionSortTime(right.sessionStartTime)
+        if (leftTime === rightTime) {
+          return left.id.localeCompare(right.id)
+        }
+        return leftTime - rightTime
+      })
+    },
+    [sessions, sessionTurnsById]
+  )
+
+  const totalRecordedDurationSeconds = useMemo(() => {
+    const currentLiveSessionId = liveSessionState.sessionId
+    const currentLiveSessionDuration =
+      typeof liveSessionState.durationSeconds === 'number' &&
+      Number.isFinite(liveSessionState.durationSeconds) &&
+      liveSessionState.durationSeconds > 0
+        ? liveSessionState.durationSeconds
+        : 0
+
+    const sessionDurationTotal = sessions.reduce((total, session) => {
+      const explicitDuration =
+        typeof session.recordingDurationSeconds === 'number' &&
+        Number.isFinite(session.recordingDurationSeconds) &&
+        session.recordingDurationSeconds > 0
+          ? session.recordingDurationSeconds
+          : null
+
+      if (explicitDuration !== null) {
+        return total + explicitDuration
+      }
+
+      if (currentLiveSessionId && session.id === currentLiveSessionId && currentLiveSessionDuration > 0) {
+        return total + currentLiveSessionDuration
+      }
+
+      const startedAtMs = parseIsoTimestampMs(session.sessionStartTime)
+      const endedAtMs = parseIsoTimestampMs(session.sessionEndTime)
+      if (startedAtMs !== null && endedAtMs !== null && endedAtMs >= startedAtMs) {
+        return total + Math.round((endedAtMs - startedAtMs) / 1000)
+      }
+
+      return total
+    }, 0)
+
+    const includesCurrentLiveSession =
+      Boolean(currentLiveSessionId) &&
+      sessions.some((session) => session.id === currentLiveSessionId)
+    const totalSeconds =
+      !includesCurrentLiveSession && currentLiveSessionDuration > 0
+        ? sessionDurationTotal + currentLiveSessionDuration
+        : sessionDurationTotal
+
+    return totalSeconds > 0 ? Math.round(totalSeconds) : null
+  }, [liveSessionState.durationSeconds, liveSessionState.sessionId, sessions])
+
+  const resetLiveTranscriptPreview = useCallback(() => {
+    setLiveTranscriptPreview(null)
+  }, [])
+
+  const setLatestTranscriptPreview = useCallback((text: string) => {
+    const normalized = normalizeTranscriptText(text)
+    if (!normalized) {
+      return
+    }
+    setLiveTranscriptPreview(normalized)
+  }, [])
 
   const loadRideAlongs = useCallback(async () => {
     if (!userId) {
       setScheduledRideAlongs([])
       setActiveRideAlong(null)
       setSelectedRideAlong(null)
+      setSessions([])
+      setSessionTurnsById({})
+      resetLiveTranscriptPreview()
       setViewMode('list')
       sessionVersionByIdRef.current = {}
       return
@@ -367,7 +536,32 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     } finally {
       setIsLoadingList(false)
     }
-  }, [selectedRideAlongId, userId])
+  }, [resetLiveTranscriptPreview, selectedRideAlongId, userId])
+
+  useEffect(() => {
+    setIsDomReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (homeTrigger > 0) {
+      setSelectedRideAlong(null)
+      setIsDetailsFlyoutOpen(false)
+      setSessions([])
+      setSessionTurnsById({})
+      resetLiveTranscriptPreview()
+      setViewMode('list')
+    }
+  }, [homeTrigger, resetLiveTranscriptPreview])
+
+  useEffect(() => {
+    if (isSpeechSessionActive) {
+      return
+    }
+    if (!liveTranscriptPreview) {
+      return
+    }
+    resetLiveTranscriptPreview()
+  }, [isSpeechSessionActive, liveTranscriptPreview, resetLiveTranscriptPreview])
 
   const loadSessions = useCallback(async (rideAlongId: string) => {
     const data = await listRideAlongSessionsByRideAlong(rideAlongId)
@@ -379,22 +573,23 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     })
     sessionVersionByIdRef.current = nextVersionMap
     setSessions(data)
-    setSelectedSessionId((current) => {
-      if (current && data.some((session) => session.id === current)) {
-        return current
-      }
-      return data[0]?.id || null
-    })
-  }, [])
 
-  const loadTurns = useCallback(async (sessionId: string) => {
-    setIsLoadingTurns(true)
-    try {
-      const data = await listRideAlongTurnsBySession(sessionId)
-      setTurns(data)
-    } finally {
-      setIsLoadingTurns(false)
-    }
+    const turnEntries = await Promise.all(
+      data.map(async (session) => {
+        try {
+          const turns = await listRideAlongTurnsBySession(session.id)
+          return [session.id, turns] as const
+        } catch (error) {
+          console.warn(
+            '[RideAlongs] Failed to load transcript turns for session:',
+            session.id,
+            error
+          )
+          return [session.id, [] as RideAlongSessionTurn[]] as const
+        }
+      })
+    )
+    setSessionTurnsById(Object.fromEntries(turnEntries))
   }, [])
 
   const syncLiveSessionState = useCallback(async () => {
@@ -409,9 +604,6 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
         sessionId,
         durationSeconds: state.duration ?? null,
       })
-      if (sessionId) {
-        setSelectedSessionId((current) => current || sessionId)
-      }
       return state
     } catch (error) {
       setLiveSessionState(defaultLiveSessionState)
@@ -460,9 +652,18 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
             spectrum.push(0)
           }
 
+          const level = Number(spectrumResult.level || 0)
+          const spectrumPeak = spectrum.length > 0 ? Math.max(...spectrum) : 0
+          const spectrumAverage = average(spectrum)
+          const nonTrivialBandCount = spectrum.filter((band) => band >= 0.0025).length
+          const hasUsableSpectrum =
+            nonTrivialBandCount >= 4 ||
+            spectrumPeak >= 0.007 ||
+            (level <= SPEECH_START_LEVEL_THRESHOLD && spectrumAverage > 0.0008)
+
           return {
-            level: Number(spectrumResult.level || 0),
-            spectrum,
+            level,
+            spectrum: hasUsableSpectrum ? spectrum : null,
           }
         }
       } catch (error) {
@@ -616,7 +817,6 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
 
           handledSessionStartRef.current.add(sessionId)
           await loadSessions(selectedRideAlong.id)
-          setSelectedSessionId(sessionId)
         } catch (error) {
           setActionError(getErrorMessage(error, 'Unable to save ride along session start.'))
         } finally {
@@ -629,10 +829,19 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
           return
         }
 
+        const eventRecord =
+          event && typeof event === 'object'
+            ? (event as Record<string, unknown>)
+            : {}
         const sessionId = event?.sessionId || ''
         const turn = event?.turn as Record<string, unknown> | undefined
         if (!sessionId || !turn) {
           return
+        }
+
+        const transcriptText = extractLiveTranscriptText(eventRecord, turn)
+        if (transcriptText) {
+          setLatestTranscriptPreview(transcriptText)
         }
 
         const endOfTurn = Boolean(turn.end_of_turn ?? turn.endOfTurn ?? false)
@@ -641,6 +850,67 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
         )
         if (!endOfTurn || !turnIsFormatted) {
           return
+        }
+
+        if (transcriptText) {
+          const turnOrderRaw = turn.turn_order ?? turn.turnOrder ?? event.turnId ?? null
+          const parsedTurnOrder = Number(turnOrderRaw)
+          if (Number.isFinite(parsedTurnOrder)) {
+            const rideAlongId = event.rideAlongId || selectedRideAlong.id
+            const resolvedClientId = event.clientId || clientId
+            const resolvedUserId = event.userId || userId
+            const nowIso = new Date().toISOString()
+            const createdAtRaw = turn.createdAt ?? turn.created_at ?? eventRecord.createdAt
+            const createdAt =
+              typeof createdAtRaw === 'string' && createdAtRaw.trim().length > 0
+                ? createdAtRaw
+                : nowIso
+            const turnIdRaw = turn.id ?? turn.turn_id
+            const resolvedTurnId =
+              typeof turnIdRaw === 'string' && turnIdRaw.trim().length > 0
+                ? turnIdRaw
+                : `${sessionId}:${parsedTurnOrder}`
+
+            setSessionTurnsById((current) => {
+              const currentTurns = current[sessionId] || []
+              const nextTurn: RideAlongSessionTurn = {
+                id: resolvedTurnId,
+                RideAlongSessionID: sessionId,
+                RideAlongID: rideAlongId,
+                ClientID: resolvedClientId,
+                UserID: resolvedUserId,
+                turnOrder: parsedTurnOrder,
+                turnIsFormatted: true,
+                endOfTurn: true,
+                transcript: transcriptText,
+                utterance:
+                  typeof turn.utterance === 'string' ? turn.utterance : transcriptText,
+                createdAt,
+                updatedAt: nowIso,
+              }
+
+              const existingIndex = currentTurns.findIndex(
+                (existingTurn) =>
+                  existingTurn.id === resolvedTurnId ||
+                  existingTurn.turnOrder === parsedTurnOrder
+              )
+              const nextTurns =
+                existingIndex >= 0
+                  ? currentTurns.map((existingTurn, index) =>
+                      index === existingIndex
+                        ? { ...existingTurn, ...nextTurn }
+                        : existingTurn
+                    )
+                  : [...currentTurns, nextTurn].sort(
+                      (left, right) => left.turnOrder - right.turnOrder
+                    )
+
+              return {
+                ...current,
+                [sessionId]: nextTurns,
+              }
+            })
+          }
         }
 
         const turnOrder = turn.turn_order ?? turn.turnOrder ?? event.turnId ?? 'na'
@@ -658,8 +928,6 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
             userId: event.userId || userId,
             turns: [turn],
           })
-
-          setSelectedSessionId((current) => current || sessionId)
         } catch (error) {
           handledTurnRef.current.delete(identity)
           setActionError(getErrorMessage(error, 'Unable to save ride along turn.'))
@@ -691,7 +959,7 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
         void errorHandle.remove()
       }
     }
-  }, [clientId, loadSessions, selectedRideAlong, userId])
+  }, [clientId, loadSessions, selectedRideAlong, setLatestTranscriptPreview, userId])
 
   const startSpeechSession = useCallback(async () => {
     if (!selectedRideAlong || !clientId || !userId) {
@@ -874,11 +1142,6 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
 
         await wait(900)
         await refreshCurrentRideAlongData()
-        if (sessionId) {
-          await loadTurns(sessionId)
-        } else if (selectedSessionId) {
-          await loadTurns(selectedSessionId)
-        }
         await syncLiveSessionState()
       } catch (error) {
         setActionError(
@@ -894,11 +1157,9 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     },
     [
       liveSessionState.sessionId,
-      loadTurns,
       refreshCurrentRideAlongData,
       sessions,
       selectedRideAlong,
-      selectedSessionId,
       syncLiveSessionState,
     ]
   )
@@ -909,6 +1170,8 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     }
 
     setActionError(null)
+    setSessionTurnsById({})
+    resetLiveTranscriptPreview()
     setIsBusy(true)
     try {
       await markRideAlongAsLive(selectedRideAlong.id)
@@ -921,7 +1184,7 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     } finally {
       setIsBusy(false)
     }
-  }, [loadRideAlongs, loadSessions, selectedRideAlong])
+  }, [loadRideAlongs, loadSessions, resetLiveTranscriptPreview, selectedRideAlong])
 
   const handlePauseRideAlong = useCallback(async () => {
     if (!selectedRideAlong || selectedRideAlong.status !== 'LIVE') {
@@ -1001,6 +1264,7 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     }
 
     setActionError(null)
+    resetLiveTranscriptPreview()
     setIsBusy(true)
     try {
       if (
@@ -1014,9 +1278,9 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
       await loadRideAlongs()
       setSelectedRideAlong(null)
       setSessions([])
+      setSessionTurnsById({})
       sessionVersionByIdRef.current = {}
-      setSelectedSessionId(null)
-      setTurns([])
+      setIsDetailsFlyoutOpen(false)
       setViewMode('list')
     } catch (error) {
       setActionError(error instanceof Error ? error.message : 'Unable to complete ride along.')
@@ -1028,9 +1292,23 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     liveSessionState.isRecording,
     liveSessionState.isStreaming,
     loadRideAlongs,
+    resetLiveTranscriptPreview,
     selectedRideAlong,
     stopCurrentSpeechSession,
   ])
+
+  const handleRequestCompleteRideAlong = useCallback(() => {
+    if (!selectedRideAlong || selectedRideAlong.status === 'ENDED' || isBusy) {
+      return
+    }
+
+    const shouldComplete = window.confirm(
+      'Complete this ride along? This will end active monitoring and return to the ride-along list.'
+    )
+    if (shouldComplete) {
+      void handleCompleteRideAlong()
+    }
+  }, [handleCompleteRideAlong, isBusy, selectedRideAlong])
 
   useEffect(() => {
     void loadRideAlongs()
@@ -1039,20 +1317,13 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
   useEffect(() => {
     if (viewMode !== 'rideAlong' || !selectedRideAlongId) {
       setSessions([])
-      setSelectedSessionId(null)
-      setTurns([])
+      setSessionTurnsById({})
+      setIsDetailsFlyoutOpen(false)
+      resetLiveTranscriptPreview()
       return
     }
     void loadSessions(selectedRideAlongId)
-  }, [loadSessions, selectedRideAlongId, viewMode])
-
-  useEffect(() => {
-    if (!selectedSessionId) {
-      setTurns([])
-      return
-    }
-    void loadTurns(selectedSessionId)
-  }, [loadTurns, selectedSessionId])
+  }, [loadSessions, resetLiveTranscriptPreview, selectedRideAlongId, viewMode])
 
   useEffect(() => {
     let cancelled = false
@@ -1307,6 +1578,7 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
           height: '100%',
           overflowY: 'auto',
           padding: '14px',
+          paddingTop: topContentInset,
           display: 'flex',
           flexDirection: 'column',
           gap: '12px',
@@ -1318,15 +1590,16 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
             type="button"
             onClick={() => {
               setSelectedRideAlong(activeRideAlong)
+              setIsDetailsFlyoutOpen(false)
               setViewMode('rideAlong')
             }}
             style={{
-              border: '1px solid rgba(33, 150, 83, 0.28)',
+              border: '1px solid rgba(49, 154, 73, 0.28)',
               borderRadius: '16px',
-              backgroundColor: 'rgba(33, 150, 83, 0.08)',
+              backgroundColor: 'rgba(49, 154, 73, 0.12)',
               color: 'var(--color-text)',
               textAlign: 'left',
-              padding: '12px 14px',
+              padding: '13px 14px',
               cursor: 'pointer',
               fontSize: '13px',
               fontWeight: 600,
@@ -1339,6 +1612,7 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
           rideAlongs={scheduledRideAlongs}
           onSelect={(rideAlong) => {
             setSelectedRideAlong(rideAlong)
+            setIsDetailsFlyoutOpen(false)
             setViewMode('rideAlong')
           }}
           onRefresh={loadRideAlongs}
@@ -1366,108 +1640,73 @@ export default function RideAlongsTab({ clientId, userId }: RideAlongsTabProps) 
     )
   }
 
-  return (
+  const activeOverlay = (
     <div
       style={{
-        width: '100%',
-        height: '100%',
-        overflowY: 'auto',
-        padding: '14px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px',
-        backgroundColor: 'transparent',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100dvh',
+        zIndex: 6000,
+        overflow: 'hidden',
+        backgroundColor: '#ffffff',
+        paddingTop: 'env(safe-area-inset-top, 0px)',
+        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 10px)',
       }}
     >
-      <RideAlongDetail
-        rideAlong={selectedRideAlong}
-        isMonitoringEnabled={shouldMonitorSpeech}
-        isSessionActive={liveSessionState.isActive}
-        onBack={() => {
-          if (activeRideAlong && activeRideAlong.id === selectedRideAlong.id) {
-            setSelectedRideAlong(activeRideAlong)
-            return
-          }
-          setViewMode('list')
-        }}
-        onStartRideAlong={handleStartRideAlong}
-        onPauseRideAlong={handlePauseRideAlong}
-        onResumeRideAlong={handleResumeRideAlong}
-        onCompleteRideAlong={handleCompleteRideAlong}
-        actionError={actionError}
-        isBusy={isBusy}
-      />
-
-      <RideAlongLiveSessionPanel
-        isMonitoringEnabled={shouldMonitorSpeech}
-        isRideAlongPaused={selectedRideAlong.status === 'PAUSED'}
-        isVisualizerEnabled={shouldRenderAudioVisualizer}
-        isSessionActive={liveSessionState.isActive}
-        sessionId={liveSessionState.sessionId}
-        durationSeconds={liveSessionState.durationSeconds}
-        currentLevel={audioLevel}
-        spectrumLevels={audioSpectrum}
-        voiceDiagnostics={voiceDiagnostics}
-        speechStartThreshold={SPEECH_START_LEVEL_THRESHOLD}
-        waveformNoiseFloor={WAVEFORM_NOISE_FLOOR_LEVEL}
-        waveformPeakTarget={WAVEFORM_SPEECH_PEAK_LEVEL}
-        silenceSeconds={silenceSeconds}
-        onStopCurrentSession={() => stopCurrentSpeechSession('MANUAL_STOP')}
-        isStoppingSession={isStoppingSession}
-        error={actionError}
-      />
-
       <div
         style={{
-          border: '1px solid var(--color-border)',
-          borderRadius: '16px',
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden',
           backgroundColor: '#ffffff',
-          padding: '14px',
+          padding: '8px 12px 0',
           display: 'flex',
           flexDirection: 'column',
-          gap: '8px',
+          gap: '10px',
         }}
       >
-        <div style={{ fontSize: '13px', fontWeight: 600 }}>Session History</div>
-        {sessions.length === 0 ? (
-          <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-            No sessions yet for this ride along.
-          </div>
-        ) : null}
-        {sessions.map((session) => (
-          <button
-            key={session.id}
-            type="button"
-            onClick={() => setSelectedSessionId(session.id)}
-            style={{
-              border:
-                session.id === selectedSessionId
-                  ? '1px solid var(--color-brand-navy)'
-                  : '1px solid var(--color-border)',
-              borderRadius: '10px',
-              backgroundColor: '#ffffff',
-              textAlign: 'left',
-              padding: '8px 10px',
-              cursor: 'pointer',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '3px',
-            }}
-          >
-            <div style={{ fontSize: '12px', fontWeight: 600 }}>
-              {session.id === latestSession?.id ? 'Latest Session' : 'Session'}: {session.id}
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
-              Start: {session.sessionStartTime}
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
-              End: {session.sessionEndTime || 'In progress'}
-            </div>
-          </button>
-        ))}
-      </div>
+        <RideAlongActiveHeader
+          rideAlong={selectedRideAlong}
+          isSessionActive={liveSessionState.isActive}
+          totalDurationSeconds={totalRecordedDurationSeconds}
+          isDetailsOpen={isDetailsFlyoutOpen}
+          onOpenDetails={() => setIsDetailsFlyoutOpen(true)}
+          onCloseDetails={() => setIsDetailsFlyoutOpen(false)}
+          onBack={() => {
+            setIsDetailsFlyoutOpen(false)
+            setViewMode('list')
+          }}
+        />
 
-      <RideAlongTurnsFeed turns={turns} isLoading={isLoadingTurns} />
+        <RideAlongActiveControls
+          rideAlongStatus={selectedRideAlong.status}
+          isMonitoringEnabled={shouldMonitorSpeech}
+          isRideAlongPaused={selectedRideAlong.status === 'PAUSED'}
+          isSessionActive={liveSessionState.isActive}
+          currentLevel={audioLevel}
+          spectrumLevels={audioSpectrum}
+          liveTranscriptPreviewText={liveTranscriptPreview}
+          transcriptSessions={transcriptSessions}
+          speechStartThreshold={SPEECH_START_LEVEL_THRESHOLD}
+          silenceSeconds={silenceSeconds}
+          onStartRideAlong={handleStartRideAlong}
+          onPauseRideAlong={handlePauseRideAlong}
+          onResumeRideAlong={handleResumeRideAlong}
+          onCompleteRideAlong={handleRequestCompleteRideAlong}
+          isBusy={isBusy}
+          isStoppingSession={isStoppingSession}
+          error={actionError}
+        />
+      </div>
     </div>
   )
+
+  if (!isDomReady) {
+    return null
+  }
+
+  return createPortal(activeOverlay, document.body)
 }

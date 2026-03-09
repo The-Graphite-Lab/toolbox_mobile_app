@@ -14,16 +14,15 @@ type SpeechWaveformProps = {
 }
 
 const BAR_COUNT = 19
-const SIDE_BAR_COUNT = (BAR_COUNT - 1) / 2
 const FRAME_INTERVAL_MS = 56
-const LEVEL_ATTACK_SMOOTHING = 0.64
-const LEVEL_RELEASE_SMOOTHING = 0.22
+const LEVEL_ATTACK_SMOOTHING = 0.68
+const LEVEL_RELEASE_SMOOTHING = 0.26
 const BAND_ATTACK_SMOOTHING = 0.82
-const BAND_RELEASE_SMOOTHING = 0.22
-const SPECTRUM_NOISE_FLOOR = 0.08
-const SPECTRUM_EXPONENT = 1.22
-const SPECTRUM_TRANSIENT_GAIN = 1.18
-const SPECTRUM_CONTRAST_GAIN = 0.92
+const BAND_RELEASE_SMOOTHING = 0.24
+const SPECTRUM_NOISE_FLOOR = 0.04
+const SPECTRUM_EXPONENT = 1.06
+const SPECTRUM_TRANSIENT_GAIN = 1.2
+const SPECTRUM_CONTRAST_GAIN = 0.96
 const SILENCE_DECAY = 0.88
 const REST_BAR_HEIGHT_PX = 16
 const MAX_BAR_HEIGHT_PX = 108
@@ -49,6 +48,13 @@ const sampleSpectrumBand = (spectrum: number[], ratio: number) => {
   )
 }
 
+const createStableBandDistribution = (count: number) => {
+  const goldenRatio = 0.61803398875
+  return Array.from({ length: count }, (_, index) =>
+    (index * goldenRatio + 0.23) % 1
+  )
+}
+
 export default function SpeechWaveform({
   level,
   spectrumLevels,
@@ -59,10 +65,18 @@ export default function SpeechWaveform({
   const targetSpectrumRef = useRef<number[] | null>(null)
   const smoothedLevelRef = useRef(0)
   const previousSpectrumRef = useRef<number[]>(
-    Array(SIDE_BAR_COUNT + 1).fill(0)
+    Array(BAR_COUNT).fill(0)
   )
   const smoothedBandLevelsRef = useRef<number[]>(
-    Array(SIDE_BAR_COUNT + 1).fill(0)
+    Array(BAR_COUNT).fill(0)
+  )
+  const bandDistributionRef = useRef<number[]>(
+    createStableBandDistribution(BAR_COUNT)
+  )
+  const fallbackWeightRef = useRef<number[]>(
+    bandDistributionRef.current.map((ratio, index) =>
+      0.68 + (((ratio * 0.66 + index * 0.07) % 1) * 0.36)
+    )
   )
 
   useEffect(() => {
@@ -72,7 +86,7 @@ export default function SpeechWaveform({
   useEffect(() => {
     if (!spectrumLevels || spectrumLevels.length === 0) {
       targetSpectrumRef.current = null
-      previousSpectrumRef.current = Array(SIDE_BAR_COUNT + 1).fill(0)
+      previousSpectrumRef.current = Array(BAR_COUNT).fill(0)
       return
     }
 
@@ -100,33 +114,32 @@ export default function SpeechWaveform({
           (normalizedTarget - smoothedLevelRef.current) * smoothingFactor
 
         const speechDrive = clampLevel(
-          Math.pow(smoothedLevelRef.current, 0.72) * 1.08,
+          Math.pow(smoothedLevelRef.current, 0.7) * 1.1,
           0,
           1
         )
         const sourceSpectrum = isMonitoringEnabled ? targetSpectrumRef.current : null
-        const centerAndRight = smoothedBandLevelsRef.current.slice()
+        const distributedBars = smoothedBandLevelsRef.current.slice()
         const previousSpectrum = previousSpectrumRef.current.slice()
 
-        for (let index = 0; index <= SIDE_BAR_COUNT; index += 1) {
-          const distanceRatio = index / SIDE_BAR_COUNT
-          const centerWeight =
-            index === 0 ? 1 : Math.pow(1 - distanceRatio, 0.82)
-
+        for (let index = 0; index < BAR_COUNT; index += 1) {
+          const sampleRatio =
+            bandDistributionRef.current[index] ?? index / Math.max(1, BAR_COUNT - 1)
+          const distributionWeight = fallbackWeightRef.current[index] ?? 1
+          const spectrumStep = 0.035
           const sampledSpectrum = sourceSpectrum
-            ? sampleSpectrumBand(sourceSpectrum, distanceRatio)
-            : speechDrive
-          const spectrumStep = 1 / SIDE_BAR_COUNT
+            ? sampleSpectrumBand(sourceSpectrum, sampleRatio)
+            : clampLevel(speechDrive * distributionWeight, 0, 1)
           const leftSpectrum = sourceSpectrum
             ? sampleSpectrumBand(
                 sourceSpectrum,
-                clampLevel(distanceRatio - spectrumStep, 0, 1)
+                clampLevel(sampleRatio - spectrumStep, 0, 1)
               )
             : sampledSpectrum
           const rightSpectrum = sourceSpectrum
             ? sampleSpectrumBand(
                 sourceSpectrum,
-                clampLevel(distanceRatio + spectrumStep, 0, 1)
+                clampLevel(sampleRatio + spectrumStep, 0, 1)
               )
             : sampledSpectrum
 
@@ -149,25 +162,26 @@ export default function SpeechWaveform({
             1
           )
           previousSpectrum[index] = sampledSpectrum
+          const baseLevelGate = Math.pow(smoothedLevelRef.current, 0.6) * 1.15
           const levelGate = clampLevel(
-            Math.pow(smoothedLevelRef.current, 0.62) * 1.18,
+            sourceSpectrum ? baseLevelGate + 0.06 : baseLevelGate,
             0,
             1
           )
 
           const targetBandLevel = sourceSpectrum
             ? clampLevel(
-                (shapedSpectrum * 0.9 +
+                (shapedSpectrum * 0.94 +
                   contrastBoost * SPECTRUM_CONTRAST_GAIN +
                   transientBoost * SPECTRUM_TRANSIENT_GAIN) *
                   levelGate *
-                  (0.86 + centerWeight * 0.14),
+                  (0.82 + distributionWeight * 0.18),
                 0,
                 1
               )
-            : clampLevel(speechDrive * (0.56 + centerWeight * 0.44), 0, 1)
+            : clampLevel(speechDrive * (0.48 + distributionWeight * 0.52), 0, 1)
 
-          const previousBandLevel = centerAndRight[index] ?? 0
+          const previousBandLevel = distributedBars[index] ?? 0
           const bandSmoothing =
             targetBandLevel > previousBandLevel
               ? BAND_ATTACK_SMOOTHING
@@ -181,18 +195,12 @@ export default function SpeechWaveform({
             nextBandLevel *= SILENCE_DECAY
           }
 
-          centerAndRight[index] = clampLevel(nextBandLevel, 0, 1)
+          distributedBars[index] = clampLevel(nextBandLevel, 0, 1)
         }
 
         previousSpectrumRef.current = previousSpectrum
-        smoothedBandLevelsRef.current = centerAndRight
-
-        const mirroredBars = [
-          ...centerAndRight.slice(1).reverse(),
-          centerAndRight[0],
-          ...centerAndRight.slice(1),
-        ]
-        setBars(mirroredBars)
+        smoothedBandLevelsRef.current = distributedBars
+        setBars(distributedBars)
       }
 
       animationFrame = window.requestAnimationFrame(animate)
@@ -242,13 +250,13 @@ const shellStyle: CSSProperties = {
   position: 'relative',
   width: '100%',
   minHeight: '152px',
-  borderRadius: '14px',
-  border: '1px solid var(--color-border)',
-  backgroundColor: 'rgba(252, 181, 0, 0.06)',
+  borderRadius: '0',
+  border: 'none',
+  backgroundColor: 'transparent',
   display: 'flex',
   alignItems: 'flex-end',
   justifyContent: 'center',
-  padding: '14px 12px',
+  padding: '8px 0',
   overflow: 'hidden',
 }
 

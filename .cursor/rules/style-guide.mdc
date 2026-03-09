@@ -20,8 +20,15 @@ description: Front-end visual design standards for consistent UI styling.
 - Use subtle animation that improves legibility, not decoration.
 - Avoid visual clutter in utility panels; favor simple contrast and clear hierarchy.
 
+## Full-Screen Shell And Bottom Navigation
+- Pages with persistent bottom navigation should lock the app shell to viewport height (`100dvh`) and avoid page-level scrolling.
+- Keep scrolling inside the content region so the bottom navigation remains visible at all times.
+- Bottom navigation containers should include safe-area aware bottom padding and should not shrink when content grows.
+- Bottom navigation actions/icons should be evenly distributed using equal-width/flex behavior across all primary actions.
+
 ## Audio Visualizer Styling
-- Session monitor waveform should render mirrored pill-shaped bars with 19 total bars.
+- Session monitor waveform should render 19 pill-shaped bars in a non-mirrored, naturally distributed layout.
+- Keep bar ordering stable across frames; do not mirror left/right copies of the same band pattern.
 - Use vertical bars only; do not render horizontal guide lines.
 - Waveform bars should use `var(--color-brand-marigold)` with restrained opacity changes for level feedback.
 - Bars should be bottom-aligned and grow upward only from a shared baseline.

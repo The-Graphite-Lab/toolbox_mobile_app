@@ -8,6 +8,11 @@ import AVFoundation
  */
 @objc(AudioRecordingPlugin)
 public class AudioRecordingPlugin: CAPPlugin {
+    private static let defaultSpectrumBandCount = 29
+    private static let spectrumDefaultMinFrequencyHz: Double = 90
+    private static let spectrumDefaultMaxFrequencyHz: Double = 4800
+    private static let spectrumAnalysisSampleCount = 512
+
     private var audioRecorder: AVAudioRecorder?
     private var audioSession: AVAudioSession?
     private var startTime: Date?
@@ -26,6 +31,30 @@ public class AudioRecordingPlugin: CAPPlugin {
     private var rideAlongPendingTurns: [[String: Any]] = []
     private var levelMonitorEngine: AVAudioEngine?
     private var levelMonitorCurrentLevel: Double = 0
+    private let spectrumProcessingQueue = DispatchQueue(
+        label: "AudioRecordingPlugin.spectrum.processing",
+        qos: .userInitiated
+    )
+    private let spectrumStateQueue = DispatchQueue(label: "AudioRecordingPlugin.spectrum.state")
+    private var spectrumWorkInFlight = false
+    private var latestSpectrumBands: [Double] = Array(
+        repeating: 0,
+        count: AudioRecordingPlugin.defaultSpectrumBandCount
+    )
+    private var latestSpectrumLevel: Double = 0
+    private var spectrumNoiseFloor: [Double] = Array(
+        repeating: 0.012,
+        count: AudioRecordingPlugin.defaultSpectrumBandCount
+    )
+    private var spectrumPeakHold: [Double] = Array(
+        repeating: 0.06,
+        count: AudioRecordingPlugin.defaultSpectrumBandCount
+    )
+    private var previousSpectrumBands: [Double] = Array(
+        repeating: 0,
+        count: AudioRecordingPlugin.defaultSpectrumBandCount
+    )
+    private var spectrumWindow: [Double] = []
     private let rideAlongDateFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -291,6 +320,64 @@ public class AudioRecordingPlugin: CAPPlugin {
         )
         
         call.resolve(["level": normalizedLevel])
+    }
+
+    @objc func getSpectrumLevels(_ call: CAPPluginCall) {
+        let requestedBandCount = max(
+            3,
+            min(64, call.getInt("bands") ?? Self.defaultSpectrumBandCount)
+        )
+        let requestedMinHz = Double(
+            call.getInt("minFrequencyHz") ?? Int(Self.spectrumDefaultMinFrequencyHz)
+        )
+        let requestedMaxHz = Double(
+            call.getInt("maxFrequencyHz") ?? Int(Self.spectrumDefaultMaxFrequencyHz)
+        )
+
+        let session = AVAudioSession.sharedInstance()
+        switch session.recordPermission {
+        case .granted:
+            do {
+                try ensureLevelMonitor()
+            } catch {
+                print("Spectrum monitor setup failed: \(error.localizedDescription)")
+            }
+            resolveSpectrumLevels(
+                call,
+                requestedBandCount: requestedBandCount,
+                requestedMinHz: requestedMinHz,
+                requestedMaxHz: requestedMaxHz
+            )
+        case .denied:
+            call.resolve([
+                "level": 0.0,
+                "bands": [Double](repeating: 0, count: requestedBandCount),
+            ])
+        case .undetermined:
+            session.requestRecordPermission { [weak self] granted in
+                guard let self = self else { return }
+                if granted {
+                    do {
+                        try self.ensureLevelMonitor()
+                    } catch {
+                        print("Spectrum monitor setup failed after permission: \(error.localizedDescription)")
+                    }
+                }
+                DispatchQueue.main.async {
+                    self.resolveSpectrumLevels(
+                        call,
+                        requestedBandCount: requestedBandCount,
+                        requestedMinHz: requestedMinHz,
+                        requestedMaxHz: requestedMaxHz
+                    )
+                }
+            }
+        @unknown default:
+            call.resolve([
+                "level": 0.0,
+                "bands": [Double](repeating: 0, count: requestedBandCount),
+            ])
+        }
     }
 
     @objc func startRideAlongSession(_ call: CAPPluginCall) {
@@ -689,6 +776,18 @@ public class AudioRecordingPlugin: CAPPlugin {
         return Data(bytes: mData, count: Int(audioBuffer.mDataByteSize))
     }
 
+    /// Returns true if the error indicates an expected close (we or server closed the socket); do not surface as user error.
+    private func isExpectedWebSocketCloseError(_ error: Error) -> Bool {
+        let msg = error.localizedDescription.lowercased()
+        if msg.contains("not connected") || msg.contains("socket is not connected") { return true }
+        if msg.contains("cancelled") || msg.contains("canceled") { return true }
+        if msg.contains("connection reset") || msg.contains("broken pipe") { return true }
+        if msg.contains("connection closed") || msg.contains("stream ended") { return true }
+        let ns = error as NSError
+        if ns.domain == "NSURLErrorDomain" && ns.code == -999 { return true } // URLError.cancelled
+        return false
+    }
+
     private func receiveRideAlongWebSocketMessages() {
         guard let task = rideAlongWebSocketTask else { return }
 
@@ -698,7 +797,9 @@ public class AudioRecordingPlugin: CAPPlugin {
             switch result {
             case .failure(let error):
                 print("RideAlong websocket receive error: \(error.localizedDescription)")
-                self.emitRideAlongSessionError(message: "WebSocket receive error: \(error.localizedDescription)")
+                if !self.isExpectedWebSocketCloseError(error) {
+                    self.emitRideAlongSessionError(message: "WebSocket receive error: \(error.localizedDescription)")
+                }
             case .success(let message):
                 var jsonPayload: [String: Any]?
                 switch message {
@@ -878,18 +979,113 @@ public class AudioRecordingPlugin: CAPPlugin {
         }
     }
 
+    private func resolveSpectrumLevels(
+        _ call: CAPPluginCall,
+        requestedBandCount: Int,
+        requestedMinHz: Double,
+        requestedMaxHz: Double
+    ) {
+        var recorderLevel: Double = 0
+        if let recorder = audioRecorder, recorder.isRecording && !isPaused {
+            recorder.updateMeters()
+            let averagePower = recorder.averagePower(forChannel: 0)
+            recorderLevel = max(0.0, min(1.0, Double((averagePower + 60.0) / 60.0)))
+        }
+
+        let spectrumSnapshot = spectrumStateQueue.sync { () -> (bands: [Double], level: Double) in
+            return (latestSpectrumBands, latestSpectrumLevel)
+        }
+
+        let spectrumAverage =
+            spectrumSnapshot.bands.isEmpty
+                ? 0
+                : spectrumSnapshot.bands.reduce(0, +) / Double(spectrumSnapshot.bands.count)
+        let effectiveLevel = max(
+            levelMonitorCurrentLevel,
+            recorderLevel,
+            spectrumSnapshot.level,
+            spectrumAverage * 0.55
+        )
+        let mappedBands = mapSpectrumBands(
+            baseBands: spectrumSnapshot.bands,
+            requestedBandCount: requestedBandCount,
+            requestedMinHz: requestedMinHz,
+            requestedMaxHz: requestedMaxHz
+        )
+
+        call.resolve([
+            "level": effectiveLevel,
+            "bands": mappedBands,
+        ])
+    }
+
+    private func mapSpectrumBands(
+        baseBands: [Double],
+        requestedBandCount: Int,
+        requestedMinHz: Double,
+        requestedMaxHz: Double
+    ) -> [Double] {
+        guard !baseBands.isEmpty else {
+            return [Double](repeating: 0, count: requestedBandCount)
+        }
+
+        let baseMin = Self.spectrumDefaultMinFrequencyHz
+        let baseMax = Self.spectrumDefaultMaxFrequencyHz
+        let boundedMin = max(40, min(requestedMinHz, requestedMaxHz - 20))
+        let boundedMax = max(boundedMin + 20, requestedMaxHz)
+        let baseMinLog = log(baseMin)
+        let baseMaxLog = log(baseMax)
+        let requestedMinLog = log(boundedMin)
+        let requestedMaxLog = log(boundedMax)
+
+        return (0..<requestedBandCount).map { bandIndex in
+            let ratio = (Double(bandIndex) + 0.5) / Double(requestedBandCount)
+            let centerFrequency = exp(
+                requestedMinLog + (requestedMaxLog - requestedMinLog) * ratio
+            )
+            let baseRatio =
+                (log(centerFrequency) - baseMinLog) /
+                max(0.000001, baseMaxLog - baseMinLog)
+
+            return sampleBandValue(baseBands: baseBands, ratio: baseRatio)
+        }
+    }
+
+    private func sampleBandValue(baseBands: [Double], ratio: Double) -> Double {
+        if baseBands.count <= 1 {
+            return max(0, min(1, baseBands.first ?? 0))
+        }
+
+        let boundedRatio = max(0, min(1, ratio))
+        let scaledIndex = boundedRatio * Double(baseBands.count - 1)
+        let lowerIndex = Int(floor(scaledIndex))
+        let upperIndex = min(baseBands.count - 1, lowerIndex + 1)
+        let interpolation = scaledIndex - Double(lowerIndex)
+
+        let value =
+            baseBands[lowerIndex] * (1 - interpolation) +
+            baseBands[upperIndex] * interpolation
+
+        return max(0, min(1, value))
+    }
+
     private func ensureLevelMonitor() throws {
         if let existingEngine = levelMonitorEngine, existingEngine.isRunning {
             return
         }
 
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(
-            .playAndRecord,
-            mode: .measurement,
-            options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP]
-        )
-        try session.setActive(true)
+        let shouldConfigureSession =
+            rideAlongAudioEngine == nil &&
+            !(audioRecorder?.isRecording ?? false)
+        if shouldConfigureSession {
+            try session.setCategory(
+                .playAndRecord,
+                mode: .measurement,
+                options: [.defaultToSpeaker, .allowBluetoothHFP, .allowBluetoothA2DP]
+            )
+            try session.setActive(true)
+        }
 
         let engine = AVAudioEngine()
         let inputNode = engine.inputNode
@@ -916,6 +1112,23 @@ public class AudioRecordingPlugin: CAPPlugin {
             let rawLevel = max(0.0, min(1.0, Double(rms) * 5.5))
             let smoothed = (self.levelMonitorCurrentLevel * 0.82) + (rawLevel * 0.18)
             self.levelMonitorCurrentLevel = smoothed
+
+            let captureCount = min(frameLength, Self.spectrumAnalysisSampleCount)
+            if captureCount > 0 {
+                var capturedSamples = [Float](
+                    repeating: 0,
+                    count: Self.spectrumAnalysisSampleCount
+                )
+                for index in 0..<captureCount {
+                    capturedSamples[index] = channelData[index]
+                }
+
+                self.enqueueSpectrumAnalysis(
+                    samples: capturedSamples,
+                    sampleRate: buffer.format.sampleRate,
+                    level: smoothed
+                )
+            }
         }
 
         engine.prepare()
@@ -928,6 +1141,189 @@ public class AudioRecordingPlugin: CAPPlugin {
         levelMonitorEngine?.stop()
         levelMonitorEngine = nil
         levelMonitorCurrentLevel = 0
+        resetSpectrumState()
+    }
+
+    private func resetSpectrumState() {
+        spectrumStateQueue.sync {
+            latestSpectrumBands = Array(repeating: 0, count: Self.defaultSpectrumBandCount)
+            latestSpectrumLevel = 0
+            spectrumNoiseFloor = Array(repeating: 0.012, count: Self.defaultSpectrumBandCount)
+            spectrumPeakHold = Array(repeating: 0.06, count: Self.defaultSpectrumBandCount)
+            previousSpectrumBands = Array(repeating: 0, count: Self.defaultSpectrumBandCount)
+            spectrumWorkInFlight = false
+        }
+    }
+
+    private func enqueueSpectrumAnalysis(samples: [Float], sampleRate: Double, level: Double) {
+        var shouldEnqueue = false
+        spectrumStateQueue.sync {
+            if !spectrumWorkInFlight {
+                spectrumWorkInFlight = true
+                shouldEnqueue = true
+            }
+        }
+
+        if !shouldEnqueue {
+            return
+        }
+
+        spectrumProcessingQueue.async { [weak self] in
+            guard let self = self else { return }
+
+            let rawBands = self.analyzeSpectrumBands(samples: samples, sampleRate: sampleRate)
+            self.spectrumStateQueue.sync {
+                let normalizedBands = self.normalizeSpectrumBands(rawBands: rawBands)
+                self.latestSpectrumBands = normalizedBands
+                self.latestSpectrumLevel = level
+                self.spectrumWorkInFlight = false
+            }
+        }
+    }
+
+    private func analyzeSpectrumBands(samples: [Float], sampleRate: Double) -> [Double] {
+        if sampleRate <= 0 {
+            return Array(repeating: 0, count: Self.defaultSpectrumBandCount)
+        }
+
+        if spectrumWindow.count != Self.spectrumAnalysisSampleCount {
+            let denominator = Double(Self.spectrumAnalysisSampleCount - 1)
+            spectrumWindow = (0..<Self.spectrumAnalysisSampleCount).map { index in
+                let ratio = denominator > 0 ? Double(index) / denominator : 0
+                return 0.5 - 0.5 * cos(2 * Double.pi * ratio)
+            }
+        }
+
+        var windowedSamples = Array(repeating: 0.0, count: Self.spectrumAnalysisSampleCount)
+        let sampleCount = min(samples.count, Self.spectrumAnalysisSampleCount)
+        if sampleCount > 0 {
+            for index in 0..<sampleCount {
+                windowedSamples[index] = Double(samples[index]) * spectrumWindow[index]
+            }
+        }
+
+        let nyquist = max(200, sampleRate / 2)
+        let minHz = max(40, min(Self.spectrumDefaultMinFrequencyHz, nyquist - 120))
+        let maxHz = max(minHz + 80, min(Self.spectrumDefaultMaxFrequencyHz, nyquist - 20))
+        let minLog = log(minHz)
+        let maxLog = log(maxHz)
+        let sampleScale = Double(Self.spectrumAnalysisSampleCount * Self.spectrumAnalysisSampleCount)
+
+        var bands = Array(repeating: 0.0, count: Self.defaultSpectrumBandCount)
+        for bandIndex in 0..<Self.defaultSpectrumBandCount {
+            let startRatio = Double(bandIndex) / Double(Self.defaultSpectrumBandCount)
+            let endRatio = Double(bandIndex + 1) / Double(Self.defaultSpectrumBandCount)
+            let startHz = exp(minLog + (maxLog - minLog) * startRatio)
+            let endHz = exp(minLog + (maxLog - minLog) * endRatio)
+            let centerHz = sqrt(startHz * endHz)
+            let lowHz = startHz * 0.6 + centerHz * 0.4
+            let highHz = centerHz * 0.4 + endHz * 0.6
+
+            let lowPower = goertzelPower(
+                samples: windowedSamples,
+                sampleRate: sampleRate,
+                targetFrequencyHz: lowHz
+            )
+            let centerPower = goertzelPower(
+                samples: windowedSamples,
+                sampleRate: sampleRate,
+                targetFrequencyHz: centerHz
+            )
+            let highPower = goertzelPower(
+                samples: windowedSamples,
+                sampleRate: sampleRate,
+                targetFrequencyHz: highHz
+            )
+
+            let blendedPower =
+                lowPower * 0.25 +
+                centerPower * 0.5 +
+                highPower * 0.25
+            let normalizedPower = sampleScale > 0 ? blendedPower / sampleScale : 0
+            var energy = sqrt(max(0, normalizedPower))
+
+            let speechWeight: Double
+            if centerHz < 120 || centerHz > 4200 {
+                speechWeight = 0.55
+            } else if centerHz >= 180 && centerHz <= 3200 {
+                speechWeight = 1.18
+            } else {
+                speechWeight = 0.88
+            }
+
+            energy *= speechWeight
+            let shapedEnergy = pow(max(0, energy * 2.0), 0.84)
+            bands[bandIndex] = max(0, min(1, shapedEnergy))
+        }
+
+        return bands
+    }
+
+    private func goertzelPower(
+        samples: [Double],
+        sampleRate: Double,
+        targetFrequencyHz: Double
+    ) -> Double {
+        if targetFrequencyHz <= 0 || targetFrequencyHz >= sampleRate * 0.5 {
+            return 0
+        }
+
+        let omega = 2 * Double.pi * targetFrequencyHz / sampleRate
+        let cosine = cos(omega)
+        let coefficient = 2 * cosine
+        var q0 = 0.0
+        var q1 = 0.0
+        var q2 = 0.0
+
+        for sample in samples {
+            q0 = sample + coefficient * q1 - q2
+            q2 = q1
+            q1 = q0
+        }
+
+        let power = q1 * q1 + q2 * q2 - coefficient * q1 * q2
+        return max(0, power)
+    }
+
+    private func normalizeSpectrumBands(rawBands: [Double]) -> [Double] {
+        if rawBands.count != previousSpectrumBands.count {
+            previousSpectrumBands = Array(repeating: 0, count: rawBands.count)
+            spectrumNoiseFloor = Array(repeating: 0.012, count: rawBands.count)
+            spectrumPeakHold = Array(repeating: 0.06, count: rawBands.count)
+        }
+
+        var output = Array(repeating: 0.0, count: rawBands.count)
+        for index in 0..<rawBands.count {
+            let raw = max(0, rawBands[index])
+
+            var floor = spectrumNoiseFloor[index]
+            if raw < floor {
+                floor = floor * 0.9 + raw * 0.1
+            } else {
+                floor = floor * 0.999 + raw * 0.001
+            }
+
+            var peak = spectrumPeakHold[index]
+            if raw > peak {
+                peak = peak * 0.76 + raw * 0.24
+            } else {
+                peak = peak * 0.982 + raw * 0.018
+            }
+            peak = max(peak, floor + 0.012)
+
+            let range = max(0.012, peak - floor)
+            let normalized = pow(max(0, min(1, (raw - floor) / range)), 1.08)
+            let previous = previousSpectrumBands[index]
+            let smoothing = normalized > previous ? 0.52 : 0.24
+            let smoothed = previous + (normalized - previous) * smoothing
+
+            spectrumNoiseFloor[index] = floor
+            spectrumPeakHold[index] = peak
+            previousSpectrumBands[index] = smoothed
+            output[index] = max(0, min(1, smoothed))
+        }
+
+        return output
     }
 }
 
