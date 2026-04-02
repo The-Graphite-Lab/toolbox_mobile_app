@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import ThemeRegistry from './ThemeRegistry'
 import AmplifyProvider from './AmplifyProvider'
 import AuthGate from './AuthGate'
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
+import { Inter } from "next/font/google";
+import { cn } from "@/app/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: 'The Graphite Lab',
@@ -25,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" className={cn("font-sans", inter.variable)}>
       <head>
         <link rel="stylesheet" href="https://use.typekit.net/efx2sth.css" />
         <link
@@ -34,11 +33,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ThemeRegistry>
-          <AmplifyProvider>
-            <AuthGate>{children}</AuthGate>
-          </AmplifyProvider>
-        </ThemeRegistry>
+        <AmplifyProvider>
+          <AuthGate>{children}</AuthGate>
+        </AmplifyProvider>
       </body>
     </html>
   )

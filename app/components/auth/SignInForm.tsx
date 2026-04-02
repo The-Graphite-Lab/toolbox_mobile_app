@@ -1,8 +1,10 @@
 'use client'
 
-import { Button, TextField } from '@mui/material'
-import type { CSSProperties, FormEvent } from 'react'
+import type { FormEvent } from 'react'
 import { useState } from 'react'
+import { Button } from '@/app/components/ui/button'
+import { Input } from '@/app/components/ui/input'
+import { Label } from '@/app/components/ui/label'
 
 type SignInFormProps = {
   onSignIn: (username: string, password: string) => Promise<void>
@@ -27,81 +29,49 @@ export default function SignInForm({
 
   const handleUsernameChange = (value: string) => {
     setUsername(value)
-    if (error) {
-      onClearError()
-    }
+    if (error) onClearError()
   }
 
   const handlePasswordChange = (value: string) => {
     setPassword(value)
-    if (error) {
-      onClearError()
-    }
+    if (error) onClearError()
   }
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
-      <TextField
-        label="Username"
-        value={username}
-        onChange={(event) => handleUsernameChange(event.target.value)}
-        autoComplete="username"
-        required
-        fullWidth
-        size="small"
-      />
-      <TextField
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(event) => handlePasswordChange(event.target.value)}
-        autoComplete="current-password"
-        required
-        fullWidth
-        size="small"
-      />
-      {error ? <p style={styles.error}>{error}</p> : null}
-      <div style={styles.buttonRow}>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4 flex-1">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="username">Username</Label>
+        <Input
+          id="username"
+          value={username}
+          onChange={(e) => handleUsernameChange(e.target.value)}
+          autoComplete="username"
+          required
+        />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="password">Password</Label>
+        <Input
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => handlePasswordChange(e.target.value)}
+          autoComplete="current-password"
+          required
+        />
+      </div>
+      {error ? (
+        <p className="text-support-negative text-[13px]">{error}</p>
+      ) : null}
+      <div className="mt-auto flex">
         <Button
           type="submit"
-          variant="contained"
           disabled={isSubmitting}
-          sx={{
-            borderRadius: '10px',
-            textTransform: 'none',
-            px: 4.5,
-            py: 1.75,
-            fontWeight: 600,
-            minHeight: 52,
-            width: '100%',
-            backgroundColor: 'var(--color-brand-marigold)',
-            color: 'var(--color-neutral-graphite)',
-            boxShadow: '0 8px 20px rgba(14, 24, 50, 0.12)',
-            '&:hover': {
-              backgroundColor: 'var(--color-brand-marigold)',
-            },
-          }}
+          className="w-full min-h-[52px] rounded-[10px] font-semibold bg-brand-marigold text-neutral-graphite hover:bg-brand-marigold shadow-[0_8px_20px_rgba(14,24,50,0.12)]"
         >
           {isSubmitting ? 'Logging in...' : 'Login'}
         </Button>
       </div>
     </form>
   )
-}
-
-const styles: Record<string, CSSProperties> = {
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-    flex: 1,
-  },
-  error: {
-    color: 'var(--color-support-negative)',
-    fontSize: '13px',
-  },
-  buttonRow: {
-    marginTop: 'auto',
-    display: 'flex',
-  },
 }

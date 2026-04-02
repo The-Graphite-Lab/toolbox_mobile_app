@@ -1,6 +1,6 @@
 'use client'
 
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 
 type AuthPageShellProps = {
   children: ReactNode
@@ -8,40 +8,15 @@ type AuthPageShellProps = {
 
 export default function AuthPageShell({ children }: AuthPageShellProps) {
   return (
-    <div style={styles.page}>
-      <div style={styles.logoWrap}>
+    <div className="w-full min-h-dvh grid grid-rows-[1fr_auto] justify-items-stretch bg-color-bg bg-[url('/images/TGL-WavesDots.svg')] bg-no-repeat bg-top bg-cover">
+      <div className="flex items-center justify-center py-3">
         <img
           src="/images/TGL-ELI-ThumbsUp.svg"
           alt="Graphite Lab mascot"
-          style={styles.logoImage}
+          className="w-auto max-h-[min(180px,24vh)]"
         />
       </div>
       {children}
     </div>
   )
-}
-
-const styles: Record<string, CSSProperties> = {
-  page: {
-    width: '100%',
-    minHeight: '100dvh',
-    display: 'grid',
-    gridTemplateRows: '1fr auto',
-    justifyItems: 'stretch',
-    backgroundColor: 'var(--color-bg)',
-    backgroundImage: 'url(/images/TGL-WavesDots.svg)',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center top',
-    backgroundSize: 'cover',
-  },
-  logoWrap: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '12px 0',
-  },
-  logoImage: {
-    width: 'auto',
-    maxHeight: 'min(180px, 24vh)',
-  },
 }
