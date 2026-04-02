@@ -1,162 +1,61 @@
 'use client'
 
-import type { CSSProperties } from 'react'
+import { cn } from '@/app/lib/utils'
 
 type LoadingScreenProps = {
   variant?: 'fullscreen' | 'inline'
 }
 
 export default function LoadingScreen({ variant = 'fullscreen' }: LoadingScreenProps) {
-  const screenStyle: CSSProperties = variant === 'inline'
-    ? {
-      ...styles.screen,
-      position: 'absolute',
-      inset: 0,
-      width: '100%',
-      height: '100%',
-      zIndex: 5,
-    }
-    : styles.screen
-
   return (
-    <div style={screenStyle}>
-      <div style={styles.stage}>
-        <div style={styles.card}>
+    <div
+      className={cn(
+        'flex items-center justify-center bg-color-bg bg-[url(\'/images/TGL-WavesDots.svg\')] bg-no-repeat bg-top bg-cover overflow-hidden',
+        variant === 'inline'
+          ? 'absolute inset-0 w-full h-full z-[5]'
+          : 'fixed inset-0 w-full h-dvh z-[1300]'
+      )}
+    >
+      <div className="w-[220px] h-[220px] flex items-center justify-center [perspective:1000px]">
+        <div className="w-[200px] h-[200px] relative [transform-style:preserve-3d] [animation:eliShowcase_3.4s_ease-in-out_infinite]">
           <img
             src="/images/TGL-ELI-ThumbsUp.svg"
             alt="Graphite Lab mascot"
-            style={styles.image}
+            className="w-full h-full object-contain block relative z-[2] [filter:drop-shadow(0_20px_30px_rgba(0,0,0,0.18))]"
           />
-          <div style={styles.glow} aria-hidden="true" />
-          <div style={styles.highlight} aria-hidden="true" />
-          <div style={styles.glint} aria-hidden="true" />
+          <div
+            aria-hidden="true"
+            className="absolute [inset:10%] rounded-3xl bg-[radial-gradient(circle_at_50%_40%,rgba(36,41,101,0.18),transparent_65%)] [transform:translateZ(-30px)] z-[1]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute [inset:12%_14%] rounded-[28px] bg-[linear-gradient(120deg,transparent_10%,rgba(255,255,255,0.45)_45%,transparent_70%)] mix-blend-screen [animation:eliShimmer_3.4s_ease-in-out_infinite] z-[3] pointer-events-none"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute [inset:12%_16%] rounded-[26px] bg-[linear-gradient(110deg,transparent_0%,rgba(255,255,255,0.55)_32%,rgba(255,255,255,0.16)_48%,transparent_64%)] mix-blend-screen [animation:eliGlintSweep_3.4s_ease-in-out_infinite] z-[4] pointer-events-none blur-[1.4px]"
+          />
         </div>
       </div>
       <style>{`
         @keyframes eliShowcase {
-          0% {
-            transform: rotateX(10deg) rotateY(-18deg) translateY(0);
-          }
-          50% {
-            transform: rotateX(12deg) rotateY(18deg) translateY(-6px);
-          }
-          100% {
-            transform: rotateX(10deg) rotateY(-18deg) translateY(0);
-          }
+          0%   { transform: rotateX(10deg) rotateY(-18deg) translateY(0); }
+          50%  { transform: rotateX(12deg) rotateY(18deg) translateY(-6px); }
+          100% { transform: rotateX(10deg) rotateY(-18deg) translateY(0); }
         }
-
         @keyframes eliShimmer {
-          0% {
-            opacity: 0.06;
-            transform: translateX(-10%) rotate(-12deg);
-          }
-          50% {
-            opacity: 0.12;
-            transform: translateX(10%) rotate(-12deg);
-          }
-          100% {
-            opacity: 0.06;
-            transform: translateX(-10%) rotate(-12deg);
-          }
+          0%   { opacity: 0.06; transform: translateX(-10%) rotate(-12deg); }
+          50%  { opacity: 0.12; transform: translateX(10%) rotate(-12deg); }
+          100% { opacity: 0.06; transform: translateX(-10%) rotate(-12deg); }
         }
-
         @keyframes eliGlintSweep {
-          0% {
-            opacity: 0;
-            transform: translateX(-120%) translateY(4%) rotate(12deg) scaleY(0.92);
-          }
-          38% {
-            opacity: 0;
-            transform: translateX(-70%) translateY(2%) rotate(12deg) scaleY(0.92);
-          }
-          52% {
-            opacity: 0.22;
-            transform: translateX(-5%) translateY(0%) rotate(12deg) scaleY(0.96);
-          }
-          70% {
-            opacity: 0.08;
-            transform: translateX(65%) translateY(-1%) rotate(12deg) scaleY(0.96);
-          }
-          100% {
-            opacity: 0;
-            transform: translateX(120%) translateY(-2%) rotate(12deg) scaleY(0.92);
-          }
+          0%   { opacity: 0;    transform: translateX(-120%) translateY(4%)  rotate(12deg) scaleY(0.92); }
+          38%  { opacity: 0;    transform: translateX(-70%)  translateY(2%)  rotate(12deg) scaleY(0.92); }
+          52%  { opacity: 0.22; transform: translateX(-5%)   translateY(0%)  rotate(12deg) scaleY(0.96); }
+          70%  { opacity: 0.08; transform: translateX(65%)   translateY(-1%) rotate(12deg) scaleY(0.96); }
+          100% { opacity: 0;    transform: translateX(120%)  translateY(-2%) rotate(12deg) scaleY(0.92); }
         }
       `}</style>
     </div>
   )
-}
-
-const styles: Record<string, CSSProperties> = {
-  screen: {
-    position: 'fixed',
-    inset: 0,
-    width: '100%',
-    height: '100dvh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'var(--color-bg)',
-    backgroundImage: 'url(/images/TGL-WavesDots.svg)',
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'center top',
-    backgroundSize: 'cover',
-    zIndex: 1300,
-    overflow: 'hidden',
-  },
-  stage: {
-    width: '220px',
-    height: '220px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    perspective: '1000px',
-  },
-  card: {
-    width: '200px',
-    height: '200px',
-    position: 'relative',
-    transformStyle: 'preserve-3d',
-    animation: 'eliShowcase 3.4s ease-in-out infinite',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'contain',
-    display: 'block',
-    position: 'relative',
-    zIndex: 2,
-    filter: 'drop-shadow(0 20px 30px rgba(0, 0, 0, 0.18))',
-  },
-  glow: {
-    position: 'absolute',
-    inset: '10%',
-    borderRadius: '24px',
-    background: 'radial-gradient(circle at 50% 40%, rgba(36, 41, 101, 0.18), transparent 65%)',
-    transform: 'translateZ(-30px)',
-    zIndex: 1,
-  },
-  highlight: {
-    position: 'absolute',
-    inset: '12% 14%',
-    borderRadius: '28px',
-    background:
-      'linear-gradient(120deg, transparent 10%, rgba(255, 255, 255, 0.45) 45%, transparent 70%)',
-    mixBlendMode: 'screen',
-    animation: 'eliShimmer 3.4s ease-in-out infinite',
-    zIndex: 3,
-    pointerEvents: 'none',
-  },
-  glint: {
-    position: 'absolute',
-    inset: '12% 16%',
-    borderRadius: '26px',
-    background:
-      'linear-gradient(110deg, transparent 0%, rgba(255, 255, 255, 0.55) 32%, rgba(255, 255, 255, 0.16) 48%, transparent 64%)',
-    mixBlendMode: 'screen',
-    animation: 'eliGlintSweep 3.4s ease-in-out infinite',
-    zIndex: 4,
-    pointerEvents: 'none',
-    filter: 'blur(1.4px)',
-  },
 }

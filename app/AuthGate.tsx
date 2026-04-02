@@ -189,17 +189,7 @@ export default function AuthGate({ children }: AuthGateProps) {
           <button
             type="button"
             onClick={checkSession}
-            style={{
-              border: 'none',
-              borderRadius: '999px',
-              padding: '12px 20px',
-              fontSize: '14px',
-              fontWeight: 600,
-              backgroundColor: 'var(--color-brand-marigold)',
-              color: 'var(--color-neutral-graphite)',
-              cursor: 'pointer',
-              width: '100%',
-            }}
+            className="border-none rounded-full px-5 py-3 text-sm font-semibold bg-brand-marigold text-neutral-graphite cursor-pointer w-full"
           >
             Try again
           </button>
