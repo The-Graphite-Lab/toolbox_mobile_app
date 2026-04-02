@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { RideAlongStatus } from '@/app/lib/rideAlongs/client'
 import SpeechWaveform from './SpeechWaveform'
 
@@ -156,18 +156,11 @@ export default function RideAlongActiveControls({
 
     transcriptSessions.forEach((session) => {
       const sessionStartTimestamp = parseTimestamp(session.sessionStartTime)
-
       session.turns.forEach((turn) => {
         const normalizedText = turn.text.trim()
-        if (!normalizedText) {
-          return
-        }
-
+        if (!normalizedText) return
         const timestampMs = parseTimestamp(turn.createdAt) ?? sessionStartTimestamp
-        if (timestampMs === null) {
-          return
-        }
-
+        if (timestampMs === null) return
         turns.push({
           id: `${session.id}:${turn.id}:${turn.turnOrder}`,
           text: normalizedText,
@@ -183,31 +176,32 @@ export default function RideAlongActiveControls({
   const hasTranscriptTurns = combinedTranscriptTurns.length > 0
 
   useEffect(() => {
-    if (!isTranscriptExpanded) {
-      return
-    }
-
+    if (!isTranscriptExpanded) return
     window.requestAnimationFrame(() => {
       const turnsContainer = transcriptTurnsScrollRef.current
-      if (!turnsContainer) {
-        return
-      }
+      if (!turnsContainer) return
       turnsContainer.scrollTop = turnsContainer.scrollHeight
     })
   }, [isTranscriptExpanded, combinedTranscriptTurns.length])
 
+  const mainActionToneClass =
+    actionConfig.tone === 'primary' || actionConfig.tone === 'resume'
+      ? 'bg-brand-marigold border-brand-marigold/[0.62] text-neutral-graphite'
+      : actionConfig.tone === 'neutral'
+        ? 'bg-white border-brand-navy/[0.34] text-brand-navy'
+        : 'bg-[rgba(58,59,56,0.16)] border-[rgba(58,59,56,0.24)] text-[rgba(58,59,56,0.75)]'
+
   return (
-    <section style={panelStyle} aria-label="Live ride along controls">
-      <div style={waveStageStyle}>
-        <div style={waveContainerStyle}>
+    <section className="flex-1 min-h-0 flex flex-col justify-end gap-3 pb-[2px]" aria-label="Live ride along controls">
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-3 py-1.5">
+        <div className="w-full max-w-[620px]">
           <SpeechWaveform
             level={currentLevel}
             spectrumLevels={spectrumLevels}
             isMonitoringEnabled={isMonitoringEnabled && !isRideAlongPaused}
           />
         </div>
-
-        <p style={helperTextStyle}>
+        <p className="m-0 text-[13px] text-[rgba(58,59,56,0.72)] text-center font-semibold">
           {helperMessage}
           {isSessionActive && silenceSeconds >= 0.8
             ? ` Silence: ${silenceSeconds.toFixed(1)}s`
@@ -215,84 +209,87 @@ export default function RideAlongActiveControls({
         </p>
       </div>
 
-      <div style={transcriptWrapStyle}>
-        <div style={transcriptHeaderRowStyle}>
-          <span style={transcriptLabelStyle}>Transcript</span>
+      <div className="border border-brand-navy/[0.16] rounded-xl bg-white/[0.78] p-[10px] flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[11px] tracking-[0.25px] uppercase font-bold text-[rgba(58,59,56,0.62)]">
+            Transcript
+          </span>
           <button
             type="button"
             onClick={() => setIsTranscriptExpanded(true)}
-            style={transcriptOpenButtonStyle}
+            className="border border-color-border rounded-full bg-white text-color-text-muted px-[10px] py-1 inline-flex items-center gap-1.5 text-[12px] font-bold cursor-pointer"
             aria-label="Open transcript timeline"
           >
-            <span style={transcriptOpenButtonTextStyle}>Expand</span>
+            <span className="text-[12px] font-bold">Expand</span>
             <i className="fa-solid fa-up-right-and-down-left-from-center" aria-hidden="true" />
           </button>
         </div>
-        <div style={transcriptPreviewStyle}>
+        <div className="text-[14px] text-color-text leading-[1.35] min-h-[20px] max-h-[2.7em] [-webkit-line-clamp:2] [display:-webkit-box] [-webkit-box-orient:vertical] overflow-hidden break-words">
           {transcriptPreview || 'Listening for transcription...'}
         </div>
       </div>
 
       {isTranscriptExpanded ? (
-        <section style={transcriptPageOverlayStyle} aria-label="Full transcript">
-          <div style={transcriptPageHeaderStyle}>
+        <section
+          className="fixed inset-0 z-[6505] bg-white flex flex-col"
+          style={{
+            paddingTop: 'env(safe-area-inset-top, 0px)',
+            paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 10px)',
+          }}
+          aria-label="Full transcript"
+        >
+          <div className="border border-[rgba(58,59,56,0.92)] rounded-none bg-neutral-graphite px-[10px] py-2 flex items-center justify-between gap-2.5">
             <button
               type="button"
               onClick={() => setIsTranscriptExpanded(false)}
-              style={transcriptPageHeaderIconButtonStyle}
+              className="border border-white/[0.46] rounded-full w-[38px] h-[38px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer flex-shrink-0"
               aria-label="Back to recording controls"
             >
               <i className="fa-solid fa-arrow-left" aria-hidden="true" />
             </button>
-
-            <div style={transcriptPageTitleStyle}>Transcript</div>
-
+            <div className="flex-1 text-center text-[15px] font-bold text-neutral-alabaster">
+              Transcript
+            </div>
             <button
               type="button"
               onClick={() => setIsTranscriptExpanded(false)}
-              style={transcriptPageHeaderIconButtonStyle}
+              className="border border-white/[0.46] rounded-full w-[38px] h-[38px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer flex-shrink-0"
               aria-label="Close transcript timeline"
             >
               <i className="fa-solid fa-xmark" aria-hidden="true" />
             </button>
           </div>
 
-          <div ref={transcriptTurnsScrollRef} style={transcriptPageScrollStyle}>
+          <div ref={transcriptTurnsScrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3">
             {hasTranscriptTurns ? (
-              <div style={speechBubbleListStyle}>
+              <div className="flex flex-col gap-2.5">
                 {combinedTranscriptTurns.map((turn) => (
-                  <div key={turn.id} style={transcriptTurnEntryStyle}>
-                    <div style={transcriptDatetimeLineStyle}>
+                  <div key={turn.id} className="flex flex-col gap-1">
+                    <div className="text-[11px] font-bold text-color-text-muted leading-[1.25]">
                       {turn.datetimeLine || 'Timestamp unavailable'}
                     </div>
-                    <div style={speechBubbleStyle}>{turn.text}</div>
+                    <div className="border border-brand-navy/[0.15] rounded-[10px] bg-white px-[10px] py-2 text-[13px] leading-[1.4] text-color-text whitespace-pre-wrap break-words">
+                      {turn.text}
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div style={transcriptEmptyStyle}>Listening for transcription...</div>
+              <div className="m-0 text-[14px] text-color-text-muted leading-[1.35] p-[2px]">
+                Listening for transcription...
+              </div>
             )}
           </div>
         </section>
       ) : null}
 
-      <div style={buttonRowStyle}>
+      <div className="flex items-center gap-2.5 w-full">
         <button
           type="button"
           onClick={actionConfig.onClick}
           disabled={disableMainAction}
-          style={{
-            ...actionButtonBaseStyle,
-            ...(actionConfig.tone === 'primary'
-              ? actionButtonPrimaryStyle
-              : actionConfig.tone === 'resume'
-                ? actionButtonResumeStyle
-                : actionConfig.tone === 'neutral'
-                ? actionButtonNeutralStyle
-                : actionButtonInactiveStyle),
-            opacity: disableMainAction ? 0.62 : 1,
-            cursor: disableMainAction ? 'default' : 'pointer',
-          }}
+          className={`flex-1 rounded-[14px] min-h-[52px] border inline-flex items-center justify-center gap-2 text-[15px] font-extrabold ${mainActionToneClass}`}
+          style={{ opacity: disableMainAction ? 0.62 : 1, cursor: disableMainAction ? 'default' : 'pointer' }}
           aria-label={actionConfig.label}
         >
           <i className={actionConfig.iconClassName} aria-hidden="true" />
@@ -303,12 +300,8 @@ export default function RideAlongActiveControls({
           type="button"
           onClick={onCompleteRideAlong}
           disabled={disableCompleteAction}
-          style={{
-            ...actionButtonBaseStyle,
-            ...completeActionButtonStyle,
-            opacity: disableCompleteAction ? 0.62 : 1,
-            cursor: disableCompleteAction ? 'default' : 'pointer',
-          }}
+          className="flex-1 rounded-[14px] min-h-[52px] border inline-flex items-center justify-center gap-2 text-[15px] font-extrabold bg-brand-tangerine/[0.14] border-brand-tangerine/[0.38] text-brand-tangerine"
+          style={{ opacity: disableCompleteAction ? 0.62 : 1, cursor: disableCompleteAction ? 'default' : 'pointer' }}
           aria-label="Complete ride along"
         >
           <i className="fa-solid fa-flag-checkered" aria-hidden="true" />
@@ -316,248 +309,11 @@ export default function RideAlongActiveControls({
         </button>
       </div>
 
-      {error ? <div style={errorTextStyle}>{error}</div> : null}
+      {error ? (
+        <div className="border border-support-negative/[0.3] rounded-[10px] bg-support-negative/[0.08] text-support-negative text-[12px] px-[9px] py-2">
+          {error}
+        </div>
+      ) : null}
     </section>
   )
-}
-
-const panelStyle: CSSProperties = {
-  flex: 1,
-  minHeight: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'flex-end',
-  gap: '12px',
-  paddingBottom: '2px',
-}
-
-const waveStageStyle: CSSProperties = {
-  flex: 1,
-  minHeight: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '12px',
-  padding: '6px 0 2px',
-}
-
-const waveContainerStyle: CSSProperties = {
-  width: '100%',
-  maxWidth: '620px',
-}
-
-const helperTextStyle: CSSProperties = {
-  margin: 0,
-  fontSize: '13px',
-  color: 'rgba(58, 59, 56, 0.72)',
-  textAlign: 'center',
-  fontWeight: 600,
-}
-
-const transcriptWrapStyle: CSSProperties = {
-  border: '1px solid rgba(36, 41, 101, 0.16)',
-  borderRadius: '12px',
-  backgroundColor: 'rgba(255, 255, 255, 0.78)',
-  padding: '10px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-}
-
-const transcriptHeaderRowStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '8px',
-}
-
-const transcriptLabelStyle: CSSProperties = {
-  fontSize: '11px',
-  letterSpacing: 0.25,
-  textTransform: 'uppercase',
-  fontWeight: 700,
-  color: 'rgba(58, 59, 56, 0.62)',
-}
-
-const transcriptOpenButtonStyle: CSSProperties = {
-  border: '1px solid var(--color-border)',
-  borderRadius: '999px',
-  backgroundColor: '#ffffff',
-  color: 'var(--color-text-muted)',
-  padding: '4px 10px',
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: '6px',
-  fontSize: '12px',
-  fontWeight: 700,
-  cursor: 'pointer',
-}
-
-const transcriptOpenButtonTextStyle: CSSProperties = {
-  fontSize: '12px',
-  fontWeight: 700,
-}
-
-const transcriptPreviewStyle: CSSProperties = {
-  fontSize: '14px',
-  color: 'var(--color-text)',
-  lineHeight: 1.35,
-  minHeight: '20px',
-  maxHeight: '2.7em',
-  display: '-webkit-box',
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: 'vertical',
-  overflow: 'hidden',
-  wordBreak: 'break-word',
-}
-
-const transcriptPageOverlayStyle: CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  zIndex: 6505,
-  backgroundColor: '#ffffff',
-  paddingTop: 'env(safe-area-inset-top, 0px)',
-  paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 10px)',
-  display: 'flex',
-  flexDirection: 'column',
-}
-
-const transcriptPageHeaderStyle: CSSProperties = {
-  border: '1px solid rgba(58, 59, 56, 0.92)',
-  borderRadius: 0,
-  backgroundColor: 'var(--color-neutral-graphite)',
-  padding: '8px 10px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '10px',
-}
-
-const transcriptPageTitleStyle: CSSProperties = {
-  flex: 1,
-  textAlign: 'center',
-  fontSize: '15px',
-  fontWeight: 700,
-  color: 'var(--color-neutral-alabaster)',
-}
-
-const transcriptPageHeaderIconButtonStyle: CSSProperties = {
-  border: '1px solid rgba(255, 255, 255, 0.46)',
-  borderRadius: '999px',
-  width: '38px',
-  height: '38px',
-  backgroundColor: 'transparent',
-  color: 'var(--color-neutral-alabaster)',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  flexShrink: 0,
-}
-
-const transcriptPageScrollStyle: CSSProperties = {
-  flex: 1,
-  minHeight: 0,
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  padding: '12px',
-}
-
-const speechBubbleListStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-}
-
-const transcriptTurnEntryStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '4px',
-}
-
-const transcriptDatetimeLineStyle: CSSProperties = {
-  fontSize: '11px',
-  fontWeight: 700,
-  color: 'var(--color-text-muted)',
-  lineHeight: 1.25,
-}
-
-const speechBubbleStyle: CSSProperties = {
-  border: '1px solid rgba(36, 41, 101, 0.15)',
-  borderRadius: '10px',
-  backgroundColor: '#ffffff',
-  padding: '8px 10px',
-  fontSize: '13px',
-  lineHeight: 1.4,
-  color: 'var(--color-text)',
-  whiteSpace: 'pre-wrap',
-  wordBreak: 'break-word',
-}
-
-const transcriptEmptyStyle: CSSProperties = {
-  margin: 0,
-  fontSize: '14px',
-  color: 'var(--color-text-muted)',
-  lineHeight: 1.35,
-  padding: '2px',
-}
-
-const buttonRowStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px',
-  width: '100%',
-}
-
-const actionButtonBaseStyle: CSSProperties = {
-  flex: 1,
-  borderRadius: '14px',
-  minHeight: '52px',
-  border: '1px solid transparent',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '8px',
-  fontSize: '15px',
-  fontWeight: 800,
-}
-
-const actionButtonPrimaryStyle: CSSProperties = {
-  backgroundColor: 'var(--color-brand-marigold)',
-  borderColor: 'rgba(252, 181, 0, 0.62)',
-  color: 'var(--color-neutral-graphite)',
-}
-
-const actionButtonResumeStyle: CSSProperties = {
-  backgroundColor: 'var(--color-brand-marigold)',
-  borderColor: 'rgba(252, 181, 0, 0.62)',
-  color: 'var(--color-neutral-graphite)',
-}
-
-const actionButtonNeutralStyle: CSSProperties = {
-  backgroundColor: '#ffffff',
-  borderColor: 'rgba(36, 41, 101, 0.34)',
-  color: 'var(--color-brand-navy)',
-}
-
-const actionButtonInactiveStyle: CSSProperties = {
-  backgroundColor: 'rgba(58, 59, 56, 0.16)',
-  borderColor: 'rgba(58, 59, 56, 0.24)',
-  color: 'rgba(58, 59, 56, 0.75)',
-}
-
-const completeActionButtonStyle: CSSProperties = {
-  backgroundColor: 'rgba(233, 102, 0, 0.14)',
-  borderColor: 'rgba(233, 102, 0, 0.38)',
-  color: 'var(--color-brand-tangerine)',
-}
-
-const errorTextStyle: CSSProperties = {
-  border: '1px solid rgba(203, 45, 45, 0.3)',
-  borderRadius: '10px',
-  backgroundColor: 'rgba(203, 45, 45, 0.08)',
-  color: 'var(--color-support-negative)',
-  fontSize: '12px',
-  padding: '8px 9px',
 }
