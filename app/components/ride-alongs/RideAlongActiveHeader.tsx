@@ -1,6 +1,5 @@
 'use client'
 
-import type { CSSProperties } from 'react'
 import type { RideAlong, RideAlongStatus } from '@/app/lib/rideAlongs/client'
 
 type RideAlongActiveHeaderProps = {
@@ -217,50 +216,55 @@ export default function RideAlongActiveHeader({
 
   return (
     <>
-      <div style={topSectionStyle}>
-        <div style={toolbarStyle}>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2.5 -mx-3 mt-0 border border-[rgba(58,59,56,0.92)] rounded-none bg-neutral-graphite px-[10px] py-2">
           <button
             type="button"
             onClick={onBack}
-            style={toolbarIconButtonStyle}
+            className="border border-white/[0.46] rounded-full min-w-[38px] h-[38px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px]"
             aria-label="Back to ride along list"
           >
             <i className="fa-solid fa-arrow-left" aria-hidden="true" />
           </button>
-
           <button
             type="button"
             onClick={onOpenDetails}
-            style={toolbarIconButtonStyle}
+            className="border border-white/[0.46] rounded-full min-w-[38px] h-[38px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px]"
             aria-label="Open ride along details"
           >
             <i className="fa-solid fa-sliders" aria-hidden="true" />
           </button>
         </div>
 
-        <div style={summaryCardStyle}>
-          <div style={headingGroupStyle}>
-            <h2 style={titleStyle}>{rideAlong.name}</h2>
-            <p style={subtitleStyle}>{summaryLocation}</p>
-            <p style={statusTextStyle}>
+        <div className="border border-color-border rounded-[14px] bg-neutral-alabaster px-3 py-[10px]">
+          <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
+            <h2 className="m-0 text-[21px] text-color-text truncate">{rideAlong.name}</h2>
+            <p className="m-0 text-[15px] text-[rgba(58,59,56,0.78)] leading-[1.35] truncate">
+              {summaryLocation}
+            </p>
+            <p className="m-0 text-[12px] text-[rgba(58,59,56,0.72)] font-semibold">
               {getStatusLabel(rideAlong.status)}
               {' \u00b7 '}
               {isSessionActive ? 'Recording speech' : 'Ready for speech'}
             </p>
-
-            <div style={statsGridStyle}>
-              <div style={statItemStyle}>
-                <span style={statLabelStyle}>Total Duration</span>
-                <span style={statValueStyle}>{totalDuration}</span>
-              </div>
-              <div style={statItemStyle}>
-                <span style={statLabelStyle}>Started</span>
-                <span style={statValueStyle}>{startedLabel}</span>
-              </div>
-              <div style={statItemStyle}>
-                <span style={statLabelStyle}>Updated</span>
-                <span style={statValueStyle}>{updatedLabel}</span>
-              </div>
+            <div className="mt-1.5 grid grid-cols-3 gap-[7px]">
+              {[
+                { label: 'Total Duration', value: totalDuration },
+                { label: 'Started', value: startedLabel },
+                { label: 'Updated', value: updatedLabel },
+              ].map(({ label, value }) => (
+                <div
+                  key={label}
+                  className="border border-color-border rounded-[10px] bg-white px-2 py-[7px] flex flex-col gap-[2px] min-w-0"
+                >
+                  <span className="text-[10px] font-bold text-color-text-muted uppercase tracking-[0.2px]">
+                    {label}
+                  </span>
+                  <span className="text-[12px] font-semibold text-color-text truncate">
+                    {value}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -270,7 +274,7 @@ export default function RideAlongActiveHeader({
         <button
           type="button"
           onClick={onCloseDetails}
-          style={flyoutBackdropStyle}
+          className="fixed inset-0 border-none m-0 p-0 bg-brand-navy/[0.22] z-[21]"
           aria-label="Close ride along details"
         />
       ) : null}
@@ -278,253 +282,49 @@ export default function RideAlongActiveHeader({
       <aside
         aria-hidden={!isDetailsOpen}
         style={{
-          ...detailsFlyoutStyle,
           transform: isDetailsOpen ? 'translateX(0)' : 'translateX(102%)',
           pointerEvents: isDetailsOpen ? 'auto' : 'none',
+          paddingTop: 'max(env(safe-area-inset-top, 0px), 14px)',
+          paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 14px)',
         }}
+        className="fixed top-0 right-0 bottom-0 w-[min(340px,100%)] border-l border-brand-navy/[0.12] rounded-[22px_0_0_22px] bg-white shadow-[-12px_0_30px_rgba(36,41,101,0.16)] z-[22] transition-transform duration-[180ms] ease-out flex flex-col gap-3 px-[14px]"
       >
-        <div style={flyoutHeaderStyle}>
-          <h3 style={flyoutTitleStyle}>Ride Along Details</h3>
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="m-0 text-[17px] text-color-text">Ride Along Details</h3>
           <button
             type="button"
             onClick={onCloseDetails}
-            style={iconButtonStyle}
+            className="border border-color-border rounded-full min-w-[38px] h-[38px] bg-white text-color-text-muted inline-flex items-center justify-center cursor-pointer text-[14px]"
             aria-label="Close details panel"
           >
             <i className="fa-solid fa-xmark" aria-hidden="true" />
           </button>
         </div>
 
-        <div style={detailsListStyle}>
-          <div style={detailRowStyle}>
-            <div style={detailLabelStyle}>Ride Along</div>
-            <div style={detailValueStyle}>{rideAlong.name}</div>
-          </div>
-          <div style={detailRowStyle}>
-            <div style={detailLabelStyle}>Status</div>
-            <div style={detailValueStyle}>{getStatusLabel(rideAlong.status)}</div>
-          </div>
-          <div style={detailRowStyle}>
-            <div style={detailLabelStyle}>Address</div>
-            <div style={detailValueStyle}>{rideAlong.address || 'Not set'}</div>
-          </div>
-          <div style={detailRowStyle}>
-            <div style={detailLabelStyle}>Location</div>
-            <div style={detailValueStyle}>{rideAlong.location || 'Not set'}</div>
-          </div>
-          <div style={detailRowStyle}>
-            <div style={detailLabelStyle}>Started</div>
-            <div style={detailValueStyle}>{formatDateTime(rideAlong.startedAt)}</div>
-          </div>
-          <div style={detailRowStyle}>
-            <div style={detailLabelStyle}>Ended</div>
-            <div style={detailValueStyle}>{formatDateTime(rideAlong.endedAt)}</div>
-          </div>
-          <div style={detailRowStyle}>
-            <div style={detailLabelStyle}>Updated</div>
-            <div style={detailValueStyle}>{formatDateTime(rideAlong.updatedAt)}</div>
-          </div>
+        <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2">
+          {[
+            { label: 'Ride Along', value: rideAlong.name },
+            { label: 'Status', value: getStatusLabel(rideAlong.status) },
+            { label: 'Address', value: rideAlong.address || 'Not set' },
+            { label: 'Location', value: rideAlong.location || 'Not set' },
+            { label: 'Started', value: formatDateTime(rideAlong.startedAt) },
+            { label: 'Ended', value: formatDateTime(rideAlong.endedAt) },
+            { label: 'Updated', value: formatDateTime(rideAlong.updatedAt) },
+          ].map(({ label, value }) => (
+            <div
+              key={label}
+              className="border border-color-border rounded-xl bg-white p-[10px] flex flex-col gap-[3px]"
+            >
+              <div className="text-[11px] font-bold text-color-text-muted uppercase tracking-[0.2px]">
+                {label}
+              </div>
+              <div className="text-[12px] text-color-text leading-[1.35] break-words">
+                {value}
+              </div>
+            </div>
+          ))}
         </div>
       </aside>
     </>
   )
 }
-
-const topSectionStyle: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-}
-
-const toolbarStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '10px',
-  margin: '-8px -12px 0',
-  border: '1px solid rgba(58, 59, 56, 0.92)',
-  borderRadius: '0',
-  backgroundColor: 'var(--color-neutral-graphite)',
-  padding: '8px 10px',
-}
-
-const summaryCardStyle: CSSProperties = {
-  border: '1px solid var(--color-border)',
-  borderRadius: '14px',
-  backgroundColor: 'var(--color-neutral-alabaster)',
-  padding: '10px 12px',
-}
-
-const toolbarIconButtonStyle: CSSProperties = {
-  border: '1px solid rgba(255, 255, 255, 0.46)',
-  borderRadius: '999px',
-  minWidth: '38px',
-  height: '38px',
-  backgroundColor: 'transparent',
-  color: 'var(--color-neutral-alabaster)',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  fontSize: '14px',
-}
-
-const iconButtonStyle: CSSProperties = {
-  border: '1px solid var(--color-border)',
-  borderRadius: '999px',
-  minWidth: '38px',
-  height: '38px',
-  backgroundColor: '#ffffff',
-  color: 'var(--color-text-muted)',
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  cursor: 'pointer',
-  fontSize: '14px',
-}
-
-const headingGroupStyle: CSSProperties = {
-  flex: 1,
-  minWidth: 0,
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '3px',
-}
-
-const titleStyle: CSSProperties = {
-  margin: 0,
-  fontSize: '21px',
-  color: 'var(--color-text)',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-}
-
-const subtitleStyle: CSSProperties = {
-  margin: 0,
-  fontSize: '15px',
-  color: 'rgba(58, 59, 56, 0.78)',
-  lineHeight: 1.35,
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-}
-
-const statusTextStyle: CSSProperties = {
-  margin: 0,
-  fontSize: '12px',
-  color: 'rgba(58, 59, 56, 0.72)',
-  fontWeight: 600,
-}
-
-const statsGridStyle: CSSProperties = {
-  marginTop: '6px',
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-  gap: '7px',
-}
-
-const statItemStyle: CSSProperties = {
-  border: '1px solid var(--color-border)',
-  borderRadius: '10px',
-  backgroundColor: '#ffffff',
-  padding: '7px 8px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '2px',
-  minWidth: 0,
-}
-
-const statLabelStyle: CSSProperties = {
-  fontSize: '10px',
-  fontWeight: 700,
-  color: 'var(--color-text-muted)',
-  letterSpacing: 0.2,
-  textTransform: 'uppercase',
-}
-
-const statValueStyle: CSSProperties = {
-  fontSize: '12px',
-  fontWeight: 600,
-  color: 'var(--color-text)',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-}
-
-const flyoutBackdropStyle: CSSProperties = {
-  position: 'fixed',
-  inset: 0,
-  border: 'none',
-  margin: 0,
-  padding: 0,
-  background: 'rgba(36, 41, 101, 0.22)',
-  zIndex: 21,
-}
-
-const detailsFlyoutStyle: CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  right: 0,
-  bottom: 0,
-  width: 'min(340px, 100%)',
-  borderLeft: '1px solid rgba(36, 41, 101, 0.12)',
-  borderRadius: '22px 0 0 22px',
-  backgroundColor: '#ffffff',
-  boxShadow: '-12px 0 30px rgba(36, 41, 101, 0.16)',
-  zIndex: 22,
-  transition: 'transform 180ms ease-out',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '12px',
-  padding:
-    'max(env(safe-area-inset-top, 0px), 14px) 14px max(env(safe-area-inset-bottom, 0px), 14px)',
-}
-
-const flyoutHeaderStyle: CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: '8px',
-}
-
-const flyoutTitleStyle: CSSProperties = {
-  margin: 0,
-  fontSize: '17px',
-  color: 'var(--color-text)',
-}
-
-const detailsListStyle: CSSProperties = {
-  flex: 1,
-  minHeight: 0,
-  overflowY: 'auto',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '8px',
-}
-
-const detailRowStyle: CSSProperties = {
-  border: '1px solid var(--color-border)',
-  borderRadius: '12px',
-  backgroundColor: '#ffffff',
-  padding: '10px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '3px',
-}
-
-const detailLabelStyle: CSSProperties = {
-  fontSize: '11px',
-  fontWeight: 700,
-  color: 'var(--color-text-muted)',
-  letterSpacing: 0.2,
-  textTransform: 'uppercase',
-}
-
-const detailValueStyle: CSSProperties = {
-  fontSize: '12px',
-  color: 'var(--color-text)',
-  lineHeight: 1.35,
-  wordBreak: 'break-word',
-}
-
