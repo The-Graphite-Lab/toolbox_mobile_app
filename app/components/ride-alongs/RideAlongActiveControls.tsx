@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
-import type { RideAlongStatus } from '@/src/lib/rideAlongs/client'
+import type { RideAlongStatus } from '@/app/lib/rideAlongs/client'
 import SpeechWaveform from './SpeechWaveform'
 
 type TranscriptTurn = {

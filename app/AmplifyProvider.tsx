@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { Amplify } from 'aws-amplify'
-import awsExports from '@/src/aws-exports'
+import awsExports from '@/app/aws-exports'
 
 let isConfigured = false
 

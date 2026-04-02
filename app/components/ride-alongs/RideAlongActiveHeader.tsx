@@ -1,7 +1,7 @@
 'use client'
 
 import type { CSSProperties } from 'react'
-import type { RideAlong, RideAlongStatus } from '@/src/lib/rideAlongs/client'
+import type { RideAlong, RideAlongStatus } from '@/app/lib/rideAlongs/client'
 
 type RideAlongActiveHeaderProps = {
   rideAlong: RideAlong

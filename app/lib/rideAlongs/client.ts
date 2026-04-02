@@ -1,7 +1,7 @@
 import { fetchAuthSession } from 'aws-amplify/auth'
 import { generateClient, post } from 'aws-amplify/api'
 import { Amplify } from 'aws-amplify'
-import awsExports from '@/src/aws-exports'
+import awsExports from '@/app/aws-exports'
 
 const CONNECTIONS_API_NAME = 'Connections'
 let isAmplifyConfiguredForRideAlongs = false
@@ -67,6 +67,8 @@ const RIDE_ALONGS_BY_USER_QUERY = /* GraphQL */ `
         address
         location
         status
+        scheduledAt
+        statusScheduledAt
         startedAt
         endedAt
         ClientID
@@ -141,6 +143,8 @@ export type RideAlong = {
   address?: string | null
   location?: string | null
   status?: RideAlongStatus | null
+  scheduledAt?: string | null
+  statusScheduledAt?: string | null
   startedAt?: string | null
   endedAt?: string | null
   ClientID: string
@@ -313,10 +317,12 @@ export const updateRideAlongStatus = async ({
     )
   }
 
+  const scheduledAtValue = existing.scheduledAt ?? null
   const input: Record<string, unknown> = {
     id: rideAlongId,
     status,
     createdAt: existing.createdAt,
+    statusScheduledAt: scheduledAtValue ? `${status}#${scheduledAtValue}` : undefined,
     startedAt:
       startedAt !== undefined
         ? startedAt

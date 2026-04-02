@@ -3,7 +3,6 @@
 import { useState, type CSSProperties } from 'react'
 import { signOut } from 'aws-amplify/auth'
 import { useAuthContext } from './AuthContext'
-import CoachingTab from './components/coaching/CoachingTab'
 import RideAlongsTab from './components/ride-alongs/RideAlongsTab'
 
 const BOTTOM_BAR_HEIGHT = 50
@@ -12,12 +11,10 @@ const MIN_BOTTOM_INSET = 8
 const SCROLL_CONTENT_TOP_INSET = `max(${MIN_TOP_INSET}px, calc(env(safe-area-inset-top, 0px) + 12px))`
 const BOTTOM_SAFE_AREA_INSET = `max(${MIN_BOTTOM_INSET}px, env(safe-area-inset-bottom, 0px))`
 
-type AppTab = 'home' | 'coaching'
-
 function TechnicianRideAlongApp() {
   const { clientId, userId } = useAuthContext()
   const [homeTrigger, setHomeTrigger] = useState(0)
-  const [activeTab, setActiveTab] = useState<AppTab>('home')
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
   const handleSignOut = async () => {
     try {
@@ -48,19 +45,15 @@ function TechnicianRideAlongApp() {
           flex: 1,
           minHeight: 0,
           overflow: 'hidden',
-          padding: activeTab === 'coaching' ? '0' : '0 14px 0',
+          padding: '0 14px 0',
         }}
       >
-        {activeTab === 'home' ? (
-          <RideAlongsTab
-            clientId={clientId}
-            userId={userId}
-            homeTrigger={homeTrigger}
-            topContentInset={SCROLL_CONTENT_TOP_INSET}
-          />
-        ) : (
-          <CoachingTab topContentInset={SCROLL_CONTENT_TOP_INSET} />
-        )}
+        <RideAlongsTab
+          clientId={clientId}
+          userId={userId}
+          homeTrigger={homeTrigger}
+          topContentInset={SCROLL_CONTENT_TOP_INSET}
+        />
       </div>
 
       <nav
@@ -93,14 +86,11 @@ function TechnicianRideAlongApp() {
           <button
             type="button"
             aria-label="Home"
-            aria-current={activeTab === 'home' ? 'page' : undefined}
-            onClick={() => {
-              setActiveTab('home')
-              setHomeTrigger((t) => t + 1)
-            }}
+            aria-current="page"
+            onClick={() => setHomeTrigger((t) => t + 1)}
             style={{
               ...tabButtonStyle,
-              ...(activeTab === 'home' ? activeTabButtonStyle : inactiveTabButtonStyle),
+              ...activeTabButtonStyle,
             }}
           >
             <i className="fa-solid fa-house" style={{ fontSize: 17 }} aria-hidden="true" />
@@ -108,21 +98,8 @@ function TechnicianRideAlongApp() {
           </button>
           <button
             type="button"
-            aria-label="Coaching"
-            aria-current={activeTab === 'coaching' ? 'page' : undefined}
-            onClick={() => setActiveTab('coaching')}
-            style={{
-              ...tabButtonStyle,
-              ...(activeTab === 'coaching' ? activeTabButtonStyle : inactiveTabButtonStyle),
-            }}
-          >
-            <i className="fa-solid fa-chart-line" style={{ fontSize: 17 }} aria-hidden="true" />
-            <span style={{ fontSize: 10, fontWeight: 600 }}>Coaching</span>
-          </button>
-          <button
-            type="button"
             aria-label="Logout"
-            onClick={handleSignOut}
+            onClick={() => setShowLogoutConfirm(true)}
             style={tabButtonStyle}
           >
             <i className="fa-solid fa-right-from-bracket" style={{ fontSize: 17 }} aria-hidden="true" />
@@ -130,6 +107,34 @@ function TechnicianRideAlongApp() {
           </button>
         </div>
       </nav>
+
+      {showLogoutConfirm ? (
+        <div style={overlayStyle} role="dialog" aria-modal="true" aria-labelledby="logout-dialog-title">
+          <div style={dialogStyle}>
+            <p id="logout-dialog-title" style={dialogTitleStyle}>Log out?</p>
+            <p style={dialogBodyStyle}>Are you sure you want to log out?</p>
+            <div style={dialogActionsStyle}>
+              <button
+                type="button"
+                onClick={() => setShowLogoutConfirm(false)}
+                style={dialogCancelStyle}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLogoutConfirm(false)
+                  void handleSignOut()
+                }}
+                style={dialogConfirmStyle}
+              >
+                Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -155,9 +160,72 @@ const activeTabButtonStyle: CSSProperties = {
   color: 'var(--color-brand-marigold)',
 }
 
-const inactiveTabButtonStyle: CSSProperties = {
-  backgroundColor: 'transparent',
+const overlayStyle: CSSProperties = {
+  position: 'fixed',
+  inset: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 1000,
+  padding: '0 32px',
+}
+
+const dialogStyle: CSSProperties = {
+  backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: '24px 20px 16px',
+  width: '100%',
+  maxWidth: 320,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 8,
+}
+
+const dialogTitleStyle: CSSProperties = {
+  margin: 0,
+  fontSize: 17,
+  fontWeight: 700,
+  color: 'var(--color-text)',
+  textAlign: 'center',
+}
+
+const dialogBodyStyle: CSSProperties = {
+  margin: 0,
+  fontSize: 13,
   color: 'var(--color-text-muted)',
+  textAlign: 'center',
+  paddingBottom: 8,
+}
+
+const dialogActionsStyle: CSSProperties = {
+  display: 'flex',
+  gap: 10,
+  marginTop: 4,
+}
+
+const dialogCancelStyle: CSSProperties = {
+  flex: 1,
+  border: '1px solid var(--color-border)',
+  borderRadius: 10,
+  padding: '10px 0',
+  fontSize: 14,
+  fontWeight: 600,
+  backgroundColor: '#ffffff',
+  color: 'var(--color-text)',
+  cursor: 'pointer',
+}
+
+const dialogConfirmStyle: CSSProperties = {
+  flex: 1,
+  border: 'none',
+  borderRadius: 10,
+  padding: '10px 0',
+  fontSize: 14,
+  fontWeight: 600,
+  backgroundColor: 'var(--color-brand-navy)',
+  color: '#ffffff',
+  cursor: 'pointer',
 }
 
 export default function Home() {

@@ -32,7 +32,7 @@ import {
   type RideAlongSession,
   type RideAlongSessionTurn,
   uploadRideAlongRecordingBlob,
-} from '@/src/lib/rideAlongs/client'
+} from '@/app/lib/rideAlongs/client'
 
 type RideAlongsTabProps = {
   clientId: string | null
@@ -1144,9 +1144,7 @@ export default function RideAlongsTab({
         await refreshCurrentRideAlongData()
         await syncLiveSessionState()
       } catch (error) {
-        setActionError(
-          error instanceof Error ? error.message : 'Unable to stop current session.'
-        )
+        setActionError(getErrorMessage(error, 'Unable to stop current session.'))
       } finally {
         monitorState.isStoppingSession = false
         monitorState.silenceStartedAt = null
@@ -1223,7 +1221,7 @@ export default function RideAlongsTab({
       await loadSessions(selectedRideAlong.id)
       await syncLiveSessionState()
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : 'Unable to pause ride along.')
+      setActionError(getErrorMessage(error, 'Unable to pause ride along.'))
       await loadRideAlongs()
     } finally {
       setIsBusy(false)
@@ -1252,7 +1250,7 @@ export default function RideAlongsTab({
       await loadSessions(selectedRideAlong.id)
       await syncLiveSessionState()
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : 'Unable to resume ride along.')
+      setActionError(getErrorMessage(error, 'Unable to resume ride along.'))
     } finally {
       setIsBusy(false)
     }
@@ -1283,7 +1281,7 @@ export default function RideAlongsTab({
       setIsDetailsFlyoutOpen(false)
       setViewMode('list')
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : 'Unable to complete ride along.')
+      setActionError(getErrorMessage(error, 'Unable to complete ride along.'))
     } finally {
       setIsBusy(false)
     }

@@ -1,7 +1,7 @@
 'use client'
 
 import type { CSSProperties } from 'react'
-import type { RideAlong } from '@/src/lib/rideAlongs/client'
+import type { RideAlong } from '@/app/lib/rideAlongs/client'
 
 type RideAlongsListProps = {
   rideAlongs: RideAlong[]
@@ -10,8 +10,23 @@ type RideAlongsListProps = {
   isLoading: boolean
 }
 
-const getRideAlongSubtitle = (rideAlong: RideAlong) =>
-  rideAlong.location || rideAlong.address || 'Location details pending'
+const parseLocation = (location: string): string => {
+  try {
+    const parsed = JSON.parse(location) as Record<string, unknown>
+    if (typeof parsed.label === 'string' && parsed.label) return parsed.label
+    if (typeof parsed.latitude === 'number' && typeof parsed.longitude === 'number') {
+      return `${parsed.latitude.toFixed(4)}, ${parsed.longitude.toFixed(4)}`
+    }
+  } catch {
+    // not JSON — use as-is
+  }
+  return location
+}
+
+const getRideAlongSubtitle = (rideAlong: RideAlong) => {
+  if (rideAlong.location) return parseLocation(rideAlong.location)
+  return rideAlong.address || 'Location details pending'
+}
 
 const getScheduledLabel = (isoDate: string | null | undefined) => {
   if (!isoDate) {
@@ -37,7 +52,7 @@ export default function RideAlongsList({
       <header style={headerStyle}>
         <div style={headingGroupStyle}>
           <h2 style={headingStyle}>Ride Alongs</h2>
-          <p style={subheadingStyle}>Pick a ride along to open technician mode.</p>
+          <p style={subheadingStyle}>Select a job below to begin your ride along.</p>
         </div>
         <button
           type="button"
@@ -52,12 +67,12 @@ export default function RideAlongsList({
       </header>
 
       {isLoading ? (
-        <div style={emptyStateStyle}>Loading ride alongs...</div>
+        <div style={emptyStateStyle}>Loading your jobs...</div>
       ) : null}
 
       {!isLoading && rideAlongs.length === 0 ? (
         <div style={emptyStateStyle}>
-          No scheduled ride alongs are available right now.
+          No jobs are assigned to you right now. Check back soon or contact your supervisor.
         </div>
       ) : null}
 
