@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { CSSProperties } from 'react'
 import {
   clampLevel,
   normalizeLevelForWaveform,
@@ -240,31 +239,10 @@ export default function SpeechWaveform({
   )
 
   return (
-    <div style={shellStyle}>
-      <div style={barsRowStyle}>{barElements}</div>
+    <div className="relative w-full min-h-[152px] rounded-none border-none bg-transparent flex items-end justify-center py-2 overflow-hidden">
+      <div className="w-full flex items-end justify-center gap-[5px] pb-[2px]">
+        {barElements}
+      </div>
     </div>
   )
-}
-
-const shellStyle: CSSProperties = {
-  position: 'relative',
-  width: '100%',
-  minHeight: '152px',
-  borderRadius: '0',
-  border: 'none',
-  backgroundColor: 'transparent',
-  display: 'flex',
-  alignItems: 'flex-end',
-  justifyContent: 'center',
-  padding: '8px 0',
-  overflow: 'hidden',
-}
-
-const barsRowStyle: CSSProperties = {
-  width: '100%',
-  display: 'flex',
-  alignItems: 'flex-end',
-  justifyContent: 'center',
-  gap: '5px',
-  paddingBottom: '2px',
 }
