@@ -1552,17 +1552,7 @@ export default function RideAlongsTab({
 
   if (!clientId || !userId) {
     return (
-      <div
-        style={{
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '24px',
-          color: 'var(--color-text-muted)',
-          fontSize: '13px',
-        }}
-      >
+      <div className="h-full flex items-center justify-center p-6 text-color-text-muted text-[13px]">
         Client and user context are required to use Ride Alongs.
       </div>
     )
@@ -1570,19 +1560,7 @@ export default function RideAlongsTab({
 
   if (viewMode === 'list') {
     return (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          overflowY: 'auto',
-          padding: '14px',
-          paddingTop: topContentInset,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          backgroundColor: 'transparent',
-        }}
-      >
+      <div className="w-full h-full overflow-y-auto px-[14px] pb-[14px] flex flex-col gap-3 bg-transparent" style={{ paddingTop: topContentInset }}>
         {activeRideAlong ? (
           <button
             type="button"
@@ -1591,17 +1569,7 @@ export default function RideAlongsTab({
               setIsDetailsFlyoutOpen(false)
               setViewMode('rideAlong')
             }}
-            style={{
-              border: '1px solid rgba(49, 154, 73, 0.28)',
-              borderRadius: '16px',
-              backgroundColor: 'rgba(49, 154, 73, 0.12)',
-              color: 'var(--color-text)',
-              textAlign: 'left',
-              padding: '13px 14px',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 600,
-            }}
+            className="border border-support-positive/[0.28] rounded-2xl bg-support-positive/[0.12] text-color-text text-left px-[14px] py-[13px] cursor-pointer text-[13px] font-semibold"
           >
             You have an active ride along in progress. Tap to resume.
           </button>
@@ -1622,50 +1590,15 @@ export default function RideAlongsTab({
 
   if (!selectedRideAlong) {
     return (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--color-text-muted)',
-          fontSize: '13px',
-        }}
-      >
+      <div className="w-full h-full flex items-center justify-center text-color-text-muted text-[13px]">
         No ride along selected.
       </div>
     )
   }
 
   const activeOverlay = (
-    <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100dvh',
-        zIndex: 6000,
-        overflow: 'hidden',
-        backgroundColor: '#ffffff',
-        paddingTop: 'env(safe-area-inset-top, 0px)',
-        paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 10px)',
-      }}
-    >
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          height: '100%',
-          overflow: 'hidden',
-          backgroundColor: '#ffffff',
-          padding: '8px 12px 0',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-        }}
-      >
+    <div className="fixed top-0 left-0 w-screen h-dvh z-[6000] overflow-hidden bg-white" style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 10px)' }}>
+      <div className="relative w-full h-full overflow-hidden bg-white pt-2 px-3 flex flex-col gap-2.5">
         <RideAlongActiveHeader
           rideAlong={selectedRideAlong}
           isSessionActive={liveSessionState.isActive}
