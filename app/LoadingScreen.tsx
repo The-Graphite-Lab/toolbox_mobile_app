@@ -10,7 +10,7 @@ export default function LoadingScreen({ variant = 'fullscreen' }: LoadingScreenP
   return (
     <div
       className={cn(
-        'flex items-center justify-center bg-color-bg bg-[url(\'/images/TGL-WavesDots.svg\')] bg-no-repeat bg-top bg-cover overflow-hidden',
+        'flex items-center justify-center bg-color-bg bg-waves bg-no-repeat bg-top bg-cover overflow-hidden',
         variant === 'inline'
           ? 'absolute inset-0 w-full h-full z-[5]'
           : 'fixed inset-0 w-full h-dvh z-[1300]'

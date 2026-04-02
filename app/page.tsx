@@ -35,7 +35,7 @@ function TechnicianRideAlongApp() {
 
   return (
     <div
-      className="w-full h-dvh min-h-dvh flex flex-col overflow-hidden bg-color-bg bg-[url('/images/TGL-WavesDots.svg')] bg-no-repeat bg-top bg-cover"
+      className="w-full h-dvh min-h-dvh flex flex-col overflow-hidden bg-color-bg bg-waves bg-no-repeat bg-top bg-cover"
     >
       <div className="flex-1 min-h-0 overflow-hidden px-[14px]">
         <RideAlongsTab

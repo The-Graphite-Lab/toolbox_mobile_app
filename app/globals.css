@@ -90,3 +90,7 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+.bg-waves {
+  background-image: url('/images/TGL-WavesDots.svg');
+}

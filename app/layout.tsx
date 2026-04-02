@@ -2,10 +2,6 @@ import type { Metadata } from 'next'
 import './globals.css'
 import AmplifyProvider from './AmplifyProvider'
 import AuthGate from './AuthGate'
-import { Inter } from "next/font/google";
-import { cn } from "@/app/lib/utils";
-
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: 'The Graphite Lab',
@@ -24,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={cn("font-sans", inter.variable)}>
+    <html lang="en">
       <head>
         <link rel="stylesheet" href="https://use.typekit.net/efx2sth.css" />
         <link
@@ -40,4 +36,3 @@ export default function RootLayout({
     </html>
   )
 }
-
