@@ -209,23 +209,26 @@ export default function RideAlongActiveControls({
         </p>
       </div>
 
-      <div className="border border-brand-navy/[0.16] rounded-xl bg-white/[0.78] p-[10px] flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[11px] tracking-[0.25px] uppercase font-bold text-[rgba(58,59,56,0.62)]">
+      <div className="px-[2px]">
+        <div className="flex items-center justify-between gap-2 mb-1">
+          <span className="text-[10px] tracking-[0.25px] uppercase font-bold text-[rgba(58,59,56,0.5)]">
             Transcript
           </span>
           <button
             type="button"
             onClick={() => setIsTranscriptExpanded(true)}
-            className="border border-color-border rounded-full bg-white text-color-text-muted px-[10px] py-1 inline-flex items-center gap-1.5 text-[12px] font-bold cursor-pointer"
+            className="border-none bg-transparent text-[rgba(58,59,56,0.5)] text-[11px] font-semibold cursor-pointer inline-flex items-center gap-1"
             aria-label="Open transcript timeline"
           >
-            <span className="text-[12px] font-bold">Expand</span>
-            <i className="fa-solid fa-up-right-and-down-left-from-center" aria-hidden="true" />
+            Expand
+            <i className="fa-solid fa-up-right-and-down-left-from-center text-[9px]" aria-hidden="true" />
           </button>
         </div>
-        <div className="text-[14px] text-color-text leading-[1.35] min-h-[20px] max-h-[2.7em] [-webkit-line-clamp:2] [display:-webkit-box] [-webkit-box-orient:vertical] overflow-hidden break-words">
-          {transcriptPreview || 'Listening for transcription...'}
+        <div className="text-[13px] leading-[1.35] min-h-[20px] max-h-[2.7em] [-webkit-line-clamp:2] [display:-webkit-box] [-webkit-box-orient:vertical] overflow-hidden break-words">
+          {transcriptPreview
+            ? <span className="text-color-text">{transcriptPreview}</span>
+            : <span className="text-[rgba(58,59,56,0.6)] italic">Listening for transcription...</span>
+          }
         </div>
       </div>
 

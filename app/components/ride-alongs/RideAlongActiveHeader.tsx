@@ -216,8 +216,8 @@ export default function RideAlongActiveHeader({
 
   return (
     <>
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-2.5 -mx-3 mt-0 border border-[rgba(58,59,56,0.92)] rounded-none bg-neutral-graphite px-[10px] py-2">
+      <div className="-mx-3 -mt-2 bg-neutral-graphite rounded-b-2xl px-3 pt-2 pb-[14px] text-neutral-alabaster">
+        <div className="flex items-center justify-between mb-2.5">
           <button
             type="button"
             onClick={onBack}
@@ -236,37 +236,17 @@ export default function RideAlongActiveHeader({
           </button>
         </div>
 
-        <div className="border border-color-border rounded-[14px] bg-neutral-alabaster px-3 py-[10px]">
-          <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
-            <h2 className="m-0 text-[21px] text-color-text truncate">{rideAlong.name}</h2>
-            <p className="m-0 text-[15px] text-[rgba(58,59,56,0.78)] leading-[1.35] truncate">
-              {summaryLocation}
-            </p>
-            <p className="m-0 text-[12px] text-[rgba(58,59,56,0.72)] font-semibold">
-              {getStatusLabel(rideAlong.status)}
-              {' \u00b7 '}
-              {isSessionActive ? 'Recording speech' : 'Ready for speech'}
-            </p>
-            <div className="mt-1.5 grid grid-cols-3 gap-[7px]">
-              {[
-                { label: 'Total Duration', value: totalDuration },
-                { label: 'Started', value: startedLabel },
-                { label: 'Updated', value: updatedLabel },
-              ].map(({ label, value }) => (
-                <div
-                  key={label}
-                  className="border border-color-border rounded-[10px] bg-white px-2 py-[7px] flex flex-col gap-[2px] min-w-0"
-                >
-                  <span className="text-[10px] font-bold text-color-text-muted uppercase tracking-[0.2px]">
-                    {label}
-                  </span>
-                  <span className="text-[12px] font-semibold text-color-text truncate">
-                    {value}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+        <h2 className="m-0 text-[18px] truncate">{rideAlong.name}</h2>
+        <p className="m-0 text-[13px] text-white/[0.72] mt-[2px] truncate">{summaryLocation}</p>
+        <p className="m-0 text-[11px] text-white/[0.55] font-semibold mt-[2px]">
+          {getStatusLabel(rideAlong.status)}
+          {' \u00b7 '}
+          {isSessionActive ? 'Recording speech' : 'Ready for speech'}
+        </p>
+        <div className="flex gap-4 mt-2 text-[11px] text-white/[0.6]">
+          <span><strong className="text-white/[0.85]">{totalDuration}</strong> duration</span>
+          <span><strong className="text-white/[0.85]">{startedLabel}</strong></span>
+          <span>Updated <strong className="text-white/[0.85]">{updatedLabel}</strong></span>
         </div>
       </div>
 
@@ -306,7 +286,7 @@ export default function RideAlongActiveHeader({
             { label: 'Ride Along', value: rideAlong.name },
             { label: 'Status', value: getStatusLabel(rideAlong.status) },
             { label: 'Address', value: rideAlong.address || 'Not set' },
-            { label: 'Location', value: rideAlong.location || 'Not set' },
+            { label: 'Location', value: getLocationDisplay(rideAlong) },
             { label: 'Started', value: formatDateTime(rideAlong.startedAt) },
             { label: 'Ended', value: formatDateTime(rideAlong.endedAt) },
             { label: 'Updated', value: formatDateTime(rideAlong.updatedAt) },
