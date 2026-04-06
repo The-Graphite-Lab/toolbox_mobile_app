@@ -9,7 +9,7 @@ type RideAlongActiveHeaderProps = {
   isDetailsOpen: boolean
   onOpenDetails: () => void
   onCloseDetails: () => void
-  onBack: () => void
+  onBack?: () => void
 }
 
 const statusLabelMap: Record<RideAlongStatus, string> = {
@@ -203,7 +203,6 @@ export default function RideAlongActiveHeader({
   isDetailsOpen,
   onOpenDetails,
   onCloseDetails,
-  onBack,
 }: RideAlongActiveHeaderProps) {
   const summaryLocation = getLocationDisplay(rideAlong)
   const totalDuration = formatTotalDuration(
@@ -216,27 +215,18 @@ export default function RideAlongActiveHeader({
 
   return (
     <>
-      <div className="-mx-3 md:-mx-5 -mt-2 bg-neutral-graphite rounded-b-2xl px-3 md:px-5 pt-2 pb-[14px] md:pb-5 text-neutral-alabaster">
-        <div className="flex items-center justify-between mb-2.5">
-          <button
-            type="button"
-            onClick={onBack}
-            className="border border-white/[0.46] rounded-full min-w-[38px] md:min-w-[46px] h-[38px] md:h-[46px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px]"
-            aria-label="Back to ride along list"
-          >
-            <i className="fa-solid fa-arrow-left" aria-hidden="true" />
-          </button>
+      <div className="-mx-3 md:-mx-5 -mt-2 bg-neutral-graphite rounded-b-2xl px-3 md:px-5 pt-4 md:pt-6 pb-[14px] md:pb-5 text-neutral-alabaster">
+        <div className="flex items-center justify-between gap-3 mb-1">
+          <h2 className="m-0 text-[18px] md:text-[22px] truncate flex-1 min-w-0">{rideAlong.name}</h2>
           <button
             type="button"
             onClick={onOpenDetails}
-            className="border border-white/[0.46] rounded-full min-w-[38px] md:min-w-[46px] h-[38px] md:h-[46px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px]"
+            className="border border-white/[0.46] rounded-full min-w-[38px] md:min-w-[46px] h-[38px] md:h-[46px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px] flex-shrink-0"
             aria-label="Open ride along details"
           >
             <i className="fa-solid fa-sliders" aria-hidden="true" />
           </button>
         </div>
-
-        <h2 className="m-0 text-[18px] md:text-[22px] truncate">{rideAlong.name}</h2>
         <p className="m-0 text-[13px] md:text-[16px] text-white/[0.72] mt-[2px] truncate">{summaryLocation}</p>
         <p className="m-0 text-[11px] md:text-[13px] text-white/[0.55] font-semibold mt-[2px]">
           {getStatusLabel(rideAlong.status)}
