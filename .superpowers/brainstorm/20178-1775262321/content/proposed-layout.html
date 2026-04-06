@@ -1,0 +1,152 @@
+<h2>Proposed Layout Cleanup</h2>
+<p class="subtitle">Current vs. proposed — fewer boxes, tighter hierarchy, same information</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Before (current)</div>
+    <div class="mockup-body" style="padding:0;background:#fff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;">
+
+      <!-- Toolbar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#3a3b38;color:#fffefc;">
+        <div style="border:1px solid rgba(255,255,255,0.46);border-radius:999px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:12px;">←</div>
+        <div style="border:1px solid rgba(255,255,255,0.46);border-radius:999px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:12px;">⚙</div>
+      </div>
+
+      <!-- Gap -->
+      <div style="padding:8px 12px 0;">
+
+        <!-- Summary card (separate box) -->
+        <div style="border:1px solid #e1e1e1;border-radius:14px;background:#fffefc;padding:10px 12px;margin-bottom:10px;">
+          <div style="font-size:17px;font-weight:700;color:#3a3b38;">HVAC Tune-up - Oak Street</div>
+          <div style="font-size:13px;color:rgba(58,59,56,0.78);margin-top:2px;">Front driveway</div>
+          <div style="font-size:11px;color:rgba(58,59,56,0.72);font-weight:600;margin-top:2px;">Scheduled · Ready for speech</div>
+
+          <!-- Stats: 3 bordered boxes -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:6px;">
+            <div style="border:1px solid #e1e1e1;border-radius:8px;background:#fff;padding:5px 6px;">
+              <div style="font-size:9px;font-weight:700;color:rgba(58,59,56,0.7);text-transform:uppercase;">Duration</div>
+              <div style="font-size:11px;font-weight:600;color:#3a3b38;">0s</div>
+            </div>
+            <div style="border:1px solid #e1e1e1;border-radius:8px;background:#fff;padding:5px 6px;">
+              <div style="font-size:9px;font-weight:700;color:rgba(58,59,56,0.7);text-transform:uppercase;">Started</div>
+              <div style="font-size:11px;font-weight:600;color:#3a3b38;">Not started</div>
+            </div>
+            <div style="border:1px solid #e1e1e1;border-radius:8px;background:#fff;padding:5px 6px;">
+              <div style="font-size:9px;font-weight:700;color:rgba(58,59,56,0.7);text-transform:uppercase;">Updated</div>
+              <div style="font-size:11px;font-weight:600;color:#3a3b38;">Apr 1</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Waveform -->
+        <div style="min-height:100px;display:flex;align-items:flex-end;justify-content:center;padding:6px 0;gap:4px;">
+          <div style="width:12px;height:14px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+          <div style="width:12px;height:18px;border-radius:999px;background:#fcb500;opacity:0.32;"></div>
+          <div style="width:12px;height:14px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+          <div style="width:12px;height:20px;border-radius:999px;background:#fcb500;opacity:0.34;"></div>
+          <div style="width:12px;height:14px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+        </div>
+        <div style="text-align:center;font-size:11px;color:rgba(58,59,56,0.72);font-weight:600;padding-bottom:8px;">Speak naturally to start capture.</div>
+
+        <!-- Transcript box (bordered) -->
+        <div style="border:1px solid rgba(36,41,101,0.16);border-radius:10px;background:rgba(255,255,255,0.78);padding:8px;margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <span style="font-size:10px;text-transform:uppercase;font-weight:700;color:rgba(58,59,56,0.62);">Transcript</span>
+            <span style="border:1px solid #e1e1e1;border-radius:999px;padding:3px 8px;font-size:10px;font-weight:700;color:rgba(58,59,56,0.7);">Expand ↗</span>
+          </div>
+          <div style="font-size:12px;color:#3a3b38;">Listening...</div>
+        </div>
+
+        <!-- Buttons -->
+        <div style="display:flex;gap:8px;margin-bottom:2px;">
+          <div style="flex:1;border-radius:12px;min-height:44px;background:#fcb500;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:800;color:#3a3b38;">▶ Start</div>
+          <div style="flex:1;border-radius:12px;min-height:44px;background:rgba(233,102,0,0.14);border:1px solid rgba(233,102,0,0.38);display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:800;color:#e96600;">🏁 Complete</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">After (proposed)</div>
+    <div class="mockup-body" style="padding:0;background:#fff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;">
+
+      <!-- Unified header block: toolbar + summary merged -->
+      <div style="background:#3a3b38;color:#fffefc;border-radius:0 0 16px 16px;padding:8px 12px 14px;">
+        <!-- Toolbar row -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="border:1px solid rgba(255,255,255,0.46);border-radius:999px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:12px;">←</div>
+          <div style="border:1px solid rgba(255,255,255,0.46);border-radius:999px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:12px;">⚙</div>
+        </div>
+        <!-- Title + location -->
+        <div style="font-size:18px;font-weight:700;">HVAC Tune-up - Oak Street</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.72);margin-top:2px;">Front driveway</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);font-weight:600;margin-top:2px;">Scheduled · Ready for speech</div>
+        <!-- Stats: plain text row, no boxes -->
+        <div style="display:flex;gap:16px;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.6);">
+          <span><strong style="color:rgba(255,255,255,0.85);">0s</strong> duration</span>
+          <span><strong style="color:rgba(255,255,255,0.85);">Not started</strong></span>
+          <span>Updated <strong style="color:rgba(255,255,255,0.85);">Apr 1</strong></span>
+        </div>
+      </div>
+
+      <div style="padding:0 12px;">
+
+        <!-- Waveform (same) -->
+        <div style="min-height:100px;display:flex;align-items:flex-end;justify-content:center;padding:6px 0;gap:4px;">
+          <div style="width:12px;height:14px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+          <div style="width:12px;height:18px;border-radius:999px;background:#fcb500;opacity:0.32;"></div>
+          <div style="width:12px;height:14px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+          <div style="width:12px;height:20px;border-radius:999px;background:#fcb500;opacity:0.34;"></div>
+          <div style="width:12px;height:14px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+        </div>
+        <div style="text-align:center;font-size:11px;color:rgba(58,59,56,0.72);font-weight:600;padding-bottom:8px;">Speak naturally to start capture.</div>
+
+        <!-- Transcript: flat, no border -->
+        <div style="margin-bottom:10px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:10px;text-transform:uppercase;font-weight:700;color:rgba(58,59,56,0.5);">Transcript</span>
+            <span style="font-size:11px;font-weight:600;color:rgba(58,59,56,0.5);cursor:pointer;">Expand ↗</span>
+          </div>
+          <div style="font-size:12px;color:rgba(58,59,56,0.6);font-style:italic;">Listening for transcription...</div>
+        </div>
+
+        <!-- Buttons (same) -->
+        <div style="display:flex;gap:8px;margin-bottom:2px;">
+          <div style="flex:1;border-radius:12px;min-height:44px;background:#fcb500;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:800;color:#3a3b38;">▶ Start</div>
+          <div style="flex:1;border-radius:12px;min-height:44px;background:rgba(233,102,0,0.14);border:1px solid rgba(233,102,0,0.38);display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:800;color:#e96600;">🏁 Complete</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px;">Key changes in the proposed version:</p>
+<ul style="color:#aaa;font-size:14px;line-height:1.8;padding-left:20px;">
+  <li><strong>Toolbar + summary merged</strong> into one dark header block with rounded bottom corners</li>
+  <li><strong>Stats are plain text</strong> — "0s duration · Not started · Updated Apr 1" — no bordered boxes</li>
+  <li><strong>Transcript is flat</strong> — label + text, no bordered container</li>
+  <li><strong>Box count reduced</strong> from ~7 visible containers to ~2 (header + buttons)</li>
+</ul>
+
+<div class="options">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Looks good — proceed with this direction</h3>
+    </div>
+  </div>
+  <div class="option" data-choice="tweak" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Close, but I want to adjust something</h3>
+    </div>
+  </div>
+  <div class="option" data-choice="different" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Not what I had in mind — let's rethink</h3>
+    </div>
+  </div>
+</div>

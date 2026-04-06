@@ -1,0 +1,112 @@
+<h2>Active Recording View on iPad</h2>
+<p class="subtitle">The waveform + transcript + controls overlay. How should it use the extra iPad space?</p>
+
+<div class="cards">
+  <!-- Option A: Full-width scale -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f8f7f5;">
+      <div style="max-width: 420px; margin: 0 auto;">
+        <div style="border: 2px solid #3a3b38; border-radius: 14px; overflow: hidden; aspect-ratio: 3/4; display: flex; flex-direction: column; background: white;">
+          <!-- Dark header -->
+          <div style="background: #3a3b38; border-radius: 0 0 16px 16px; padding: 16px 24px 14px; color: #fffefc;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+              <div style="width: 34px; height: 34px; border: 1px solid rgba(255,255,255,0.46); border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px;">←</div>
+              <div style="width: 34px; height: 34px; border: 1px solid rgba(255,255,255,0.46); border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px;">⚙</div>
+            </div>
+            <div style="font-size: 17px; font-weight: bold;">Smith Residence</div>
+            <div style="font-size: 12px; opacity: 0.72; margin-top: 2px;">123 Main St, Springfield</div>
+            <div style="font-size: 10px; opacity: 0.55; margin-top: 2px;">Live · Recording speech</div>
+          </div>
+          <!-- Waveform area — full width -->
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 24px; gap: 8px;">
+            <div style="width: 100%; display: flex; align-items: end; justify-content: center; gap: 6px; height: 80px;">
+              <div style="width: 14px; height: 20px; background: #fcb500; border-radius: 99px; opacity: 0.4;"></div>
+              <div style="width: 14px; height: 45px; background: #fcb500; border-radius: 99px; opacity: 0.7;"></div>
+              <div style="width: 14px; height: 65px; background: #fcb500; border-radius: 99px; opacity: 0.9;"></div>
+              <div style="width: 14px; height: 80px; background: #fcb500; border-radius: 99px;"></div>
+              <div style="width: 14px; height: 55px; background: #fcb500; border-radius: 99px; opacity: 0.8;"></div>
+              <div style="width: 14px; height: 70px; background: #fcb500; border-radius: 99px; opacity: 0.85;"></div>
+              <div style="width: 14px; height: 40px; background: #fcb500; border-radius: 99px; opacity: 0.6;"></div>
+              <div style="width: 14px; height: 60px; background: #fcb500; border-radius: 99px; opacity: 0.8;"></div>
+              <div style="width: 14px; height: 35px; background: #fcb500; border-radius: 99px; opacity: 0.55;"></div>
+              <div style="width: 14px; height: 50px; background: #fcb500; border-radius: 99px; opacity: 0.7;"></div>
+              <div style="width: 14px; height: 25px; background: #fcb500; border-radius: 99px; opacity: 0.45;"></div>
+              <div style="width: 14px; height: 55px; background: #fcb500; border-radius: 99px; opacity: 0.75;"></div>
+              <div style="width: 14px; height: 30px; background: #fcb500; border-radius: 99px; opacity: 0.5;"></div>
+            </div>
+            <div style="font-size: 13px; color: rgba(58,59,56,0.72); font-weight: 600; text-align: center;">Speech detected.</div>
+          </div>
+          <!-- Transcript preview -->
+          <div style="padding: 0 24px; height: 70px; overflow: hidden; position: relative;">
+            <div style="font-size: 16px; line-height: 1.7; color: rgba(58,59,56,0.38);">
+              So the compressor unit looks like it needs a full replacement...
+            </div>
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to bottom, white, transparent);"></div>
+          </div>
+          <!-- Buttons -->
+          <div style="padding: 12px 24px 16px; display: flex; gap: 10px;">
+            <div style="flex: 1; background: white; border: 1px solid rgba(36,41,101,0.34); border-radius: 14px; padding: 14px; text-align: center; font-size: 14px; font-weight: 800; color: #242965;">⏸ Pause</div>
+            <div style="flex: 1; background: rgba(233,102,0,0.14); border: 1px solid rgba(233,102,0,0.38); border-radius: 14px; padding: 14px; text-align: center; font-size: 14px; font-weight: 800; color: #e96600;">🏁 Complete</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Full-Width Scale</h3>
+      <p>Everything scales up and stretches edge-to-edge. Waveform fills the width, buttons are wide, transcript text is large. Consistent with the list view approach.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Centered content zone -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f8f7f5;">
+      <div style="max-width: 420px; margin: 0 auto;">
+        <div style="border: 2px solid #3a3b38; border-radius: 14px; overflow: hidden; aspect-ratio: 3/4; display: flex; flex-direction: column; background: white;">
+          <!-- Dark header — full bleed -->
+          <div style="background: #3a3b38; border-radius: 0 0 16px 16px; padding: 16px 24px 14px; color: #fffefc;">
+            <div style="max-width: 520px; margin: 0 auto;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <div style="width: 34px; height: 34px; border: 1px solid rgba(255,255,255,0.46); border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px;">←</div>
+                <div style="width: 34px; height: 34px; border: 1px solid rgba(255,255,255,0.46); border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px;">⚙</div>
+              </div>
+              <div style="font-size: 17px; font-weight: bold;">Smith Residence</div>
+              <div style="font-size: 12px; opacity: 0.72; margin-top: 2px;">123 Main St, Springfield</div>
+              <div style="font-size: 10px; opacity: 0.55; margin-top: 2px;">Live · Recording speech</div>
+            </div>
+          </div>
+          <!-- Waveform area — capped width -->
+          <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 40px; gap: 8px;">
+            <div style="width: 280px; display: flex; align-items: end; justify-content: center; gap: 6px; height: 80px;">
+              <div style="width: 14px; height: 20px; background: #fcb500; border-radius: 99px; opacity: 0.4;"></div>
+              <div style="width: 14px; height: 45px; background: #fcb500; border-radius: 99px; opacity: 0.7;"></div>
+              <div style="width: 14px; height: 65px; background: #fcb500; border-radius: 99px; opacity: 0.9;"></div>
+              <div style="width: 14px; height: 80px; background: #fcb500; border-radius: 99px;"></div>
+              <div style="width: 14px; height: 55px; background: #fcb500; border-radius: 99px; opacity: 0.8;"></div>
+              <div style="width: 14px; height: 70px; background: #fcb500; border-radius: 99px; opacity: 0.85;"></div>
+              <div style="width: 14px; height: 40px; background: #fcb500; border-radius: 99px; opacity: 0.6;"></div>
+              <div style="width: 14px; height: 60px; background: #fcb500; border-radius: 99px; opacity: 0.8;"></div>
+              <div style="width: 14px; height: 35px; background: #fcb500; border-radius: 99px; opacity: 0.55;"></div>
+            </div>
+            <div style="font-size: 13px; color: rgba(58,59,56,0.72); font-weight: 600; text-align: center;">Speech detected.</div>
+          </div>
+          <!-- Transcript preview — capped -->
+          <div style="padding: 0 40px; height: 70px; overflow: hidden; position: relative;">
+            <div style="max-width: 380px; margin: 0 auto; font-size: 16px; line-height: 1.7; color: rgba(58,59,56,0.38);">
+              So the compressor unit looks like it needs a full replacement...
+            </div>
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 30px; background: linear-gradient(to bottom, white, transparent);"></div>
+          </div>
+          <!-- Buttons — capped width -->
+          <div style="padding: 12px 40px 16px; display: flex; gap: 10px; max-width: 460px; margin: 0 auto; width: 100%;">
+            <div style="flex: 1; background: white; border: 1px solid rgba(36,41,101,0.34); border-radius: 14px; padding: 14px; text-align: center; font-size: 14px; font-weight: 800; color: #242965;">⏸ Pause</div>
+            <div style="flex: 1; background: rgba(233,102,0,0.14); border: 1px solid rgba(233,102,0,0.38); border-radius: 14px; padding: 14px; text-align: center; font-size: 14px; font-weight: 800; color: #e96600;">🏁 Complete</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Capped Content Zone</h3>
+      <p>Header goes full-bleed (dark bar edge to edge), but the waveform, transcript, and buttons are capped at a comfortable max-width and centered. Prevents the waveform from looking stretched thin across the full iPad width.</p>
+    </div>
+  </div>
+</div>

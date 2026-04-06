@@ -1,0 +1,156 @@
+<h2>iPad Layout Strategy</h2>
+<p class="subtitle">How should the ride-along app adapt to the larger iPad screen? Pick the approach that feels right for a field worker tool.</p>
+
+<div class="cards">
+  <!-- Option A: Centered Column -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f8f7f5;">
+      <div style="max-width: 460px; margin: 0 auto;">
+        <!-- iPad frame -->
+        <div style="border: 2px solid #3a3b38; border-radius: 14px; overflow: hidden; aspect-ratio: 3/4; display: flex; flex-direction: column; background: #fffefc;">
+          <!-- Dark header -->
+          <div style="background: #3a3b38; padding: 14px 16px; color: #fffefc;">
+            <div style="font-size: 15px; font-weight: bold;">Ride Alongs</div>
+            <div style="font-size: 10px; opacity: 0.5; margin-top: 2px;">3 jobs assigned</div>
+          </div>
+          <!-- Content area with centered column -->
+          <div style="flex: 1; padding: 16px; display: flex; justify-content: center;">
+            <div style="width: 360px;">
+              <div style="background: white; border-radius: 10px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                <div style="font-size: 12px; font-weight: bold; color: #3a3b38;">Smith Residence</div>
+                <div style="font-size: 10px; color: rgba(58,59,56,0.55);">123 Main St</div>
+              </div>
+              <div style="background: white; border-radius: 10px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                <div style="font-size: 12px; font-weight: bold; color: #3a3b38;">Johnson HVAC</div>
+                <div style="font-size: 10px; color: rgba(58,59,56,0.55);">456 Oak Ave</div>
+              </div>
+              <div style="background: white; border-radius: 10px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                <div style="font-size: 12px; font-weight: bold; color: #3a3b38;">Williams Plumbing</div>
+                <div style="font-size: 10px; color: rgba(58,59,56,0.55);">789 Elm Blvd</div>
+              </div>
+            </div>
+          </div>
+          <!-- Nav -->
+          <div style="border-top: 1px solid #e1e1e1; padding: 8px; display: flex; justify-content: center; gap: 32px;">
+            <div style="text-align: center; font-size: 9px; color: #fcb500;">🏠 Home</div>
+            <div style="text-align: center; font-size: 9px; color: rgba(58,59,56,0.5);">↪ Logout</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Centered Column</h3>
+      <p>Keep the phone layout in a centered max-width column (~420px). Simple, no layout changes needed. Content stays familiar but uses iPad space for breathing room.</p>
+      <div class="pros-cons" style="margin-top: 8px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Minimal code changes</li><li>Phone layout stays intact</li><li>Consistent experience</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Wastes iPad screen real estate</li><li>Feels like a phone app on iPad</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option B: Scale + Breathe -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f8f7f5;">
+      <div style="max-width: 460px; margin: 0 auto;">
+        <div style="border: 2px solid #3a3b38; border-radius: 14px; overflow: hidden; aspect-ratio: 3/4; display: flex; flex-direction: column; background: #fffefc;">
+          <!-- Dark header — full width -->
+          <div style="background: #3a3b38; padding: 18px 28px; color: #fffefc;">
+            <div style="font-size: 18px; font-weight: bold;">Ride Alongs</div>
+            <div style="font-size: 12px; opacity: 0.5; margin-top: 3px;">3 jobs assigned</div>
+          </div>
+          <!-- Content — full width, bigger cards, more padding -->
+          <div style="flex: 1; padding: 20px 28px;">
+            <div style="background: white; border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+              <div style="font-size: 16px; font-weight: bold; color: #3a3b38;">Smith Residence</div>
+              <div style="font-size: 13px; color: rgba(58,59,56,0.55); margin-top: 2px;">123 Main St, Springfield</div>
+              <div style="margin-top: 8px;">
+                <span style="border: 1px solid rgba(36,41,101,0.14); border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: #242965; background: rgba(130,190,232,0.14);">Scheduled Mar 5</span>
+              </div>
+            </div>
+            <div style="background: white; border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+              <div style="font-size: 16px; font-weight: bold; color: #3a3b38;">Johnson HVAC</div>
+              <div style="font-size: 13px; color: rgba(58,59,56,0.55); margin-top: 2px;">456 Oak Ave, Springfield</div>
+              <div style="margin-top: 8px;">
+                <span style="border: 1px solid rgba(36,41,101,0.14); border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: #242965; background: rgba(130,190,232,0.14);">Scheduled Mar 5</span>
+              </div>
+            </div>
+            <div style="background: white; border-radius: 14px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+              <div style="font-size: 16px; font-weight: bold; color: #3a3b38;">Williams Plumbing</div>
+              <div style="font-size: 13px; color: rgba(58,59,56,0.55); margin-top: 2px;">789 Elm Blvd, Springfield</div>
+              <div style="margin-top: 8px;">
+                <span style="border: 1px solid rgba(36,41,101,0.14); border-radius: 99px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: #242965; background: rgba(130,190,232,0.14);">Scheduled Mar 6</span>
+              </div>
+            </div>
+          </div>
+          <!-- Nav -->
+          <div style="border-top: 1px solid #e1e1e1; padding: 10px; display: flex; justify-content: center; gap: 48px;">
+            <div style="text-align: center; font-size: 11px; color: #fcb500; font-weight: 600;">🏠 Home</div>
+            <div style="text-align: center; font-size: 11px; color: rgba(58,59,56,0.5);">↪ Logout</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Scale + Breathe</h3>
+      <p>Keep single-column layout but scale everything up: bigger text, more padding, larger cards, wider touch targets. The whole UI uses the iPad space without rearranging anything. Like the phone layout "grew up."</p>
+      <div class="pros-cons" style="margin-top: 8px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Uses full iPad width naturally</li><li>Bigger touch targets for field use</li><li>Feels intentional, not cramped</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>Cards may look oddly wide</li><li>Single-column list with 3 items looks sparse</li></ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Option C: Adaptive Density -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 20px; background: #f8f7f5;">
+      <div style="max-width: 460px; margin: 0 auto;">
+        <div style="border: 2px solid #3a3b38; border-radius: 14px; overflow: hidden; aspect-ratio: 3/4; display: flex; flex-direction: column; background: #fffefc;">
+          <!-- Dark header — full width -->
+          <div style="background: #3a3b38; padding: 18px 28px; color: #fffefc;">
+            <div style="font-size: 18px; font-weight: bold;">Ride Alongs</div>
+            <div style="font-size: 12px; opacity: 0.5; margin-top: 3px;">3 jobs assigned</div>
+          </div>
+          <!-- Content — 2-col grid -->
+          <div style="flex: 1; padding: 20px 24px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div style="background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                <div style="font-size: 14px; font-weight: bold; color: #3a3b38;">Smith Residence</div>
+                <div style="font-size: 11px; color: rgba(58,59,56,0.55); margin-top: 2px;">123 Main St</div>
+                <div style="margin-top: 8px;">
+                  <span style="border: 1px solid rgba(36,41,101,0.14); border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 600; color: #242965; background: rgba(130,190,232,0.14);">Scheduled</span>
+                </div>
+              </div>
+              <div style="background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                <div style="font-size: 14px; font-weight: bold; color: #3a3b38;">Johnson HVAC</div>
+                <div style="font-size: 11px; color: rgba(58,59,56,0.55); margin-top: 2px;">456 Oak Ave</div>
+                <div style="margin-top: 8px;">
+                  <span style="border: 1px solid rgba(36,41,101,0.14); border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 600; color: #242965; background: rgba(130,190,232,0.14);">Scheduled</span>
+                </div>
+              </div>
+              <div style="background: white; border-radius: 14px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);">
+                <div style="font-size: 14px; font-weight: bold; color: #3a3b38;">Williams Plumbing</div>
+                <div style="font-size: 11px; color: rgba(58,59,56,0.55); margin-top: 2px;">789 Elm Blvd</div>
+                <div style="margin-top: 8px;">
+                  <span style="border: 1px solid rgba(36,41,101,0.14); border-radius: 99px; padding: 2px 8px; font-size: 10px; font-weight: 600; color: #242965; background: rgba(130,190,232,0.14);">Scheduled</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Nav -->
+          <div style="border-top: 1px solid #e1e1e1; padding: 10px; display: flex; justify-content: center; gap: 48px;">
+            <div style="text-align: center; font-size: 11px; color: #fcb500; font-weight: 600;">🏠 Home</div>
+            <div style="text-align: center; font-size: 11px; color: rgba(58,59,56,0.5);">↪ Logout</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Adaptive Grid</h3>
+      <p>Scale up text/spacing AND rearrange cards into a 2-column grid on iPad. Best of both worlds — bigger UI elements plus smarter use of horizontal space. Active view stays single-column and centered.</p>
+      <div class="pros-cons" style="margin-top: 8px;">
+        <div class="pros"><h4>Pros</h4><ul><li>Best use of iPad screen real estate</li><li>Feels like a native iPad app</li><li>Scales up AND rearranges</li></ul></div>
+        <div class="cons"><h4>Cons</h4><ul><li>More CSS changes needed</li><li>Need to handle odd card counts</li></ul></div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,109 @@
+<h2>Ride Along List — Redesign</h2>
+<p class="subtitle">Current vs. proposed — bringing the list in line with the active view's unified dark header + flat style</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Before (current)</div>
+    <div class="mockup-body" style="padding:0;background:#fffefc;font-family:system-ui,-apple-system,sans-serif;font-size:13px;background-image:linear-gradient(135deg, #e96600 0%, #fcb500 50%, #e96600 100%);background-size:cover;min-height:480px;">
+
+      <div style="padding:50px 14px 14px;">
+        <!-- Bordered white card container -->
+        <div style="border:1px solid #e1e1e1;border-radius:16px;background:#fff;padding:14px;display:flex;flex-direction:column;gap:12px;">
+          <!-- Header -->
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div>
+              <div style="font-size:20px;font-weight:700;color:#3a3b38;">Ride Alongs</div>
+              <div style="font-size:12px;color:rgba(58,59,56,0.7);margin-top:4px;">Select a job below to begin your ride along.</div>
+            </div>
+            <div style="border:1px solid #e1e1e1;border-radius:999px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:rgba(58,59,56,0.7);font-size:12px;">↻</div>
+          </div>
+
+          <!-- Card 1 -->
+          <div style="border:1px solid #e1e1e1;border-radius:14px;background:#fff;padding:12px;display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="font-size:14px;font-weight:700;color:#3a3b38;">HVAC Tune-up - Oak Street</div>
+              <span style="border:1px solid rgba(36,41,101,0.14);border-radius:999px;padding:4px 8px;font-size:11px;font-weight:600;color:#242965;background:rgba(130,190,232,0.14);white-space:nowrap;">Scheduled</span>
+            </div>
+            <div style="font-size:12px;color:rgba(58,59,56,0.7);">Front driveway</div>
+          </div>
+
+          <!-- Card 2 -->
+          <div style="border:1px solid #e1e1e1;border-radius:14px;background:#fff;padding:12px;display:flex;flex-direction:column;gap:7px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="font-size:14px;font-weight:700;color:#3a3b38;">Furnace Install - Elm Ave</div>
+              <span style="border:1px solid rgba(36,41,101,0.14);border-radius:999px;padding:4px 8px;font-size:11px;font-weight:600;color:#242965;background:rgba(130,190,232,0.14);white-space:nowrap;">Scheduled</span>
+            </div>
+            <div style="font-size:12px;color:rgba(58,59,56,0.7);">Side entrance</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">After (proposed)</div>
+    <div class="mockup-body" style="padding:0;background:#fffefc;font-family:system-ui,-apple-system,sans-serif;font-size:13px;background-image:linear-gradient(135deg, #e96600 0%, #fcb500 50%, #e96600 100%);background-size:cover;min-height:480px;">
+
+      <!-- Dark header — matches active view style -->
+      <div style="background:#3a3b38;border-radius:0 0 20px 20px;padding:50px 16px 18px;color:#fffefc;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+          <div style="font-size:22px;font-weight:700;">Ride Alongs</div>
+          <div style="border:1px solid rgba(255,255,255,0.46);border-radius:999px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:12px;">↻</div>
+        </div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.55);">Select a job below to begin.</div>
+      </div>
+
+      <div style="padding:12px 14px;">
+
+        <!-- Job card 1 — cleaner, no outer border box -->
+        <div style="background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <div style="font-size:15px;font-weight:700;color:#3a3b38;">HVAC Tune-up - Oak Street</div>
+          <div style="font-size:13px;color:rgba(58,59,56,0.6);margin-top:3px;">Front driveway</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+            <span style="font-size:11px;font-weight:600;color:#242965;background:rgba(130,190,232,0.14);border-radius:999px;padding:3px 10px;">Scheduled</span>
+          </div>
+        </div>
+
+        <!-- Job card 2 -->
+        <div style="background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+          <div style="font-size:15px;font-weight:700;color:#3a3b38;">Furnace Install - Elm Ave</div>
+          <div style="font-size:13px;color:rgba(58,59,56,0.6);margin-top:3px;">Side entrance</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+            <span style="font-size:11px;font-weight:600;color:#242965;background:rgba(130,190,232,0.14);border-radius:999px;padding:3px 10px;">Scheduled</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px;">Key changes:</p>
+<ul style="color:#aaa;font-size:14px;line-height:1.8;padding-left:20px;">
+  <li><strong>Dark header</strong> with "Ride Alongs" title + refresh button — matches the active view's unified header</li>
+  <li><strong>No outer bordered card</strong> wrapping everything — jobs sit directly on the background</li>
+  <li><strong>Job cards are cleaner</strong> — subtle shadow instead of border, status chip below title instead of cramped on the right</li>
+  <li><strong>Title + location stacked</strong> — no side-by-side squeeze with the status pill</li>
+</ul>
+
+<div class="options">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Looks good — proceed with this direction</h3>
+    </div>
+  </div>
+  <div class="option" data-choice="tweak" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Close, but I want to adjust something</h3>
+    </div>
+  </div>
+  <div class="option" data-choice="different" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Not what I had in mind</h3>
+    </div>
+  </div>
+</div>

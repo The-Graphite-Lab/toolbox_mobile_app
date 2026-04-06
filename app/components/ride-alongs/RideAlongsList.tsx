@@ -70,7 +70,7 @@ export default function RideAlongsList({
           key={rideAlong.id}
           type="button"
           onClick={() => onSelect(rideAlong)}
-          className="bg-white rounded-[14px] md:rounded-[18px] text-left p-[14px] md:p-5 cursor-pointer flex flex-col gap-[3px] md:gap-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.06)] border-none"
+          className="bg-white rounded-[14px] md:rounded-[22px] text-left p-[14px] md:p-5 cursor-pointer flex flex-col gap-[3px] md:gap-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.06)] border border-color-border/40 md:border-color-border/60"
         >
           <div className="text-[15px] md:text-[19px] font-bold text-color-text">{rideAlong.name}</div>
           <div className="text-[13px] md:text-[16px] text-[rgba(58,59,56,0.55)]">

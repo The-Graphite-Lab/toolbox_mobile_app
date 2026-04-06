@@ -1,0 +1,120 @@
+<h2>Current Ride Along Page Layout</h2>
+<p class="subtitle">Here's a wireframe of how the active ride along view is currently structured. Which areas feel like they have extra spacing or poor design?</p>
+
+<div class="mockup">
+  <div class="mockup-header">Active Ride Along View (current)</div>
+  <div class="mockup-body" style="padding:0;background:#fff;font-family:system-ui,-apple-system,sans-serif;">
+
+    <!-- Toolbar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#3a3b38;color:#fffefc;">
+      <div style="border:1px solid rgba(255,255,255,0.46);border-radius:999px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:14px;">←</div>
+      <div style="border:1px solid rgba(255,255,255,0.46);border-radius:999px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-size:14px;">⚙</div>
+    </div>
+
+    <!-- gap between toolbar and summary card -->
+    <div style="padding:8px 12px 0;">
+
+      <!-- Summary card -->
+      <div style="border:1px solid #e1e1e1;border-radius:14px;background:#fffefc;padding:10px 12px;margin-bottom:10px;">
+        <div style="font-size:21px;font-weight:700;color:#3a3b38;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">HVAC Tune-up - Oak Street</div>
+        <div style="font-size:15px;color:rgba(58,59,56,0.78);margin-top:3px;">Front driveway</div>
+        <div style="font-size:12px;color:rgba(58,59,56,0.72);font-weight:600;margin-top:3px;">Scheduled · Ready for speech</div>
+
+        <!-- Stats grid -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px;">
+          <div style="border:1px solid #e1e1e1;border-radius:10px;background:#fff;padding:7px 8px;">
+            <div style="font-size:10px;font-weight:700;color:rgba(58,59,56,0.7);text-transform:uppercase;">Total Duration</div>
+            <div style="font-size:12px;font-weight:600;color:#3a3b38;">0s</div>
+          </div>
+          <div style="border:1px solid #e1e1e1;border-radius:10px;background:#fff;padding:7px 8px;">
+            <div style="font-size:10px;font-weight:700;color:rgba(58,59,56,0.7);text-transform:uppercase;">Started</div>
+            <div style="font-size:12px;font-weight:600;color:#3a3b38;">Not started</div>
+          </div>
+          <div style="border:1px solid #e1e1e1;border-radius:10px;background:#fff;padding:7px 8px;">
+            <div style="font-size:10px;font-weight:700;color:rgba(58,59,56,0.7);text-transform:uppercase;">Updated</div>
+            <div style="font-size:12px;font-weight:600;color:#3a3b38;">Apr 1, 3:20 PM</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Waveform area (large gap) -->
+      <div style="min-height:152px;display:flex;align-items:flex-end;justify-content:center;padding:8px 0;gap:5px;">
+        <div style="width:16px;height:16px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+        <div style="width:16px;height:20px;border-radius:999px;background:#fcb500;opacity:0.32;"></div>
+        <div style="width:16px;height:16px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+        <div style="width:16px;height:24px;border-radius:999px;background:#fcb500;opacity:0.36;"></div>
+        <div style="width:16px;height:16px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+        <div style="width:16px;height:18px;border-radius:999px;background:#fcb500;opacity:0.3;"></div>
+        <div style="width:16px;height:16px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+        <div style="width:16px;height:22px;border-radius:999px;background:#fcb500;opacity:0.34;"></div>
+        <div style="width:16px;height:16px;border-radius:999px;background:#fcb500;opacity:0.28;"></div>
+      </div>
+
+      <!-- Helper text -->
+      <div style="text-align:center;font-size:13px;color:rgba(58,59,56,0.72);font-weight:600;padding-bottom:12px;">Speak naturally to start capture.</div>
+
+      <!-- Transcript box -->
+      <div style="border:1px solid rgba(36,41,101,0.16);border-radius:12px;background:rgba(255,255,255,0.78);padding:10px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:11px;text-transform:uppercase;font-weight:700;color:rgba(58,59,56,0.62);">Transcript</span>
+          <span style="border:1px solid #e1e1e1;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;color:rgba(58,59,56,0.7);">Expand ↗</span>
+        </div>
+        <div style="font-size:14px;color:#3a3b38;">Listening for transcription...</div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:10px;margin-bottom:2px;">
+        <div style="flex:1;border-radius:14px;min-height:52px;background:#fcb500;border:1px solid rgba(252,181,0,0.62);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:800;color:#3a3b38;">▶ Start</div>
+        <div style="flex:1;border-radius:14px;min-height:52px;background:rgba(233,102,0,0.14);border:1px solid rgba(233,102,0,0.38);display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:800;color:#e96600;">🏁 Complete</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:20px;">Click on the areas that feel off, or tell me in the terminal what bugs you about the spacing/layout.</p>
+
+<div class="options" data-multiselect>
+  <div class="option" data-choice="toolbar-gap" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Gap between toolbar and summary card</h3>
+      <p>The dark toolbar and the info card below it feel disconnected</p>
+    </div>
+  </div>
+  <div class="option" data-choice="waveform-height" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Waveform area is too tall</h3>
+      <p>The 152px minimum height takes up too much space when idle</p>
+    </div>
+  </div>
+  <div class="option" data-choice="stats-grid" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>Stats grid feels cramped or unnecessary</h3>
+      <p>Total Duration / Started / Updated might be better elsewhere</p>
+    </div>
+  </div>
+  <div class="option" data-choice="transcript-spacing" onclick="toggleSelect(this)">
+    <div class="letter">D</div>
+    <div class="content">
+      <h3>Transcript section spacing</h3>
+      <p>Too much gap around the transcript box</p>
+    </div>
+  </div>
+  <div class="option" data-choice="overall-density" onclick="toggleSelect(this)">
+    <div class="letter">E</div>
+    <div class="content">
+      <h3>Overall page feels too spaced out / sparse</h3>
+      <p>Too many boxes and borders, not enough content density</p>
+    </div>
+  </div>
+  <div class="option" data-choice="other" onclick="toggleSelect(this)">
+    <div class="letter">F</div>
+    <div class="content">
+      <h3>Something else</h3>
+      <p>I'll describe it in the terminal</p>
+    </div>
+  </div>
+</div>

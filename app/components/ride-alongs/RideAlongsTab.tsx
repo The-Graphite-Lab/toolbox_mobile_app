@@ -1587,7 +1587,7 @@ export default function RideAlongsTab({
                 setIsDetailsFlyoutOpen(false)
                 setViewMode('rideAlong')
               }}
-              className="border border-support-positive/[0.28] rounded-2xl md:rounded-[18px] bg-support-positive/[0.12] text-color-text text-left px-[14px] md:px-5 py-[13px] md:py-4 cursor-pointer text-[13px] md:text-[16px] font-semibold"
+              className="border border-support-positive/[0.28] rounded-2xl md:rounded-[22px] bg-support-positive/[0.12] text-color-text text-left px-[14px] md:px-6 py-[13px] md:py-5 cursor-pointer text-[13px] md:text-[17px] font-semibold"
             >
               You have an active ride along in progress. Tap to resume.
             </button>
@@ -1616,7 +1616,7 @@ export default function RideAlongsTab({
 
   const activeOverlay = (
     <div className="fixed top-0 left-0 w-screen h-dvh z-[6000] overflow-hidden bg-white" style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 10px)' }}>
-      <div className="relative w-full h-full overflow-hidden bg-white pt-2 px-3 md:px-5 flex flex-col gap-2.5 md:max-w-[620px] md:mx-auto">
+      <div className="relative w-full h-full overflow-hidden bg-white pt-2 px-3 md:px-5 flex flex-col gap-2.5">
         <RideAlongActiveHeader
           rideAlong={selectedRideAlong}
           isSessionActive={liveSessionState.isActive}
