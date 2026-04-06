@@ -49,7 +49,7 @@ export default function RideAlongsList({
 }: RideAlongsListProps) {
   if (isLoading) {
     return (
-      <div className="text-color-text-muted text-[13px] py-4 text-center">
+      <div className="text-color-text-muted text-[13px] md:text-[16px] py-4 text-center">
         Loading your jobs...
       </div>
     )
@@ -57,27 +57,27 @@ export default function RideAlongsList({
 
   if (rideAlongs.length === 0) {
     return (
-      <div className="text-color-text-muted text-[13px] py-4 text-center">
+      <div className="text-color-text-muted text-[13px] md:text-[16px] py-4 text-center">
         No jobs are assigned to you right now. Check back soon or contact your supervisor.
       </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-col gap-2.5 md:gap-3.5">
       {rideAlongs.map((rideAlong) => (
         <button
           key={rideAlong.id}
           type="button"
           onClick={() => onSelect(rideAlong)}
-          className="bg-white rounded-[14px] text-left p-[14px] cursor-pointer flex flex-col gap-[3px] shadow-[0_1px_4px_rgba(0,0,0,0.06)] border-none"
+          className="bg-white rounded-[14px] md:rounded-[18px] text-left p-[14px] md:p-5 cursor-pointer flex flex-col gap-[3px] md:gap-[5px] shadow-[0_1px_4px_rgba(0,0,0,0.06)] border-none"
         >
-          <div className="text-[15px] font-bold text-color-text">{rideAlong.name}</div>
-          <div className="text-[13px] text-[rgba(58,59,56,0.55)]">
+          <div className="text-[15px] md:text-[19px] font-bold text-color-text">{rideAlong.name}</div>
+          <div className="text-[13px] md:text-[16px] text-[rgba(58,59,56,0.55)]">
             {getRideAlongSubtitle(rideAlong)}
           </div>
           <div className="mt-1.5">
-            <span className="border border-brand-navy/[0.14] rounded-full px-2.5 py-[3px] text-[11px] font-semibold text-brand-navy bg-brand-cerulean/[0.14]">
+            <span className="border border-brand-navy/[0.14] rounded-full px-2.5 md:px-3.5 py-[3px] md:py-[5px] text-[11px] md:text-[14px] font-semibold text-brand-navy bg-brand-cerulean/[0.14]">
               {getScheduledLabel(rideAlong.startedAt)}
             </span>
           </div>

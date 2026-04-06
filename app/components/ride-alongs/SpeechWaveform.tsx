@@ -12,6 +12,7 @@ type SpeechWaveformProps = {
   isMonitoringEnabled: boolean
 }
 
+const TABLET_MEDIA_QUERY = '(min-width: 768px)'
 const BAR_COUNT = 19
 const FRAME_INTERVAL_MS = 56
 const LEVEL_ATTACK_SMOOTHING = 0.68
@@ -23,8 +24,6 @@ const SPECTRUM_EXPONENT = 1.06
 const SPECTRUM_TRANSIENT_GAIN = 1.2
 const SPECTRUM_CONTRAST_GAIN = 0.96
 const SILENCE_DECAY = 0.88
-const REST_BAR_HEIGHT_PX = 16
-const MAX_BAR_HEIGHT_PX = 108
 const REST_BAR_OPACITY = 0.28
 
 const sampleSpectrumBand = (spectrum: number[], ratio: number) => {
@@ -59,6 +58,20 @@ export default function SpeechWaveform({
   spectrumLevels,
   isMonitoringEnabled,
 }: SpeechWaveformProps) {
+  const [isTablet, setIsTablet] = useState(false)
+
+  useEffect(() => {
+    const mql = window.matchMedia(TABLET_MEDIA_QUERY)
+    setIsTablet(mql.matches)
+    const handler = (e: MediaQueryListEvent) => setIsTablet(e.matches)
+    mql.addEventListener('change', handler)
+    return () => mql.removeEventListener('change', handler)
+  }, [])
+
+  const barWidth = isTablet ? 20 : 16
+  const maxBarHeight = isTablet ? 140 : 108
+  const restBarHeight = isTablet ? 20 : 16
+
   const [bars, setBars] = useState<number[]>(() => Array(BAR_COUNT).fill(0))
   const targetLevelRef = useRef(0)
   const targetSpectrumRef = useRef<number[] | null>(null)
@@ -217,15 +230,15 @@ export default function SpeechWaveform({
     () =>
       bars.map((barLevel, index) => {
         const height =
-          REST_BAR_HEIGHT_PX +
-          barLevel * (MAX_BAR_HEIGHT_PX - REST_BAR_HEIGHT_PX)
+          restBarHeight +
+          barLevel * (maxBarHeight - restBarHeight)
         const opacity = REST_BAR_OPACITY + barLevel * (1 - REST_BAR_OPACITY)
 
         return (
           <div
             key={`wave-bar-${index}`}
             style={{
-              width: '16px',
+              width: `${barWidth}px`,
               height: `${height}px`,
               borderRadius: '999px',
               backgroundColor: 'var(--color-brand-marigold)',
@@ -235,11 +248,11 @@ export default function SpeechWaveform({
           />
         )
       }),
-    [bars]
+    [bars, barWidth, maxBarHeight, restBarHeight]
   )
 
   return (
-    <div className="relative w-full min-h-[152px] rounded-none border-none bg-transparent flex items-end justify-center py-2 overflow-hidden">
+    <div className="relative w-full min-h-[152px] md:min-h-[200px] rounded-none border-none bg-transparent flex items-end justify-center py-2 overflow-hidden">
       <div className="w-full flex items-end justify-center gap-[5px] pb-[2px]">
         {barElements}
       </div>

@@ -216,12 +216,12 @@ export default function RideAlongActiveHeader({
 
   return (
     <>
-      <div className="-mx-3 -mt-2 bg-neutral-graphite rounded-b-2xl px-3 pt-2 pb-[14px] text-neutral-alabaster">
+      <div className="-mx-3 md:-mx-5 -mt-2 bg-neutral-graphite rounded-b-2xl px-3 md:px-5 pt-2 pb-[14px] md:pb-5 text-neutral-alabaster">
         <div className="flex items-center justify-between mb-2.5">
           <button
             type="button"
             onClick={onBack}
-            className="border border-white/[0.46] rounded-full min-w-[38px] h-[38px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px]"
+            className="border border-white/[0.46] rounded-full min-w-[38px] md:min-w-[46px] h-[38px] md:h-[46px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px]"
             aria-label="Back to ride along list"
           >
             <i className="fa-solid fa-arrow-left" aria-hidden="true" />
@@ -229,21 +229,21 @@ export default function RideAlongActiveHeader({
           <button
             type="button"
             onClick={onOpenDetails}
-            className="border border-white/[0.46] rounded-full min-w-[38px] h-[38px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px]"
+            className="border border-white/[0.46] rounded-full min-w-[38px] md:min-w-[46px] h-[38px] md:h-[46px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer text-[14px]"
             aria-label="Open ride along details"
           >
             <i className="fa-solid fa-sliders" aria-hidden="true" />
           </button>
         </div>
 
-        <h2 className="m-0 text-[18px] truncate">{rideAlong.name}</h2>
-        <p className="m-0 text-[13px] text-white/[0.72] mt-[2px] truncate">{summaryLocation}</p>
-        <p className="m-0 text-[11px] text-white/[0.55] font-semibold mt-[2px]">
+        <h2 className="m-0 text-[18px] md:text-[22px] truncate">{rideAlong.name}</h2>
+        <p className="m-0 text-[13px] md:text-[16px] text-white/[0.72] mt-[2px] truncate">{summaryLocation}</p>
+        <p className="m-0 text-[11px] md:text-[13px] text-white/[0.55] font-semibold mt-[2px]">
           {getStatusLabel(rideAlong.status)}
           {' \u00b7 '}
           {isSessionActive ? 'Recording speech' : 'Ready for speech'}
         </p>
-        <div className="flex gap-4 mt-2 text-[11px] text-white/[0.6]">
+        <div className="flex gap-4 mt-2 text-[11px] md:text-[13px] text-white/[0.6]">
           <span><strong className="text-white/[0.85]">{totalDuration}</strong> duration</span>
           <span><strong className="text-white/[0.85]">{startedLabel}</strong></span>
           <span>Updated <strong className="text-white/[0.85]">{updatedLabel}</strong></span>
@@ -267,10 +267,10 @@ export default function RideAlongActiveHeader({
           paddingTop: 'max(env(safe-area-inset-top, 0px), 14px)',
           paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 14px)',
         }}
-        className="fixed top-0 right-0 bottom-0 w-[min(340px,100%)] border-l border-brand-navy/[0.12] rounded-[22px_0_0_22px] bg-white shadow-[-12px_0_30px_rgba(36,41,101,0.16)] z-[22] transition-transform duration-[180ms] ease-out flex flex-col gap-3 px-[14px]"
+        className="fixed top-0 right-0 bottom-0 w-[min(340px,100%)] md:w-[min(420px,100%)] border-l border-brand-navy/[0.12] rounded-[22px_0_0_22px] bg-white shadow-[-12px_0_30px_rgba(36,41,101,0.16)] z-[22] transition-transform duration-[180ms] ease-out flex flex-col gap-3 px-[14px]"
       >
         <div className="flex items-center justify-between gap-2">
-          <h3 className="m-0 text-[17px] text-color-text">Ride Along Details</h3>
+          <h3 className="m-0 text-[17px] md:text-[20px] text-color-text">Ride Along Details</h3>
           <button
             type="button"
             onClick={onCloseDetails}
@@ -293,12 +293,12 @@ export default function RideAlongActiveHeader({
           ].map(({ label, value }) => (
             <div
               key={label}
-              className="border border-color-border rounded-xl bg-white p-[10px] flex flex-col gap-[3px]"
+              className="border border-color-border rounded-xl bg-white p-[10px] md:p-3.5 flex flex-col gap-[3px]"
             >
-              <div className="text-[11px] font-bold text-color-text-muted uppercase tracking-[0.2px]">
+              <div className="text-[11px] md:text-[13px] font-bold text-color-text-muted uppercase tracking-[0.2px]">
                 {label}
               </div>
-              <div className="text-[12px] text-color-text leading-[1.35] break-words">
+              <div className="text-[12px] md:text-[14px] text-color-text leading-[1.35] break-words">
                 {value}
               </div>
             </div>

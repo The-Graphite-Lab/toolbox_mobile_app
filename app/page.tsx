@@ -37,7 +37,7 @@ function TechnicianRideAlongApp() {
     <div
       className="w-full h-dvh min-h-dvh flex flex-col overflow-hidden bg-neutral-alabaster"
     >
-      <div className="flex-1 min-h-0 overflow-hidden px-[14px]">
+      <div className="flex-1 min-h-0 overflow-hidden">
         <RideAlongsTab
           clientId={clientId}
           userId={userId}
@@ -52,25 +52,25 @@ function TechnicianRideAlongApp() {
         style={{ paddingBottom: BOTTOM_SAFE_AREA_INSET, minHeight: BOTTOM_BAR_HEIGHT }}
         className="w-full flex-shrink-0 pt-1.5 bg-white border-t border-color-border flex flex-row items-center justify-center px-[10px]"
       >
-        <div className="w-full flex items-center justify-evenly gap-1.5">
+        <div className="w-full flex items-center justify-evenly gap-1.5 md:gap-3">
           <button
             type="button"
             aria-label="Home"
             aria-current="page"
             onClick={() => setHomeTrigger((t) => t + 1)}
-            className="border-none rounded-[10px] bg-brand-sand text-brand-marigold cursor-pointer flex flex-col items-center justify-center gap-[3px] py-[5px] px-4 min-w-[72px] flex-1"
+            className="border-none rounded-[10px] bg-brand-sand text-brand-marigold cursor-pointer flex flex-col items-center justify-center gap-[3px] py-[5px] px-4 min-w-[72px] md:min-w-[90px] md:max-w-[160px] flex-1"
           >
-            <i className="fa-solid fa-house text-[17px]" aria-hidden="true" />
-            <span className="text-[10px] font-semibold">Home</span>
+            <i className="fa-solid fa-house text-[17px] md:text-[20px]" aria-hidden="true" />
+            <span className="text-[10px] md:text-[12px] font-semibold">Home</span>
           </button>
           <button
             type="button"
             aria-label="Logout"
             onClick={() => setShowLogoutConfirm(true)}
-            className="border-none rounded-[10px] bg-transparent text-color-text-muted cursor-pointer flex flex-col items-center justify-center gap-[3px] py-[5px] px-4 min-w-[72px] flex-1"
+            className="border-none rounded-[10px] bg-transparent text-color-text-muted cursor-pointer flex flex-col items-center justify-center gap-[3px] py-[5px] px-4 min-w-[72px] md:min-w-[90px] md:max-w-[160px] flex-1"
           >
-            <i className="fa-solid fa-right-from-bracket text-[17px]" aria-hidden="true" />
-            <span className="text-[10px] font-semibold">Logout</span>
+            <i className="fa-solid fa-right-from-bracket text-[17px] md:text-[20px]" aria-hidden="true" />
+            <span className="text-[10px] md:text-[12px] font-semibold">Logout</span>
           </button>
         </div>
       </nav>

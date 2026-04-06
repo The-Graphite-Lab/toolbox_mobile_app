@@ -1561,24 +1561,24 @@ export default function RideAlongsTab({
   if (viewMode === 'list') {
     return (
       <div className="w-full h-full overflow-y-auto flex flex-col bg-transparent">
-        <div className="bg-neutral-graphite rounded-b-2xl px-4 pb-4 text-neutral-alabaster" style={{ paddingTop: topContentInset }}>
+        <div className="bg-neutral-graphite rounded-b-2xl px-4 md:px-8 pb-4 md:pb-5 text-neutral-alabaster" style={{ paddingTop: topContentInset }}>
           <div className="flex items-center justify-between">
-            <h2 className="m-0 text-[22px] font-bold">Ride Alongs</h2>
+            <h2 className="m-0 text-[22px] md:text-[28px] font-bold">Ride Alongs</h2>
             <button
               type="button"
               onClick={() => { void loadRideAlongs() }}
-              className="border border-white/[0.46] rounded-full min-w-[34px] h-[34px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer"
+              className="border border-white/[0.46] rounded-full min-w-[34px] md:min-w-[42px] h-[34px] md:h-[42px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer"
               aria-label="Refresh ride along list"
             >
               <i className="fa-solid fa-rotate-right" aria-hidden="true" />
             </button>
           </div>
-          <p className="m-0 text-[13px] text-white/[0.5] mt-1">
+          <p className="m-0 text-[13px] md:text-[16px] text-white/[0.5] mt-1">
             {isLoadingList ? 'Loading...' : `${scheduledRideAlongs.length} job${scheduledRideAlongs.length === 1 ? '' : 's'} assigned`}
           </p>
         </div>
 
-        <div className="px-[14px] py-3 flex flex-col gap-2.5">
+        <div className="px-[14px] md:px-6 py-3 md:py-4 flex flex-col gap-2.5">
           {activeRideAlong ? (
             <button
               type="button"
@@ -1587,7 +1587,7 @@ export default function RideAlongsTab({
                 setIsDetailsFlyoutOpen(false)
                 setViewMode('rideAlong')
               }}
-              className="border border-support-positive/[0.28] rounded-2xl bg-support-positive/[0.12] text-color-text text-left px-[14px] py-[13px] cursor-pointer text-[13px] font-semibold"
+              className="border border-support-positive/[0.28] rounded-2xl md:rounded-[18px] bg-support-positive/[0.12] text-color-text text-left px-[14px] md:px-5 py-[13px] md:py-4 cursor-pointer text-[13px] md:text-[16px] font-semibold"
             >
               You have an active ride along in progress. Tap to resume.
             </button>
@@ -1616,7 +1616,7 @@ export default function RideAlongsTab({
 
   const activeOverlay = (
     <div className="fixed top-0 left-0 w-screen h-dvh z-[6000] overflow-hidden bg-white" style={{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 10px)' }}>
-      <div className="relative w-full h-full overflow-hidden bg-white pt-2 px-3 flex flex-col gap-2.5">
+      <div className="relative w-full h-full overflow-hidden bg-white pt-2 px-3 md:px-5 flex flex-col gap-2.5 md:max-w-[620px] md:mx-auto">
         <RideAlongActiveHeader
           rideAlong={selectedRideAlong}
           isSessionActive={liveSessionState.isActive}

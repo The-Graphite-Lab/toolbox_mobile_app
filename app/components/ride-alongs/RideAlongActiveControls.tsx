@@ -132,6 +132,7 @@ export default function RideAlongActiveControls({
   const disableCompleteAction = isBusy || isStoppingSession || rideAlongStatus === 'ENDED'
   const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false)
   const transcriptTurnsScrollRef = useRef<HTMLDivElement | null>(null)
+  const transcriptPreviewScrollRef = useRef<HTMLDivElement | null>(null)
 
   const helperMessage = isRideAlongPaused
     ? 'Ride along is paused. Tap resume when ready.'
@@ -184,6 +185,12 @@ export default function RideAlongActiveControls({
     })
   }, [isTranscriptExpanded, combinedTranscriptTurns.length])
 
+  useEffect(() => {
+    const el = transcriptPreviewScrollRef.current
+    if (!el) return
+    el.scrollTop = el.scrollHeight
+  }, [combinedTranscriptTurns.length, liveTranscriptPreviewText])
+
   const mainActionToneClass =
     actionConfig.tone === 'primary' || actionConfig.tone === 'resume'
       ? 'bg-brand-marigold border-brand-marigold/[0.62] text-neutral-graphite'
@@ -193,7 +200,7 @@ export default function RideAlongActiveControls({
 
   return (
     <section className="flex-1 min-h-0 flex flex-col justify-end gap-3 pb-[2px]" aria-label="Live ride along controls">
-      <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-3 py-1.5">
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-3 md:gap-4 py-1.5">
         <div className="w-full max-w-[620px]">
           <SpeechWaveform
             level={currentLevel}
@@ -201,7 +208,7 @@ export default function RideAlongActiveControls({
             isMonitoringEnabled={isMonitoringEnabled && !isRideAlongPaused}
           />
         </div>
-        <p className="m-0 text-[13px] text-[rgba(58,59,56,0.72)] text-center font-semibold">
+        <p className="m-0 text-[13px] md:text-[16px] text-[rgba(58,59,56,0.72)] text-center font-semibold">
           {helperMessage}
           {isSessionActive && silenceSeconds >= 0.8
             ? ` Silence: ${silenceSeconds.toFixed(1)}s`
@@ -209,28 +216,29 @@ export default function RideAlongActiveControls({
         </p>
       </div>
 
-      <div className="px-[2px]">
-        <div className="flex items-center justify-between gap-2 mb-1">
-          <span className="text-[10px] tracking-[0.25px] uppercase font-bold text-[rgba(58,59,56,0.5)]">
-            Transcript
-          </span>
-          <button
-            type="button"
-            onClick={() => setIsTranscriptExpanded(true)}
-            className="border-none bg-transparent text-[rgba(58,59,56,0.5)] text-[11px] font-semibold cursor-pointer inline-flex items-center gap-1"
-            aria-label="Open transcript timeline"
-          >
-            Expand
-            <i className="fa-solid fa-up-right-and-down-left-from-center text-[9px]" aria-hidden="true" />
-          </button>
+      <button
+        type="button"
+        onClick={() => setIsTranscriptExpanded(true)}
+        className="relative w-full text-left cursor-pointer border-none bg-transparent p-0 overflow-hidden h-[8em] md:h-[10em]"
+        aria-label="Open transcript timeline"
+      >
+        <div
+          ref={transcriptPreviewScrollRef}
+          className="absolute inset-0 overflow-hidden flex flex-col justify-end"
+        >
+          <div className="text-[18px] md:text-[22px] leading-[1.7] break-words text-[rgba(58,59,56,0.38)]">
+            {hasTranscriptTurns
+              ? combinedTranscriptTurns.map((turn) => (
+                  <p key={turn.id} className="m-0">{turn.text}</p>
+                ))
+              : transcriptPreview
+                ? <p className="m-0">{transcriptPreview}</p>
+                : <p className="m-0 italic">Listening for transcription...</p>
+            }
+          </div>
         </div>
-        <div className="text-[13px] leading-[1.35] min-h-[20px] max-h-[2.7em] [-webkit-line-clamp:2] [display:-webkit-box] [-webkit-box-orient:vertical] overflow-hidden break-words">
-          {transcriptPreview
-            ? <span className="text-color-text">{transcriptPreview}</span>
-            : <span className="text-[rgba(58,59,56,0.6)] italic">Listening for transcription...</span>
-          }
-        </div>
-      </div>
+        <div className="absolute inset-x-0 top-0 h-[50%] pointer-events-none bg-gradient-to-b from-white to-transparent z-[1]" />
+      </button>
 
       {isTranscriptExpanded ? (
         <section
@@ -245,33 +253,33 @@ export default function RideAlongActiveControls({
             <button
               type="button"
               onClick={() => setIsTranscriptExpanded(false)}
-              className="border border-white/[0.46] rounded-full w-[38px] h-[38px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer flex-shrink-0"
+              className="border border-white/[0.46] rounded-full w-[38px] md:w-[46px] h-[38px] md:h-[46px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer flex-shrink-0"
               aria-label="Back to recording controls"
             >
               <i className="fa-solid fa-arrow-left" aria-hidden="true" />
             </button>
-            <div className="flex-1 text-center text-[15px] font-bold text-neutral-alabaster">
+            <div className="flex-1 text-center text-[15px] md:text-[18px] font-bold text-neutral-alabaster">
               Transcript
             </div>
             <button
               type="button"
               onClick={() => setIsTranscriptExpanded(false)}
-              className="border border-white/[0.46] rounded-full w-[38px] h-[38px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer flex-shrink-0"
+              className="border border-white/[0.46] rounded-full w-[38px] md:w-[46px] h-[38px] md:h-[46px] bg-transparent text-neutral-alabaster inline-flex items-center justify-center cursor-pointer flex-shrink-0"
               aria-label="Close transcript timeline"
             >
               <i className="fa-solid fa-xmark" aria-hidden="true" />
             </button>
           </div>
 
-          <div ref={transcriptTurnsScrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3">
+          <div ref={transcriptTurnsScrollRef} className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3 md:max-w-[620px] md:mx-auto md:w-full">
             {hasTranscriptTurns ? (
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col gap-2.5 md:gap-3.5">
                 {combinedTranscriptTurns.map((turn) => (
                   <div key={turn.id} className="flex flex-col gap-1">
-                    <div className="text-[11px] font-bold text-color-text-muted leading-[1.25]">
+                    <div className="text-[11px] md:text-[13px] font-bold text-color-text-muted leading-[1.25]">
                       {turn.datetimeLine || 'Timestamp unavailable'}
                     </div>
-                    <div className="border border-brand-navy/[0.15] rounded-[10px] bg-white px-[10px] py-2 text-[13px] leading-[1.4] text-color-text whitespace-pre-wrap break-words">
+                    <div className="border border-brand-navy/[0.15] rounded-[10px] md:rounded-[14px] bg-white px-[10px] md:px-4 py-2 md:py-3 text-[13px] md:text-[16px] leading-[1.4] text-color-text whitespace-pre-wrap break-words">
                       {turn.text}
                     </div>
                   </div>
@@ -286,12 +294,12 @@ export default function RideAlongActiveControls({
         </section>
       ) : null}
 
-      <div className="flex items-center gap-2.5 w-full">
+      <div className="flex items-center gap-2.5 md:gap-3.5 w-full">
         <button
           type="button"
           onClick={actionConfig.onClick}
           disabled={disableMainAction}
-          className={`flex-1 rounded-[14px] min-h-[52px] border inline-flex items-center justify-center gap-2 text-[15px] font-extrabold ${mainActionToneClass}`}
+          className={`flex-1 rounded-[14px] md:rounded-[18px] min-h-[52px] md:min-h-[64px] border inline-flex items-center justify-center gap-2 text-[15px] md:text-[18px] font-extrabold ${mainActionToneClass}`}
           style={{ opacity: disableMainAction ? 0.62 : 1, cursor: disableMainAction ? 'default' : 'pointer' }}
           aria-label={actionConfig.label}
         >
@@ -303,7 +311,7 @@ export default function RideAlongActiveControls({
           type="button"
           onClick={onCompleteRideAlong}
           disabled={disableCompleteAction}
-          className="flex-1 rounded-[14px] min-h-[52px] border inline-flex items-center justify-center gap-2 text-[15px] font-extrabold bg-brand-tangerine/[0.14] border-brand-tangerine/[0.38] text-brand-tangerine"
+          className="flex-1 rounded-[14px] md:rounded-[18px] min-h-[52px] md:min-h-[64px] border inline-flex items-center justify-center gap-2 text-[15px] md:text-[18px] font-extrabold bg-brand-tangerine/[0.14] border-brand-tangerine/[0.38] text-brand-tangerine"
           style={{ opacity: disableCompleteAction ? 0.62 : 1, cursor: disableCompleteAction ? 'default' : 'pointer' }}
           aria-label="Complete ride along"
         >
@@ -313,7 +321,7 @@ export default function RideAlongActiveControls({
       </div>
 
       {error ? (
-        <div className="border border-support-negative/[0.3] rounded-[10px] bg-support-negative/[0.08] text-support-negative text-[12px] px-[9px] py-2">
+        <div className="border border-support-negative/[0.3] rounded-[10px] bg-support-negative/[0.08] text-support-negative text-[12px] md:text-[14px] px-[9px] md:px-3.5 py-2 md:py-2.5">
           {error}
         </div>
       ) : null}
